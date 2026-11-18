@@ -406,21 +406,21 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0934: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0295: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_051d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0601: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0337: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0889: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0745: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0859: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_072a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_057a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_053e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_060a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_081d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_069a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07df: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -431,13 +431,11 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 			{
 			case 1045800646u:
 			{
-				bool flag = ((obj is string || obj == null) ? true : false);
-				bool flag27 = flag;
-				string username = (flag27 ? ((string)(obj ?? null)) : null);
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag28 = flag;
-				string userid = (flag28 ? ((string)(obj2 ?? null)) : null);
-				if (flag27 & flag28)
+				bool flag11 = obj is string || obj == null;
+				string username = (flag11 ? ((string)(obj ?? null)) : null);
+				bool flag12 = obj2 is string || obj2 == null;
+				string userid = (flag12 ? ((string)(obj2 ?? null)) : null);
+				if (flag11 & flag12)
 				{
 					return CanUserLogin(username, userid);
 				}
@@ -445,217 +443,183 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 			}
 			case 3858352595u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag24 = flag;
-				BasePlayer player9 = ((!flag24) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag25 = flag;
-				string cmd4 = (flag25 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag26 = flag;
-				string[] args9 = (flag26 ? ((string[])(obj3 ?? null)) : null);
-				if (flag24 & flag25 & flag26)
+				bool flag28 = obj is BasePlayer || obj == null;
+				BasePlayer player11 = ((!flag28) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag29 = obj2 is string || obj2 == null;
+				string cmd6 = (flag29 ? ((string)(obj2 ?? null)) : null);
+				bool flag30 = obj3 is string[] || obj3 == null;
+				string[] args9 = (flag30 ? ((string[])(obj3 ?? null)) : null);
+				if (flag28 & flag29 & flag30)
 				{
-					CmdBan(player9, cmd4, args9);
+					CmdBan(player11, cmd6, args9);
 					return null;
 				}
 				break;
 			}
 			case 3316594012u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag12 = flag;
-				BasePlayer player5 = ((!flag12) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag13 = flag;
-				string _2 = (flag13 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag14 = flag;
-				string[] args5 = (flag14 ? ((string[])(obj3 ?? null)) : null);
-				if (flag12 & flag13 & flag14)
+				bool flag31 = obj is BasePlayer || obj == null;
+				BasePlayer player12 = ((!flag31) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag32 = obj2 is string || obj2 == null;
+				string _3 = (flag32 ? ((string)(obj2 ?? null)) : null);
+				bool flag33 = obj3 is string[] || obj3 == null;
+				string[] args10 = (flag33 ? ((string[])(obj3 ?? null)) : null);
+				if (flag31 & flag32 & flag33)
 				{
-					CmdBlind(player5, _2, args5);
+					CmdBlind(player12, _3, args10);
 					return null;
 				}
 				break;
 			}
 			case 268148139u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag6 = flag;
-				BasePlayer player3 = ((!flag6) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag7 = flag;
-				string _ = (flag7 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag8 = flag;
-				string[] args3 = (flag8 ? ((string[])(obj3 ?? null)) : null);
-				if (flag6 & flag7 & flag8)
+				bool flag8 = obj is BasePlayer || obj == null;
+				BasePlayer player4 = ((!flag8) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag9 = obj2 is string || obj2 == null;
+				string _ = (flag9 ? ((string)(obj2 ?? null)) : null);
+				bool flag10 = obj3 is string[] || obj3 == null;
+				string[] args4 = (flag10 ? ((string[])(obj3 ?? null)) : null);
+				if (flag8 & flag9 & flag10)
 				{
-					CmdEmpower(player3, _, args3);
+					CmdEmpower(player4, _, args4);
 					return null;
 				}
 				break;
 			}
 			case 3356795315u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag29 = flag;
-				BasePlayer player10 = ((!flag29) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag30 = flag;
-				string cmd5 = (flag30 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag31 = flag;
-				string[] args10 = (flag31 ? ((string[])(obj3 ?? null)) : null);
-				if (flag29 & flag30 & flag31)
+				bool flag20 = obj is BasePlayer || obj == null;
+				BasePlayer player8 = ((!flag20) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag21 = obj2 is string || obj2 == null;
+				string cmd4 = (flag21 ? ((string)(obj2 ?? null)) : null);
+				bool flag22 = obj3 is string[] || obj3 == null;
+				string[] args7 = (flag22 ? ((string[])(obj3 ?? null)) : null);
+				if (flag20 & flag21 & flag22)
 				{
-					CmdKick(player10, cmd5, args10);
+					CmdKick(player8, cmd4, args7);
 					return null;
 				}
 				break;
 			}
 			case 3318094191u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag9 = flag;
-				BasePlayer player4 = ((!flag9) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag10 = flag;
-				string cmd2 = (flag10 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag11 = flag;
-				string[] args4 = (flag11 ? ((string[])(obj3 ?? null)) : null);
-				if (flag9 & flag10 & flag11)
+				bool flag16 = obj is BasePlayer || obj == null;
+				BasePlayer player6 = ((!flag16) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag17 = obj2 is string || obj2 == null;
+				string cmd3 = (flag17 ? ((string)(obj2 ?? null)) : null);
+				bool flag18 = obj3 is string[] || obj3 == null;
+				string[] args6 = (flag18 ? ((string[])(obj3 ?? null)) : null);
+				if (flag16 & flag17 & flag18)
 				{
-					CmdLockPlayerInventory(player4, cmd2, args4);
+					CmdLockPlayerInventory(player6, cmd3, args6);
 					return null;
 				}
 				break;
 			}
 			case 3317529770u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag3 = flag;
-				BasePlayer player2 = ((!flag3) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag4 = flag;
-				string cmd = (flag4 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag5 = flag;
-				string[] args2 = (flag5 ? ((string[])(obj3 ?? null)) : null);
-				if (flag3 & flag4 & flag5)
+				bool flag5 = obj is BasePlayer || obj == null;
+				BasePlayer player3 = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag6 = obj2 is string || obj2 == null;
+				string cmd2 = (flag6 ? ((string)(obj2 ?? null)) : null);
+				bool flag7 = obj3 is string[] || obj3 == null;
+				string[] args3 = (flag7 ? ((string[])(obj3 ?? null)) : null);
+				if (flag5 & flag6 & flag7)
 				{
-					CmdMute(player2, cmd, args2);
+					CmdMute(player3, cmd2, args3);
 					return null;
 				}
 				break;
 			}
 			case 4200947581u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag34 = flag;
-				BasePlayer player12 = ((!flag34) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag34)
+				bool flag19 = obj is BasePlayer || obj == null;
+				BasePlayer player7 = ((!flag19) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag19)
 				{
-					CmdMuteList(player12);
+					CmdMuteList(player7);
 					return null;
 				}
 				break;
 			}
 			case 2256174198u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag35 = flag;
-				BasePlayer player13 = ((!flag35) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag36 = flag;
-				string cmd6 = (flag36 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag37 = flag;
-				string[] args11 = (flag37 ? ((string[])(obj3 ?? null)) : null);
-				if (flag35 & flag36 & flag37)
+				bool flag23 = obj is BasePlayer || obj == null;
+				BasePlayer player9 = ((!flag23) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag24 = obj2 is string || obj2 == null;
+				string cmd5 = (flag24 ? ((string)(obj2 ?? null)) : null);
+				bool flag25 = obj3 is string[] || obj3 == null;
+				string[] args8 = (flag25 ? ((string[])(obj3 ?? null)) : null);
+				if (flag23 & flag24 & flag25)
 				{
-					CmdPrivateMessage(player13, cmd6, args11);
+					CmdPrivateMessage(player9, cmd5, args8);
 					return null;
 				}
 				break;
 			}
 			case 3797902375u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag21 = flag;
-				BasePlayer player8 = ((!flag21) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag22 = flag;
-				string _4 = (flag22 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag23 = flag;
-				string[] args8 = (flag23 ? ((string[])(obj3 ?? null)) : null);
-				if (flag21 & flag22 & flag23)
+				bool flag13 = obj is BasePlayer || obj == null;
+				BasePlayer player5 = ((!flag13) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag14 = obj2 is string || obj2 == null;
+				string _2 = (flag14 ? ((string)(obj2 ?? null)) : null);
+				bool flag15 = obj3 is string[] || obj3 == null;
+				string[] args5 = (flag15 ? ((string[])(obj3 ?? null)) : null);
+				if (flag13 & flag14 & flag15)
 				{
-					CmdTeleportMarker(player8, _4, args8);
+					CmdTeleportMarker(player5, _2, args5);
 					return null;
 				}
 				break;
 			}
 			case 1004786013u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag18 = flag;
-				BasePlayer player7 = ((!flag18) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag19 = flag;
-				string _3 = (flag19 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag20 = flag;
-				string[] args7 = (flag20 ? ((string[])(obj3 ?? null)) : null);
-				if (flag18 & flag19 & flag20)
+				bool flag34 = obj is BasePlayer || obj == null;
+				BasePlayer player13 = ((!flag34) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag35 = obj2 is string || obj2 == null;
+				string _4 = (flag35 ? ((string)(obj2 ?? null)) : null);
+				bool flag36 = obj3 is string[] || obj3 == null;
+				string[] args11 = (flag36 ? ((string[])(obj3 ?? null)) : null);
+				if (flag34 & flag35 & flag36)
 				{
-					CmdToggleCadmin(player7, _3, args7);
+					CmdToggleCadmin(player13, _4, args11);
 					return null;
 				}
 				break;
 			}
 			case 109812738u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag15 = flag;
-				BasePlayer player6 = ((!flag15) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag16 = flag;
-				string cmd3 = (flag16 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag17 = flag;
-				string[] args6 = (flag17 ? ((string[])(obj3 ?? null)) : null);
-				if (flag15 & flag16 & flag17)
+				bool flag2 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag3 = obj2 is string || obj2 == null;
+				string cmd = (flag3 ? ((string)(obj2 ?? null)) : null);
+				bool flag4 = obj3 is string[] || obj3 == null;
+				string[] args2 = (flag4 ? ((string[])(obj3 ?? null)) : null);
+				if (flag2 & flag3 & flag4)
 				{
-					CmdUnban(player6, cmd3, args6);
+					CmdUnban(player2, cmd, args2);
 					return null;
 				}
 				break;
 			}
 			case 1405948638u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag32 = flag;
-				BasePlayer player11 = ((!flag32) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is MapNote || obj2 == null) ? true : false);
-				bool flag33 = flag;
-				MapNote note = ((!flag33) ? ((MapNote)null) : ((MapNote)(obj2 ?? null)));
-				if (flag32 & flag33)
+				bool flag26 = obj is BasePlayer || obj == null;
+				BasePlayer player10 = ((!flag26) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag27 = obj2 is MapNote || obj2 == null;
+				MapNote note = ((!flag27) ? ((MapNote)null) : ((MapNote)(obj2 ?? null)));
+				if (flag26 & flag27)
 				{
-					OnMapMarkerAdded(player11, note);
+					OnMapMarkerAdded(player10, note);
 					return null;
 				}
 				break;
 			}
 			case 2848347654u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag2 = flag;
-				BasePlayer player = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag)
 				{
 					OnPlayerConnected(player);
 					return null;

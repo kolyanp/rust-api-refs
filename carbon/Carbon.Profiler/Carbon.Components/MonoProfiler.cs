@@ -1084,6 +1084,16 @@ public static class MonoProfiler
 
 	private static Action _profileWarningTimer;
 
+	private const int MaxAllocationScopes = 16;
+
+	private static int _allocationScopes;
+
+	private static bool _allocationScopesUnavailable;
+
+	private static bool _allocationEventsLeftOn;
+
+	private static bool _allocationCallbackReplaced;
+
 	public const int NATIVE_PROTOCOL = 5;
 
 	public const int MANAGED_PROTOCOL = 127;
@@ -1190,6 +1200,71 @@ public static class MonoProfiler
 		return Enabled;
 	}
 
+	public static bool BeginAllocationScope()
+	{
+		if (_allocationScopes > 0)
+		{
+			if (_allocationScopes < 16)
+			{
+				profiler_alloc_push();
+			}
+			_allocationScopes++;
+			return true;
+		}
+		if (_allocationScopesUnavailable || Crashed || IsRecording || string.IsNullOrEmpty(ConfigPath))
+		{
+			return false;
+		}
+		if (!Enabled && !Start())
+		{
+			_allocationScopesUnavailable = true;
+			return false;
+		}
+		switch (SwitchAllocationEvents(on: true))
+		{
+		case ProfilerResultCode.MainThreadOnly:
+		case ProfilerResultCode.Busy:
+			return false;
+		default:
+			_allocationScopesUnavailable = true;
+			return false;
+		case ProfilerResultCode.OK:
+		case ProfilerResultCode.NoOp:
+			profiler_alloc_push();
+			_allocationScopes = 1;
+			return true;
+		}
+	}
+
+	public static long EndAllocationScope()
+	{
+		if (_allocationScopes <= 0)
+		{
+			return 0L;
+		}
+		if (_allocationScopes > 16)
+		{
+			_allocationScopes--;
+			return 0L;
+		}
+		ulong result = profiler_alloc_pop();
+		if (--_allocationScopes == 0)
+		{
+			_allocationEventsLeftOn = SwitchAllocationEvents(on: false) == ProfilerResultCode.Busy;
+		}
+		return (long)result;
+	}
+
+	private static ProfilerResultCode SwitchAllocationEvents(bool on)
+	{
+		ProfilerResultCode profilerResultCode = enable_method_alloc_stack(on);
+		if (profilerResultCode == ProfilerResultCode.OK)
+		{
+			_allocationCallbackReplaced = true;
+		}
+		return profilerResultCode;
+	}
+
 	public static void Clear()
 	{
 		AssemblyRecords.Clear();
@@ -1272,6 +1347,11 @@ public static class MonoProfiler
 	private static void OnRecordingStopped()
 	{
 		CancelTimers();
+		if (_allocationEventsLeftOn && _allocationScopes == 0)
+		{
+			_allocationEventsLeftOn = false;
+			SwitchAllocationEvents(on: false);
+		}
 		RecordingStopped?.Invoke();
 	}
 
@@ -1295,8 +1375,13 @@ public static class MonoProfiler
 			_dataProcessTimer = Pool.Get<Stopwatch>();
 			_dataProcessTimer.Start();
 		}
+		ProfilerArgs profilerArgs = args;
+		if (!IsRecording && _allocationCallbackReplaced)
+		{
+			profilerArgs &= ~ProfilerArgs.FastResume;
+		}
 		bool flag = default;
-		ProfilerResultCode profilerResultCode = profiler_toggle(args, &flag, &gCStats, &assemblyRecords, &callRecords, &memoryRecords);
+		ProfilerResultCode profilerResultCode = profiler_toggle(profilerArgs, &flag, &gCStats, &assemblyRecords, &callRecords, &memoryRecords);
 		if (profilerResultCode == ProfilerResultCode.Aborted)
 		{
 			if (logging)
@@ -1340,6 +1425,7 @@ public static class MonoProfiler
 		IsRecording = flag;
 		if (flag)
 		{
+			_allocationCallbackReplaced = false;
 			if (logging)
 			{
 				Debug.LogWarning((object)"[MonoProfiler] Started recording..");
@@ -1542,6 +1628,16 @@ public static class MonoProfiler
 	[DllImport("CarbonNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
 	private unsafe static extern bool start_profiler(char* ptr, int length);
+
+	[DllImport("CarbonNative")]
+	private static extern ProfilerResultCode enable_method_alloc_stack([MarshalAs(UnmanagedType.U1)] bool toggle);
+
+	[DllImport("CarbonNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	private static extern bool profiler_alloc_push();
+
+	[DllImport("CarbonNative")]
+	private static extern ulong profiler_alloc_pop();
 
 	[DllImport("CarbonNative")]
 	private unsafe static extern void carbon_init_logger(delegate*<int, int, byte*, int, LogSource, void> logger);

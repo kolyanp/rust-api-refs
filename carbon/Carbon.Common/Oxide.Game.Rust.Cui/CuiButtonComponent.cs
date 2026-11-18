@@ -61,7 +61,7 @@ public class CuiButtonComponent : ICuiComponent, ICuiColor, ICuiEnableable, ICui
 	public float ColorMultiplier { get; set; }
 
 	[JsonProperty("fadeDuration")]
-	public float FadeDuration { get; set; }
+	public float? FadeDuration { get; set; }
 
 	[JsonProperty("fadeIn")]
 	public float FadeIn { get; set; }

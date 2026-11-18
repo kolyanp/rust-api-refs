@@ -192,10 +192,10 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -205,10 +205,9 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			{
 			case 388755728u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg args3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag3 = obj is Arg || obj == null;
+				Arg args3 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag3)
 				{
 					ActionDatePickerUI(args3);
 					return null;
@@ -217,10 +216,9 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 2637635139u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag3 = flag;
-				Arg args2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag3)
+				bool flag2 = obj is Arg || obj == null;
+				Arg args2 = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag2)
 				{
 					CloseDatePickerUI(args2);
 					return null;
@@ -229,13 +227,11 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 3586261805u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag5 = flag;
-				BasePlayer player2 = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is Action<DateTime> || obj2 == null) ? true : false);
-				bool flag6 = flag;
-				Action<DateTime> onDatePicked = (flag6 ? ((Action<DateTime>)(obj2 ?? null)) : null);
-				if (flag5 & flag6)
+				bool flag4 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag4) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag5 = obj2 is Action<DateTime> || obj2 == null;
+				Action<DateTime> onDatePicked = (flag5 ? ((Action<DateTime>)(obj2 ?? null)) : null);
+				if (flag4 & flag5)
 				{
 					Draw(player2, onDatePicked);
 					return null;
@@ -244,10 +240,9 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 3895172637u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag2 = flag;
-				BasePlayer player = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag)
 				{
 					DrawCursorLocker(player);
 					return null;

@@ -204,19 +204,11 @@ public abstract class BridgeServer
 
 	public virtual bool OnPasswordValidate(string password)
 	{
-		bool flag;
-		switch (password)
+		if (password != null && !(password == "password"))
 		{
-		case null:
-		case "unset":
-		case "password":
-			flag = true;
-			break;
-		default:
-			flag = false;
-			break;
+			return !(password == "unset");
 		}
-		return !flag;
+		return false;
 	}
 
 	public virtual bool OnSocketValidate(IWebSocketConnection socket)

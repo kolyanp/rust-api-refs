@@ -19,7 +19,7 @@
       <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.15/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil" />
     <Reference Include="Rust.Global" />

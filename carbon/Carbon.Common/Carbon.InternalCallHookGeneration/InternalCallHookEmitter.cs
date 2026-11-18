@@ -71,7 +71,7 @@ public static class InternalCallHookEmitter
 			group method by new { method.HookId, method.HookName }).OrderBy(group => group.Key.HookName, StringComparer.Ordinal).ToList();
 		foreach (var item in list)
 		{
-			AppendLine(builder, indent + 4, $"// {item.Key.HookName} aka {item.Key.HookId}");
+			AppendLine(builder, indent + 4, $"// {EscapeLineBreaks(item.Key.HookName)} aka {item.Key.HookId}");
 			AppendLine(builder, indent + 4, $"case {item.Key.HookId}:");
 			AppendLine(builder, indent + 4, "{");
 			List<InternalCallHookMethodModel> list2 = item.OrderByDescending((InternalCallHookMethodModel method) => method.Score).ThenBy((InternalCallHookMethodModel method) => method.MethodName, StringComparer.Ordinal).ToList();
@@ -155,6 +155,13 @@ public static class InternalCallHookEmitter
 		}
 	}
 
+	private static string EscapeLineBreaks(string value)
+	{
+		return value.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\u0085", "\\u0085")
+			.Replace("\u2028", "\\u2028")
+			.Replace("\u2029", "\\u2029");
+	}
+
 	private static string NormalizeUsing(string value)
 	{
 		if (string.IsNullOrWhiteSpace(value))
@@ -198,12 +205,12 @@ public static class InternalCallHookEmitter
 		for (int i = 0; i < typeName.Length && !flag; i++)
 		{
 			char c = typeName[i];
-			if ((c == '(' || c == '<' || c == '[') ? true : false)
+			if (c == '(' || c == '<' || c == '[')
 			{
 				num++;
 				continue;
 			}
-			if ((c == ')' || c == '>' || c == ']') ? true : false)
+			if (c == ')' || c == '>' || c == ']')
 			{
 				flag = --num == 0;
 				if (!flag)

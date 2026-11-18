@@ -92,11 +92,7 @@ public class HookEx : IDisposable, IHook
 		get
 		{
 			HookState status = _runtime.Status;
-			if (status == HookState.Warning || status == HookState.Success)
-			{
-				return true;
-			}
-			return false;
+			return status == HookState.Warning || status == HookState.Success;
 		}
 	}
 

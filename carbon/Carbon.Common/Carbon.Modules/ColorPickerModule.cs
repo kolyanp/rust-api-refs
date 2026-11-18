@@ -272,12 +272,12 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -287,8 +287,7 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			{
 			case 3488114070u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag7 = flag;
+				bool flag7 = obj is Arg || obj == null;
 				Arg args3 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag7)
 				{
@@ -299,13 +298,11 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 			case 3586261805u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag3 = flag;
-				BasePlayer player = ((!flag3) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is Action<string, string, float> || obj2 == null) ? true : false);
-				bool flag4 = flag;
-				Action<string, string, float> onColorPicked = (flag4 ? ((Action<string, string, float>)(obj2 ?? null)) : null);
-				if (flag3 & flag4)
+				bool flag2 = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag3 = obj2 is Action<string, string, float> || obj2 == null;
+				Action<string, string, float> onColorPicked = (flag3 ? ((Action<string, string, float>)(obj2 ?? null)) : null);
+				if (flag2 & flag3)
 				{
 					Draw(player, onColorPicked);
 					return null;
@@ -314,10 +311,9 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 			case 3895172637u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag5 = flag;
-				BasePlayer player2 = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag5)
+				bool flag4 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag4) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag4)
 				{
 					DrawCursorLocker(player2);
 					return null;
@@ -326,10 +322,9 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 			case 877006401u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag6 = flag;
-				Arg args2 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag6)
+				bool flag5 = obj is Arg || obj == null;
+				Arg args2 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag5)
 				{
 					PickAlphaColorPickerUI(args2);
 					return null;
@@ -338,10 +333,9 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 			case 2210168706u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag8 = flag;
-				Arg arg2 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag8)
+				bool flag6 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag6)
 				{
 					PickColorPickerUI(arg2);
 					return null;
@@ -350,10 +344,9 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 			case 1750458046u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					PickHexColorPickerUI(arg);
 					return null;

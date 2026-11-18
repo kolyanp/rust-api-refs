@@ -15,6 +15,9 @@ public class CuiCanvasGroupComponent : ICuiComponent, ICuiEnableable
 	[JsonProperty("interactable")]
 	public bool? Interactable { get; set; }
 
+	[JsonProperty("fade")]
+	public string Fade { get; set; }
+
 	[JsonProperty("enabled")]
 	public bool? Enabled { get; set; }
 }

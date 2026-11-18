@@ -541,46 +541,46 @@ public class ScriptCompilationThread : BaseThreadedJob
 	public override void ThreadFunction()
 	{
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d7: Expected Obj, but got Unknown
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0502: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0504: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0507: Invalid comparison between Unknown and I4
-		//IL_0509: Unknown result type (might be due to invalid IL or missing references)
-		//IL_050c: Invalid comparison between Unknown and I4
-		//IL_05a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05e2: Expected Obj, but got Unknown
-		//IL_052b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0530: Unknown result type (might be due to invalid IL or missing references)
-		//IL_053d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0542: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0560: Unknown result type (might be due to invalid IL or missing references)
-		//IL_056a: Expected Obj, but got Unknown
+		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0432: Expected Obj, but got Unknown
+		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0274: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0289: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0254: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0515: Unknown result type (might be due to invalid IL or missing references)
+		//IL_051a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_051e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0523: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0558: Unknown result type (might be due to invalid IL or missing references)
+		//IL_055d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_055f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0562: Invalid comparison between Unknown and I4
+		//IL_0564: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0567: Invalid comparison between Unknown and I4
+		//IL_05fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0603: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0610: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0615: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0633: Unknown result type (might be due to invalid IL or missing references)
+		//IL_063d: Expected Obj, but got Unknown
+		//IL_0586: Unknown result type (might be due to invalid IL or missing references)
+		//IL_058b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0598: Unknown result type (might be due to invalid IL or missing references)
+		//IL_059d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05c5: Expected Obj, but got Unknown
 		if (IsAborted || Sources.TrueForAll((ISource x) => string.IsNullOrEmpty(x.Content)))
 		{
 			Dispose();
@@ -612,13 +612,20 @@ public class ScriptCompilationThread : BaseThreadedJob
 			CSharpParseOptions val = new CSharpParseOptions((LanguageVersion)2147483646, (DocumentationMode)1, (SourceCodeKind)0, (IEnumerable<string>)null).WithPreprocessorSymbols((IEnumerable<string>)list2);
 			bool flag = Sources.Any((ISource x) => !string.IsNullOrEmpty(x.Content) && x.Content.Contains("override object InternalCallHook"));
 			bool flag2 = false;
+			List<SyntaxTree> list3 = new List<SyntaxTree>(Sources.Count);
 			foreach (ISource source in Sources)
 			{
 				SyntaxTree val2 = CSharpSyntaxTree.ParseText(source.Content, val, source.FilePath, Encoding.UTF8, default(CancellationToken));
 				CompilationUnitSyntax val3 = CSharpExtensions.GetCompilationUnitRoot(val2, default(CancellationToken));
+				int count = list2.Count;
 				HookCaller.HandleVersionConditionals(val3, list2);
-				val = val.WithPreprocessorSymbols((IEnumerable<string>)list2);
-				val2 = val2.WithRootAndOptions((SyntaxNode)(object)val3, (ParseOptions)(object)val);
+				if (list2.Count != count)
+				{
+					val = val.WithPreprocessorSymbols((IEnumerable<string>)list2);
+					val2 = CSharpSyntaxTree.ParseText(source.Content, val, source.FilePath, Encoding.UTF8, default(CancellationToken));
+					val3 = CSharpExtensions.GetCompilationUnitRoot(val2, default(CancellationToken));
+				}
+				list3.Add(val2);
 				if (InternalCallHook.FindPluginInfo(val3, out var @namespace, out var namespaceIndex, out var classIndex, ClassList))
 				{
 					flag2 = true;
@@ -646,7 +653,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 			{
 				_stopwatch.Start();
 				SyntaxTree val6 = CSharpSyntaxTree.ParseText(Sources.Select((ISource x) => x.Content).ToString("\n"), val, contextFileName, Encoding.UTF8, default(CancellationToken));
-				InternalCallHook.GeneratePartial(CSharpExtensions.GetCompilationUnitRoot(val6, default(CancellationToken)), out var output, val, contextFileName, ClassList, Defines.GetScriptDebugFolder(), Usings, references);
+				InternalCallHook.GeneratePartial(CSharpExtensions.GetCompilationUnitRoot(val6, default(CancellationToken)), out var output, val, contextFileName, ClassList, Defines.GetScriptDebugFolder(), Usings, references, list3);
 				InternalCallHookGenTime = _stopwatch.Elapsed;
 				if (output != null)
 				{
@@ -674,11 +681,11 @@ public class ScriptCompilationThread : BaseThreadedJob
 					Dispose();
 					return;
 				}
-				List<string> list3 = Pool.Get<List<string>>();
 				List<string> list4 = Pool.Get<List<string>>();
+				List<string> list5 = Pool.Get<List<string>>();
 				foreach (Diagnostic diagnostic in val9.Diagnostics)
 				{
-					if (list3.Contains(diagnostic.Id) || list4.Contains(diagnostic.Id))
+					if (list4.Contains(diagnostic.Id) || list5.Contains(diagnostic.Id))
 					{
 						continue;
 					}
@@ -710,7 +717,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 					{
 						if ((int)severity == 3)
 						{
-							list3.Add(diagnostic.Id);
+							list4.Add(diagnostic.Id);
 							List<CompilerException> exceptions = Exceptions;
 							start = span.Start;
 							int num = start.Line + 1;
@@ -720,7 +727,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 					}
 					else if (!diagnostic.GetMessage((IFormatProvider)CultureInfo.InvariantCulture).Contains("Assuming assembly reference"))
 					{
-						list3.Add(diagnostic.Id);
+						list4.Add(diagnostic.Id);
 						List<CompilerException> warnings = Warnings;
 						start = span.Start;
 						int num2 = start.Line + 1;
@@ -728,8 +735,8 @@ public class ScriptCompilationThread : BaseThreadedJob
 						warnings.Add(new CompilerException(text, new CompilerError(fileNameWithoutExtension, num2, start.Character + 1, diagnostic.Id, diagnostic.GetMessage((IFormatProvider)CultureInfo.InvariantCulture))));
 					}
 				}
-				Pool.FreeUnmanaged<string>(ref list3);
 				Pool.FreeUnmanaged<string>(ref list4);
+				Pool.FreeUnmanaged<string>(ref list5);
 				if (val9.Success)
 				{
 					IsCompileSuccess = true;
@@ -784,12 +791,12 @@ public class ScriptCompilationThread : BaseThreadedJob
 			Type[] types = Assembly.GetTypes();
 			foreach (Type type in types)
 			{
-				List<uint> list5 = new List<uint>();
-				List<HookMethodAttribute> list6 = new List<HookMethodAttribute>();
-				List<PluginReferenceAttribute> list7 = new List<PluginReferenceAttribute>();
-				Hooks.Add(type, list5);
-				HookMethods.Add(type, list6);
-				PluginReferences.Add(type, list7);
+				List<uint> list6 = new List<uint>();
+				List<HookMethodAttribute> list7 = new List<HookMethodAttribute>();
+				List<PluginReferenceAttribute> list8 = new List<PluginReferenceAttribute>();
+				Hooks.Add(type, list6);
+				HookMethods.Add(type, list7);
+				PluginReferences.Add(type, list8);
 				MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 				foreach (MethodInfo methodInfo in methods)
 				{
@@ -800,9 +807,9 @@ public class ScriptCompilationThread : BaseThreadedJob
 					if (Community.Runtime.HookManager.IsHook(methodInfo.Name))
 					{
 						uint orAdd = HookStringPool.GetOrAdd(methodInfo.Name);
-						if (!list5.Contains(orAdd))
+						if (!list6.Contains(orAdd))
 						{
-							list5.Add(orAdd);
+							list6.Add(orAdd);
 						}
 						continue;
 					}
@@ -810,7 +817,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 					if (customAttribute != null)
 					{
 						customAttribute.Method = methodInfo;
-						list6.Add(customAttribute);
+						list7.Add(customAttribute);
 					}
 				}
 				FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -820,7 +827,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 					if (customAttribute2 != null)
 					{
 						customAttribute2.Field = fieldInfo;
-						list7.Add(customAttribute2);
+						list8.Add(customAttribute2);
 					}
 				}
 			}

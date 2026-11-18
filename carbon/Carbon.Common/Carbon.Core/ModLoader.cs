@@ -699,27 +699,19 @@ public static class ModLoader
 		{
 			return false;
 		}
-		bool flag;
 		switch (type.Name)
 		{
 		case "CarbonPlugin":
 		case "RustPlugin":
 		case "CovalencePlugin":
-			flag = true;
-			break;
-		default:
-			flag = false;
-			break;
-		}
-		if (flag)
-		{
 			return true;
+		default:
+			if (recursive)
+			{
+				return IsValidPlugin(type.BaseType, recursive);
+			}
+			return false;
 		}
-		if (recursive)
-		{
-			return IsValidPlugin(type.BaseType, recursive);
-		}
-		return false;
 	}
 
 	public static void ProcessCommands(Type type, BaseHookable hookable = null, BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic, string prefix = null, bool hidden = false)

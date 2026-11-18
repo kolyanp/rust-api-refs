@@ -106,7 +106,7 @@ public class WhitelistModule : CarbonModule<WhitelistConfig, EmptyModuleData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -115,16 +115,13 @@ public class WhitelistModule : CarbonModule<WhitelistConfig, EmptyModuleData>
 		{
 			if (hook == 1045800646)
 			{
-				bool flag = ((obj is string || obj == null) ? true : false);
-				bool flag2 = flag;
-				string name = (flag2 ? ((string)(obj ?? null)) : null);
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag3 = flag;
-				string id = (flag3 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag4 = flag;
-				string ipAddress = (flag4 ? ((string)(obj3 ?? null)) : null);
-				if (flag2 & flag3 & flag4)
+				bool flag = obj is string || obj == null;
+				string name = (flag ? ((string)(obj ?? null)) : null);
+				bool flag2 = obj2 is string || obj2 == null;
+				string id = (flag2 ? ((string)(obj2 ?? null)) : null);
+				bool flag3 = obj3 is string || obj3 == null;
+				string ipAddress = (flag3 ? ((string)(obj3 ?? null)) : null);
+				if (flag & flag2 & flag3)
 				{
 					return CanUserLogin(name, id, ipAddress);
 				}

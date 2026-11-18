@@ -81,6 +81,8 @@ public class Config
 		public int HookLagSpikeThreshold = 1000;
 
 		public bool TrackHookMemory = true;
+
+		public bool PreciseHookMemory;
 	}
 
 	public class LoggingConfig

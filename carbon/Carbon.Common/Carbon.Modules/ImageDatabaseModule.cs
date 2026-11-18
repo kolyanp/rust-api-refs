@@ -702,9 +702,9 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		object obj = ((args?.Length > 0) ? args[0] : null);
 		try
 		{
@@ -712,10 +712,9 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 			{
 			case 3338439234u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg arg3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag3 = obj is Arg || obj == null;
+				Arg arg3 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag3)
 				{
 					ClearInvalid(arg3);
 					return null;
@@ -724,10 +723,9 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 			}
 			case 2641566827u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag3 = flag;
-				Arg arg2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag3)
+				bool flag2 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag2)
 				{
 					DeleteImg(arg2);
 					return null;
@@ -735,14 +733,13 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 				break;
 			}
 			case 986171947u:
-				LoadDefaultImages(obj is bool flag5 && flag5);
+				LoadDefaultImages(obj is bool flag4 && flag4);
 				return null;
 			case 2550838889u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					LoadDefaults(arg);
 					return null;

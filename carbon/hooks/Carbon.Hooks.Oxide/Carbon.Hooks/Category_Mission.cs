@@ -12,7 +12,7 @@ public class Category_Mission
 	public class Mission_BaseMission
 	{
 		[Patch("OnMissionFailed", "OnMissionFailed", "BaseMission", "MissionFailed", new string[] { "BaseMission/MissionInstance", "BasePlayer", "BaseMission/MissionFailReason", "System.Boolean" })]
-		[Identifier("43048536d5924bb7971fff55fbb35c0e")]
+		[Identifier("821b735f1b0c401b98e3fd7fb7d95ee3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseMission", false)]
 		[Parameter("instance", "BaseMission+MissionInstance", false)]
@@ -21,7 +21,7 @@ public class Category_Mission
 		[Return(typeof(void), Discarded = true)]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_43048536d5924bb7971fff55fbb35c0e : Patch
+		public class Mission_BaseMission_821b735f1b0c401b98e3fd7fb7d95ee3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -54,13 +54,13 @@ public class Category_Mission
 		}
 
 		[Patch("OnMissionSucceeded", "OnMissionSucceeded", "BaseMission", "MissionSuccess", new string[] { "BaseMission/MissionInstance", "BasePlayer" })]
-		[Identifier("b8d99fb5ff184be19a03561e70a7f974")]
+		[Identifier("61b30f4398dc4291b600a38a65f095de")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseMission", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_b8d99fb5ff184be19a03561e70a7f974 : Patch
+		public class Mission_BaseMission_61b30f4398dc4291b600a38a65f095de : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -90,13 +90,13 @@ public class Category_Mission
 		}
 
 		[Patch("OnMissionStart", "OnMissionStart", "BaseMission", "MissionStart", new string[] { "BaseMission/MissionInstance", "BasePlayer" })]
-		[Identifier("e3ed661313a341258fb4f468857d6f74")]
+		[Identifier("bd3a3d08f1ea4522a29a8c98808f4984")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseMission", false)]
 		[Return(typeof(void))]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_e3ed661313a341258fb4f468857d6f74 : Patch
+		public class Mission_BaseMission_bd3a3d08f1ea4522a29a8c98808f4984 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -130,7 +130,7 @@ public class Category_Mission
 		}
 
 		[Patch("CanAssignMission", "CanAssignMission", "BaseMission", "AssignMission", new string[] { "BasePlayer", "IMissionProvider", "BaseMission" })]
-		[Identifier("8049dc5f36544e8ca758eb553f9bcef7")]
+		[Identifier("1fbee73704354e4f8f794eb25cfcd368")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("assignee", "BasePlayer", false)]
 		[Parameter("mission", "BaseMission", false)]
@@ -138,7 +138,7 @@ public class Category_Mission
 		[Return(typeof(bool))]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_8049dc5f36544e8ca758eb553f9bcef7 : Patch
+		public class Mission_BaseMission_1fbee73704354e4f8f794eb25cfcd368 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -178,7 +178,7 @@ public class Category_Mission
 		}
 
 		[Patch("OnMissionAssigned", "OnMissionAssigned", "BaseMission", "AssignMission", new string[] { "BasePlayer", "IMissionProvider", "BaseMission" })]
-		[Identifier("4029ffa9f2bd4e9fb02519a17e757768")]
+		[Identifier("3a348cbc26914dfa955200635fb01513")]
 		[Dependencies(new string[] { "CanAssignMission" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("mission", "BaseMission", false)]
@@ -187,7 +187,7 @@ public class Category_Mission
 		[Return(typeof(void), Discarded = true)]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_4029ffa9f2bd4e9fb02519a17e757768 : Patch
+		public class Mission_BaseMission_3a348cbc26914dfa955200635fb01513 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -217,14 +217,14 @@ public class Category_Mission
 		}
 
 		[Patch("OnMissionStarted", "OnMissionStarted", "BaseMission", "MissionStart", new string[] { "BaseMission/MissionInstance", "BasePlayer" })]
-		[Identifier("e650926039fc4b289a1a26461c707a43")]
+		[Identifier("ff569647d55642419c611a08f3c1fb46")]
 		[Dependencies(new string[] { "OnMissionStart" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseMission", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Mission")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Mission_BaseMission_e650926039fc4b289a1a26461c707a43 : Patch
+		public class Mission_BaseMission_ff569647d55642419c611a08f3c1fb46 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

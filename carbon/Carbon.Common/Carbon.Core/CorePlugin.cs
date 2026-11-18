@@ -769,6 +769,21 @@ public class CorePlugin : CarbonPlugin
 		}
 	}
 
+	[CommandVar("precisehookmemory", "Counts the bytes each hook allocates through the native profiler instead of estimating them from heap growth. Slows down allocations made inside hooks.")]
+	[AuthLevel(2)]
+	private bool PreciseHookMemory
+	{
+		get
+		{
+			return Community.Runtime.Config.Debugging.PreciseHookMemory;
+		}
+		set
+		{
+			Community.Runtime.Config.Debugging.PreciseHookMemory = value;
+			Community.Runtime.SaveConfig();
+		}
+	}
+
 	[CommandVar("hooklsthreshold", "The threshold value used by the hook caller to determine what minimum time is considered as a server lag spike. Defaults to 1000ms.")]
 	[AuthLevel(2)]
 	private int HookLagSpikeThreshold
@@ -2360,7 +2375,6 @@ public class CorePlugin : CarbonPlugin
 		string text = arg.GetString(0, "");
 		string text2 = arg.GetString(1, "");
 		string text3 = arg.GetString(2, "");
-		KeyValuePair<string, UserData> keyValuePair = permission.FindUser(text2);
 		if (!permission.PermissionExists(text3))
 		{
 			arg.ReplyWith("Couldn't grant permission - permission does not exist.");
@@ -2412,8 +2426,10 @@ public class CorePlugin : CarbonPlugin
 			{
 				PrintWarn(arg);
 			}
+			return;
 		}
-		else if (string.IsNullOrEmpty(keyValuePair.Key))
+		KeyValuePair<string, UserData> keyValuePair = permission.FindUser(text2);
+		if (string.IsNullOrEmpty(keyValuePair.Key))
 		{
 			arg.ReplyWith("Couldn't grant user permission - user not found, use full name or steam ID.");
 		}
@@ -2467,7 +2483,6 @@ public class CorePlugin : CarbonPlugin
 		string text = arg.GetString(0, "");
 		string text2 = arg.GetString(1, "");
 		string text3 = arg.GetString(2, "");
-		KeyValuePair<string, UserData> keyValuePair = permission.FindUser(text2);
 		bool flag = text3.Equals(Permission.StarStr);
 		if (!(text == "user"))
 		{
@@ -2514,8 +2529,10 @@ public class CorePlugin : CarbonPlugin
 			{
 				PrintWarn(arg);
 			}
+			return;
 		}
-		else if (string.IsNullOrEmpty(keyValuePair.Key))
+		KeyValuePair<string, UserData> keyValuePair = permission.FindUser(text2);
+		if (string.IsNullOrEmpty(keyValuePair.Key))
 		{
 			arg.ReplyWith("Couldn't revoke user permission - user not found, use full name or steam ID.");
 		}
@@ -5023,112 +5040,112 @@ public class CorePlugin : CarbonPlugin
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_1444: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e44: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1268: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c68: Unknown result type (might be due to invalid IL or missing references)
-		//IL_20c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1d68: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1e70: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0fd0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2680: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1486: Unknown result type (might be due to invalid IL or missing references)
-		//IL_203e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1402: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0dc0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0d7e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_24f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_133c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a58: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ffc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a92: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2326: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b16: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ba2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0992: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f8e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2188: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1718: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1e2e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c26: Unknown result type (might be due to invalid IL or missing references)
-		//IL_137e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_22d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2578: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ce4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_220c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_24b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0be4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b58: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1eb2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1623: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b9a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_10c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1d26: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1daa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_263e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2290: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2470: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0adc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b1e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f4c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_25fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_21ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1f36: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1bdc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_087d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_23aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_224e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_120c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a16: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0d3c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ca2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a0e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cfa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a50: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a9a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_26bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e02: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1dec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1c1e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_242e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_150a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1c60: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b60: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1f78: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ef4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0943: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1695: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_23ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0901: Unknown result type (might be due to invalid IL or missing references)
-		//IL_25ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f0a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1330: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0dba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f5e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_117e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c08: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e82: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1b76: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1c66: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f22: Unknown result type (might be due to invalid IL or missing references)
+		//IL_23b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_136c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e0a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d42: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d06: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2254: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a28: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1dce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1ebe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_18e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e46: Unknown result type (might be due to invalid IL or missing references)
+		//IL_20b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_195a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1204: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b54: Unknown result type (might be due to invalid IL or missing references)
 		//IL_12b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cb8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e86: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2146: Unknown result type (might be due to invalid IL or missing references)
-		//IL_16d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1fba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2536: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2368: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ec8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ad4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_15b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_192a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_192f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1565: Unknown result type (might be due to invalid IL or missing references)
-		//IL_156a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_157e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_19d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0974: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ee6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1f36: Unknown result type (might be due to invalid IL or missing references)
+		//IL_15bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1c2a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bcc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_127c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_22cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1afe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1fae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2218: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b90: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1996: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1ca2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_14df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_19d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1b3a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1bb2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2380: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_21dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0aa0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0adc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eaa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2344: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1f72: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1d1a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_10ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1a0e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0877: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2128: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1fea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1128: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0cca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1ac2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_186a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c8e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_18a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a64: Unknown result type (might be due to invalid IL or missing references)
+		//IL_23f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d7e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1bee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1a4a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_21a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1a86: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b18: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1d56: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1cde: Unknown result type (might be due to invalid IL or missing references)
+		//IL_092b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1545: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2164: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2308: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e6e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_11c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c52: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0df6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1efa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1580: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1d92: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2290: Unknown result type (might be due to invalid IL or missing references)
+		//IL_20ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e32: Unknown result type (might be due to invalid IL or missing references)
+		//IL_191e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1479: Unknown result type (might be due to invalid IL or missing references)
+		//IL_179e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_17a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1433: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1438: Unknown result type (might be due to invalid IL or missing references)
+		//IL_144c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1837: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -5141,48 +5158,44 @@ public class CorePlugin : CarbonPlugin
 			{
 			case 3617829410u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag53 = flag;
-				Arg arg37 = ((!flag53) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag53)
+				bool flag46 = obj is Arg || obj == null;
+				Arg arg36 = ((!flag46) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag46)
 				{
-					AddConditional(arg37);
+					AddConditional(arg36);
 					return null;
 				}
 				break;
 			}
 			case 1461696666u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag32 = flag;
-				Arg arg17 = ((!flag32) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag32)
+				bool flag91 = obj is Arg || obj == null;
+				Arg arg66 = ((!flag91) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag91)
 				{
-					Aliases(arg17);
+					Aliases(arg66);
 					return null;
 				}
 				break;
 			}
 			case 1310794640u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag56 = flag;
-				Arg arg38 = ((!flag56) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag56)
+				bool flag62 = obj is Arg || obj == null;
+				Arg arg45 = ((!flag62) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag62)
 				{
-					AssignAlias(arg38);
+					AssignAlias(arg45);
 					return null;
 				}
 				break;
 			}
 			case 1569187096u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag50 = flag;
-				Arg arg34 = ((!flag50) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag50)
+				bool flag19 = obj is Arg || obj == null;
+				Arg arg16 = ((!flag19) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag19)
 				{
-					BuildCall(arg34);
+					BuildCall(arg16);
 					return null;
 				}
 				break;
@@ -5191,142 +5204,130 @@ public class CorePlugin : CarbonPlugin
 				return CanUnlockTechTreeNode();
 			case 2522567266u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag110 = flag;
-				Arg arg76 = ((!flag110) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag110)
+				bool flag80 = obj is Arg || obj == null;
+				Arg arg60 = ((!flag80) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag80)
 				{
-					CarbonLoadConfig(arg76);
+					CarbonLoadConfig(arg60);
 					return null;
 				}
 				break;
 			}
 			case 8097725u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag67 = flag;
-				Arg arg46 = ((!flag67) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag67)
+				bool flag31 = obj is Arg || obj == null;
+				Arg arg25 = ((!flag31) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag31)
 				{
-					CarbonSaveConfig(arg46);
+					CarbonSaveConfig(arg25);
 					return null;
 				}
 				break;
 			}
 			case 3026698837u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag66 = flag;
-				Arg arg45 = ((!flag66) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag66)
+				bool flag37 = obj is Arg || obj == null;
+				Arg arg28 = ((!flag37) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag37)
 				{
-					ChangeVersion(arg45);
+					ChangeVersion(arg28);
 					return null;
 				}
 				break;
 			}
 			case 3716440972u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag87 = flag;
-				Arg arg61 = ((!flag87) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag87)
+				bool flag109 = obj is Arg || obj == null;
+				Arg arg76 = ((!flag109) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag109)
 				{
-					Cleanup(arg61);
+					Cleanup(arg76);
 					return null;
 				}
 				break;
 			}
 			case 2486811342u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag41 = flag;
-				Arg arg25 = ((!flag41) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag41)
+				bool flag67 = obj is Arg || obj == null;
+				Arg arg50 = ((!flag67) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag67)
 				{
-					ClearMarkers(arg25);
+					ClearMarkers(arg50);
 					return null;
 				}
 				break;
 			}
 			case 212981081u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag97 = flag;
-				Arg arg68 = ((!flag97) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag97)
+				bool flag15 = obj is Arg || obj == null;
+				Arg arg12 = ((!flag15) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag15)
 				{
-					Commit(arg68);
+					Commit(arg12);
 					return null;
 				}
 				break;
 			}
 			case 121761328u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag80 = flag;
-				Arg arg56 = ((!flag80) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag80)
+				bool flag111 = obj is Arg || obj == null;
+				Arg arg78 = ((!flag111) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag111)
 				{
-					Conditionals(arg56);
+					Conditionals(arg78);
 					return null;
 				}
 				break;
 			}
 			case 1813333766u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag72 = flag;
-				Arg arg51 = ((!flag72) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag72)
+				bool flag26 = obj is Arg || obj == null;
+				Arg arg20 = ((!flag26) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag26)
 				{
-					CreatePlugin(arg51);
+					CreatePlugin(arg20);
 					return null;
 				}
 				break;
 			}
 			case 2563024626u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag89 = flag;
-				Arg arg62 = ((!flag89) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag89)
+				bool flag76 = obj is Arg || obj == null;
+				Arg arg57 = ((!flag76) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag76)
 				{
-					Delete(arg62);
+					Delete(arg57);
 					return null;
 				}
 				break;
 			}
 			case 1566035725u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag60 = flag;
-				Arg arg41 = ((!flag60) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag60)
+				bool flag84 = obj is Arg || obj == null;
+				Arg arg63 = ((!flag84) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag84)
 				{
-					DeleteExt(arg41);
+					DeleteExt(arg63);
 					return null;
 				}
 				break;
 			}
 			case 2179227208u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag18 = flag;
-				Arg arg8 = ((!flag18) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag18)
+				bool flag47 = obj is Arg || obj == null;
+				Arg arg37 = ((!flag47) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag47)
 				{
-					DevDumpSnapshot(arg8);
+					DevDumpSnapshot(arg37);
 					return null;
 				}
 				break;
 			}
 			case 2215751651u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag68 = flag;
-				Arg arg47 = ((!flag68) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag68)
+				bool flag64 = obj is Arg || obj == null;
+				Arg arg47 = ((!flag64) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag64)
 				{
 					EditConfig(arg47);
 					return null;
@@ -5338,154 +5339,141 @@ public class CorePlugin : CarbonPlugin
 				return null;
 			case 1012871006u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag117 = flag;
-				Arg arg82 = ((!flag117) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag117)
+				bool flag3 = obj is Arg || obj == null;
+				Arg arg3 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag3)
 				{
-					Extensions(arg82);
+					Extensions(arg3);
 					return null;
 				}
 				break;
 			}
 			case 2557278796u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag95 = flag;
-				Arg arg66 = ((!flag95) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag95)
+				bool flag82 = obj is Arg || obj == null;
+				Arg arg61 = ((!flag82) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag82)
 				{
-					Find(arg66);
+					Find(arg61);
 					return null;
 				}
 				break;
 			}
 			case 2822243214u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag114 = flag;
-				Arg arg79 = ((!flag114) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag114)
+				bool flag12 = obj is Arg || obj == null;
+				Arg arg10 = ((!flag12) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag12)
 				{
-					FindChat(arg79);
+					FindChat(arg10);
 					return null;
 				}
 				break;
 			}
 			case 3993433097u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag58 = flag;
-				Arg arg39 = ((!flag58) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag58)
+				bool flag90 = obj is Arg || obj == null;
+				Arg arg65 = ((!flag90) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag90)
 				{
-					GetVault(arg39);
+					GetVault(arg65);
 					return null;
 				}
 				break;
 			}
 			case 4128227484u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag96 = flag;
-				Arg arg67 = ((!flag96) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag96)
+				bool flag51 = obj is Arg || obj == null;
+				Arg arg40 = ((!flag51) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag51)
 				{
-					GetWebControlPanelClients(arg67);
+					GetWebControlPanelClients(arg40);
 					return null;
 				}
 				break;
 			}
 			case 2362460257u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag113 = flag;
-				Arg arg78 = ((!flag113) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag113)
+				bool flag108 = obj is Arg || obj == null;
+				Arg arg75 = ((!flag108) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag108)
 				{
-					GoCommunity(arg78);
+					GoCommunity(arg75);
 					return null;
 				}
 				break;
 			}
 			case 3167076070u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag31 = flag;
-				Arg arg16 = ((!flag31) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag31)
+				bool flag60 = obj is Arg || obj == null;
+				Arg arg43 = ((!flag60) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag60)
 				{
-					Grant(arg16);
+					Grant(arg43);
 					return null;
 				}
 				break;
 			}
 			case 879858435u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag69 = flag;
-				Arg arg48 = ((!flag69) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag69)
+				bool flag6 = obj is Arg || obj == null;
+				Arg arg4 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag6)
 				{
-					Group(arg48);
+					Group(arg4);
 					return null;
 				}
 				break;
 			}
 			case 126019937u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag44 = flag;
-				Arg arg28 = ((!flag44) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag44)
+				bool flag112 = obj is Arg || obj == null;
+				Arg arg79 = ((!flag112) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag112)
 				{
-					HarmonyMods(arg28);
+					HarmonyMods(arg79);
 					return null;
 				}
 				break;
 			}
 			case 1224025706u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag115 = flag;
-				Arg arg80 = ((!flag115) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag115)
+				bool flag66 = obj is Arg || obj == null;
+				Arg arg49 = ((!flag66) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag66)
 				{
-					Help(arg80);
+					Help(arg49);
 					return null;
 				}
 				break;
 			}
 			case 14884890u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag79 = flag;
-				Arg arg55 = ((!flag79) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag79)
+				bool flag30 = obj is Arg || obj == null;
+				Arg arg24 = ((!flag30) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag30)
 				{
-					HookIndex(arg55);
+					HookIndex(arg24);
 					return null;
 				}
 				break;
 			}
 			case 2465598932u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag36 = flag;
-				Arg arg21 = ((!flag36) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag36)
+				bool flag87 = obj is Arg || obj == null;
+				Arg arg64 = ((!flag87) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag87)
 				{
-					HookInfo(arg21);
+					HookInfo(arg64);
 					return null;
 				}
 				break;
 			}
 			case 1110553926u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag17 = flag;
-				Arg args3 = ((!flag17) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag17)
+				bool flag77 = obj is Arg || obj == null;
+				Arg args3 = ((!flag77) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag77)
 				{
 					HooksCall(args3);
 					return null;
@@ -5494,16 +5482,13 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 2966092386u:
 			{
-				bool flag = ((obj is ItemBlueprint || obj == null) ? true : false);
-				bool flag106 = flag;
-				ItemBlueprint bp = ((!flag106) ? ((ItemBlueprint)null) : ((ItemBlueprint)(obj ?? null)));
-				flag = ((obj2 is float || obj2 == null) ? true : false);
-				bool flag107 = flag;
-				float workbenchLevel = (flag107 ? ((float)(obj2 ?? ((object)0f))) : 0f);
-				flag = ((obj3 is bool || obj3 == null) ? true : false);
-				bool flag108 = flag;
-				bool isInTutorial = flag108 && (bool)(obj3 ?? ((object)false));
-				if (flag106 & flag107 & flag108)
+				bool flag95 = obj is ItemBlueprint || obj == null;
+				ItemBlueprint bp = ((!flag95) ? ((ItemBlueprint)null) : ((ItemBlueprint)(obj ?? null)));
+				bool flag96 = obj2 is float || obj2 == null;
+				float workbenchLevel = (flag96 ? ((float)(obj2 ?? ((object)0f))) : 0f);
+				bool flag97 = obj3 is bool || obj3 == null;
+				bool isInTutorial = flag97 && (bool)(obj3 ?? ((object)false));
+				if (flag95 & flag96 & flag97)
 				{
 					return ICraftDurationMultiplier(bp, workbenchLevel, isInTutorial);
 				}
@@ -5511,13 +5496,11 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 1211592203u:
 			{
-				bool flag = ((obj is MixingTable || obj == null) ? true : false);
-				bool flag54 = flag;
-				MixingTable table = ((!flag54) ? ((MixingTable)null) : ((MixingTable)(obj ?? null)));
-				flag = ((obj2 is float || obj2 == null) ? true : false);
-				bool flag55 = flag;
-				float originalValue = (flag55 ? ((float)(obj2 ?? ((object)0f))) : 0f);
-				if (flag54 & flag55)
+				bool flag35 = obj is MixingTable || obj == null;
+				MixingTable table = ((!flag35) ? ((MixingTable)null) : ((MixingTable)(obj ?? null)));
+				bool flag36 = obj2 is float || obj2 == null;
+				float originalValue = (flag36 ? ((float)(obj2 ?? ((object)0f))) : 0f);
+				if (flag35 & flag36)
 				{
 					return IMixingSpeedMultiplier(table, originalValue);
 				}
@@ -5525,10 +5508,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 1112160822u:
 			{
-				bool flag = ((obj is ExcavatorArm || obj == null) ? true : false);
-				bool flag13 = flag;
-				ExcavatorArm arm = ((!flag13) ? ((ExcavatorArm)null) : ((ExcavatorArm)(obj ?? null)));
-				if (flag13)
+				bool flag106 = obj is ExcavatorArm || obj == null;
+				ExcavatorArm arm = ((!flag106) ? ((ExcavatorArm)null) : ((ExcavatorArm)(obj ?? null)));
+				if (flag106)
 				{
 					IOnExcavatorInit(arm);
 					return null;
@@ -5537,10 +5519,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 4155259925u:
 			{
-				bool flag = ((obj is bool || obj == null) ? true : false);
-				bool flag82 = flag;
-				bool inited = flag82 && (bool)(obj ?? ((object)false));
-				if (flag82)
+				bool flag70 = obj is bool || obj == null;
+				bool inited = flag70 && (bool)(obj ?? ((object)false));
+				if (flag70)
 				{
 					return IOnServerInitialized(inited);
 				}
@@ -5548,10 +5529,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 3923985155u:
 			{
-				bool flag = ((obj is BaseOven || obj == null) ? true : false);
-				bool flag81 = flag;
-				BaseOven oven = ((!flag81) ? ((BaseOven)null) : ((BaseOven)(obj ?? null)));
-				if (flag81)
+				bool flag44 = obj is BaseOven || obj == null;
+				BaseOven oven = ((!flag44) ? ((BaseOven)null) : ((BaseOven)(obj ?? null)));
+				if (flag44)
 				{
 					return IOvenSmeltSpeedMultiplier(oven);
 				}
@@ -5559,10 +5539,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 3134346010u:
 			{
-				bool flag = ((obj is Recycler || obj == null) ? true : false);
-				bool flag30 = flag;
-				Recycler recycler = ((!flag30) ? ((Recycler)null) : ((Recycler)(obj ?? null)));
-				if (flag30)
+				bool flag119 = obj is Recycler || obj == null;
+				Recycler recycler = ((!flag119) ? ((Recycler)null) : ((Recycler)(obj ?? null)));
+				if (flag119)
 				{
 					return IRecyclerThinkSpeed(recycler);
 				}
@@ -5575,12 +5554,11 @@ public class CorePlugin : CarbonPlugin
 				return IVendingBuyDuration();
 			case 2370971930u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag116 = flag;
-				Arg arg81 = ((!flag116) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag116)
+				bool flag105 = obj is Arg || obj == null;
+				Arg arg73 = ((!flag105) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag105)
 				{
-					InstallPlugin(arg81);
+					InstallPlugin(arg73);
 					return null;
 				}
 				break;
@@ -5590,82 +5568,75 @@ public class CorePlugin : CarbonPlugin
 				return null;
 			case 1175002629u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag86 = flag;
-				Arg arg60 = ((!flag86) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag86)
+				bool flag72 = obj is Arg || obj == null;
+				Arg arg53 = ((!flag72) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag72)
 				{
-					LoadModule(arg60);
+					LoadModule(arg53);
 					return null;
 				}
 				break;
 			}
 			case 2699051938u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag38 = flag;
-				Arg arg23 = ((!flag38) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag38)
+				bool flag17 = obj is Arg || obj == null;
+				Arg arg14 = ((!flag17) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag17)
 				{
-					LoadPlugin(arg23);
+					LoadPlugin(arg14);
 					return null;
 				}
 				break;
 			}
 			case 3768797615u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag10 = flag;
-				Arg arg3 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag10)
+				bool flag20 = obj is Arg || obj == null;
+				Arg arg17 = ((!flag20) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag20)
 				{
-					LoadWebControlPanelConfig(arg3);
+					LoadWebControlPanelConfig(arg17);
 					return null;
 				}
 				break;
 			}
 			case 2009737156u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag109 = flag;
-				Arg arg75 = ((!flag109) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag109)
+				bool flag103 = obj is Arg || obj == null;
+				Arg arg71 = ((!flag103) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag103)
 				{
-					MigrateToProto(arg75);
+					MigrateToProto(arg71);
 					return null;
 				}
 				break;
 			}
 			case 2539568543u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag99 = flag;
-				Arg arg70 = ((!flag99) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag99)
+				bool flag69 = obj is Arg || obj == null;
+				Arg arg51 = ((!flag69) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag69)
 				{
-					MigrateToSql(arg70);
+					MigrateToSql(arg51);
 					return null;
 				}
 				break;
 			}
 			case 4209386718u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag51 = flag;
-				Arg arg35 = ((!flag51) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag51)
+				bool flag53 = obj is Arg || obj == null;
+				Arg arg41 = ((!flag53) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag53)
 				{
-					ModdedRustConVars(arg35);
+					ModdedRustConVars(arg41);
 					return null;
 				}
 				break;
 			}
 			case 3694325137u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag34 = flag;
-				Arg arg19 = ((!flag34) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag34)
+				bool flag25 = obj is Arg || obj == null;
+				Arg arg19 = ((!flag25) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag25)
 				{
 					ModuleInfo(arg19);
 					return null;
@@ -5674,82 +5645,72 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 346822591u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag28 = flag;
-				Arg arg15 = ((!flag28) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag28)
+				bool flag117 = obj is Arg || obj == null;
+				Arg arg84 = ((!flag117) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag117)
 				{
-					Modules(arg15);
+					Modules(arg84);
 					return null;
 				}
 				break;
 			}
 			case 2263673102u:
 			{
-				bool flag = ((obj is Connection || obj == null) ? true : false);
-				bool flag102 = flag;
-				Connection connection2 = ((!flag102) ? ((Connection)null) : ((Connection)(obj ?? null)));
-				if (flag102)
+				bool flag93 = obj is Connection || obj == null;
+				Connection connection = ((!flag93) ? ((Connection)null) : ((Connection)(obj ?? null)));
+				if (flag93)
 				{
-					OnClientAuth(connection2);
+					OnClientAuth(connection);
 					return null;
 				}
 				break;
 			}
 			case 2032160890u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag21 = flag;
-				BasePlayer player = ((!flag21) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag22 = flag;
-				string message = (flag22 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is ChatChannel || obj3 == null) ? true : false);
-				bool flag23 = flag;
-				ChatChannel channel = (ChatChannel)(flag23 ? ((int)(ChatChannel)(obj3 ?? ((object)(ChatChannel)0))) : 0);
-				if (flag21 & flag22 & flag23)
+				bool flag22 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag22) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag23 = obj2 is string || obj2 == null;
+				string message = (flag23 ? ((string)(obj2 ?? null)) : null);
+				bool flag24 = obj3 is ChatChannel || obj3 == null;
+				ChatChannel channel = (ChatChannel)(flag24 ? ((int)(ChatChannel)(obj3 ?? ((object)(ChatChannel)0))) : 0);
+				if (flag22 & flag23 & flag24)
 				{
-					OnPlayerChat(player, message, channel);
+					OnPlayerChat(player2, message, channel);
 					return null;
 				}
 				break;
 			}
 			case 72085565u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag90 = flag;
-				BasePlayer player2 = ((!flag90) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag91 = flag;
-				string reason3 = (flag91 ? ((string)(obj2 ?? null)) : null);
-				if (flag90 & flag91)
+				bool flag4 = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag4) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag5 = obj2 is string || obj2 == null;
+				string reason = (flag5 ? ((string)(obj2 ?? null)) : null);
+				if (flag4 & flag5)
 				{
-					OnPlayerDisconnected(player2, reason3);
+					OnPlayerDisconnected(player, reason);
 					return null;
 				}
 				break;
 			}
 			case 1321158727u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag61 = flag;
-				BasePlayer basePlayer3 = ((!flag61) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag62 = flag;
-				string reason2 = (flag62 ? ((string)(obj2 ?? null)) : null);
-				if (flag61 & flag62)
+				bool flag85 = obj is BasePlayer || obj == null;
+				BasePlayer basePlayer3 = ((!flag85) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag86 = obj2 is string || obj2 == null;
+				string reason3 = (flag86 ? ((string)(obj2 ?? null)) : null);
+				if (flag85 & flag86)
 				{
-					OnPlayerKicked(basePlayer3, reason2);
+					OnPlayerKicked(basePlayer3, reason3);
 					return null;
 				}
 				break;
 			}
 			case 1546340674u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag39 = flag;
-				BasePlayer basePlayer2 = ((!flag39) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag39)
+				bool flag52 = obj is BasePlayer || obj == null;
+				BasePlayer basePlayer2 = ((!flag52) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag52)
 				{
 					return OnPlayerRespawn(basePlayer2);
 				}
@@ -5757,10 +5718,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 458523914u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag12 = flag;
-				BasePlayer basePlayer = ((!flag12) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag12)
+				bool flag34 = obj is BasePlayer || obj == null;
+				BasePlayer basePlayer = ((!flag34) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag34)
 				{
 					OnPlayerRespawned(basePlayer);
 					return null;
@@ -5769,28 +5729,24 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 2283023029u:
 			{
-				bool flag = ((obj is Connection || obj == null) ? true : false);
-				bool flag74 = flag;
-				Connection connection = ((!flag74) ? ((Connection)null) : ((Connection)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag75 = flag;
-				string key = (flag75 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag76 = flag;
-				string val2 = (flag76 ? ((string)(obj3 ?? null)) : null);
-				if (flag74 & flag75 & flag76)
+				bool flag99 = obj is Connection || obj == null;
+				Connection connection2 = ((!flag99) ? ((Connection)null) : ((Connection)(obj ?? null)));
+				bool flag100 = obj2 is string || obj2 == null;
+				string key = (flag100 ? ((string)(obj2 ?? null)) : null);
+				bool flag101 = obj3 is string || obj3 == null;
+				string val2 = (flag101 ? ((string)(obj3 ?? null)) : null);
+				if (flag99 & flag100 & flag101)
 				{
-					OnPlayerSetInfo(connection, key, val2);
+					OnPlayerSetInfo(connection2, key, val2);
 					return null;
 				}
 				break;
 			}
 			case 3051933177u:
 			{
-				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag57 = flag;
-				RustPlugin plugin2 = (flag57 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag57)
+				bool flag89 = obj is RustPlugin || obj == null;
+				RustPlugin plugin2 = (flag89 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag89)
 				{
 					OnPluginLoaded(plugin2);
 					return null;
@@ -5799,10 +5755,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 1250294368u:
 			{
-				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag29 = flag;
-				RustPlugin plugin = (flag29 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag29)
+				bool flag68 = obj is RustPlugin || obj == null;
+				RustPlugin plugin = (flag68 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag68)
 				{
 					OnPluginUnloaded(plugin);
 					return null;
@@ -5811,10 +5766,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 3757699682u:
 			{
-				bool flag = ((obj is EventArgs || obj == null) ? true : false);
-				bool flag9 = flag;
-				EventArgs args2 = (flag9 ? ((EventArgs)(obj ?? null)) : null);
-				if (flag9)
+				bool flag48 = obj is EventArgs || obj == null;
+				EventArgs args2 = (flag48 ? ((EventArgs)(obj ?? null)) : null);
+				if (flag48)
 				{
 					OnProfiledPluginLoaded(args2);
 					return null;
@@ -5832,406 +5786,369 @@ public class CorePlugin : CarbonPlugin
 				return null;
 			case 2043356880u:
 			{
-				bool flag = ((obj is ulong || obj == null) ? true : false);
-				bool flag88 = flag;
-				ulong steamId2 = (flag88 ? ((ulong)(obj ?? ((object)0uL))) : 0);
-				if (flag88)
+				bool flag14 = obj is ulong || obj == null;
+				ulong steamId = (flag14 ? ((ulong)(obj ?? ((object)0uL))) : 0);
+				if (flag14)
 				{
-					OnServerUserRemove(steamId2);
+					OnServerUserRemove(steamId);
 					return null;
 				}
 				break;
 			}
 			case 931424179u:
 			{
-				bool flag = ((obj is ulong || obj == null) ? true : false);
-				bool flag3 = flag;
-				ulong steamId = (flag3 ? ((ulong)(obj ?? ((object)0uL))) : 0);
-				flag = ((obj2 is UserGroup || obj2 == null) ? true : false);
-				bool flag4 = flag;
-				UserGroup val = (UserGroup)(flag4 ? ((int)(UserGroup)(obj2 ?? ((object)(UserGroup)0))) : 0);
-				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag5 = flag;
-				string playerName = (flag5 ? ((string)(obj3 ?? null)) : null);
-				flag = ((obj4 is string || obj4 == null) ? true : false);
-				bool flag6 = flag;
-				string reason = (flag6 ? ((string)(obj4 ?? null)) : null);
-				flag = ((obj5 is long || obj5 == null) ? true : false);
-				bool flag7 = flag;
-				long expiry = (flag7 ? ((long)(obj5 ?? ((object)0L))) : 0);
-				if (flag3 & flag4 & flag5 & flag6 & flag7)
+				bool flag55 = obj is ulong || obj == null;
+				ulong steamId2 = (flag55 ? ((ulong)(obj ?? ((object)0uL))) : 0);
+				bool flag56 = obj2 is UserGroup || obj2 == null;
+				UserGroup val = (UserGroup)(flag56 ? ((int)(UserGroup)(obj2 ?? ((object)(UserGroup)0))) : 0);
+				bool flag57 = obj3 is string || obj3 == null;
+				string playerName = (flag57 ? ((string)(obj3 ?? null)) : null);
+				bool flag58 = obj4 is string || obj4 == null;
+				string reason2 = (flag58 ? ((string)(obj4 ?? null)) : null);
+				bool flag59 = obj5 is long || obj5 == null;
+				long expiry = (flag59 ? ((long)(obj5 ?? ((object)0L))) : 0);
+				if (flag55 & flag56 & flag57 & flag58 & flag59)
 				{
-					OnServerUserSet(steamId, val, playerName, reason, expiry);
+					OnServerUserSet(steamId2, val, playerName, reason2, expiry);
 					return null;
 				}
 				break;
 			}
 			case 2601596680u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag104 = flag;
-				Arg arg73 = ((!flag104) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag104)
+				bool flag39 = obj is Arg || obj == null;
+				Arg arg30 = ((!flag39) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag39)
 				{
-					OpenConfigs(arg73);
+					OpenConfigs(arg30);
 					return null;
 				}
 				break;
 			}
 			case 2529893848u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag98 = flag;
-				Arg arg69 = ((!flag98) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag98)
+				bool flag27 = obj is Arg || obj == null;
+				Arg arg21 = ((!flag27) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag27)
 				{
-					OpenData(arg69);
+					OpenData(arg21);
 					return null;
 				}
 				break;
 			}
 			case 3168678498u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag65 = flag;
-				Arg arg44 = ((!flag65) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag65)
+				bool flag9 = obj is Arg || obj == null;
+				Arg arg7 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag9)
 				{
-					OpenExtensions(arg44);
+					OpenExtensions(arg7);
 					return null;
 				}
 				break;
 			}
 			case 113708137u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag48 = flag;
-				Arg arg32 = ((!flag48) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag48)
+				bool flag118 = obj is Arg || obj == null;
+				Arg arg85 = ((!flag118) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag118)
 				{
-					OpenLang(arg32);
+					OpenLang(arg85);
 					return null;
 				}
 				break;
 			}
 			case 2745846876u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag42 = flag;
-				Arg arg26 = ((!flag42) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag42)
+				bool flag110 = obj is Arg || obj == null;
+				Arg arg77 = ((!flag110) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag110)
 				{
-					OpenLogs(arg26);
+					OpenLogs(arg77);
 					return null;
 				}
 				break;
 			}
 			case 1539167114u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag20 = flag;
-				Arg arg10 = ((!flag20) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag20)
+				bool flag75 = obj is Arg || obj == null;
+				Arg arg56 = ((!flag75) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag75)
 				{
-					OpenModules(arg10);
+					OpenModules(arg56);
 					return null;
 				}
 				break;
 			}
 			case 1290689173u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag119 = flag;
-				Arg arg84 = ((!flag119) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag119)
+				bool flag71 = obj is Arg || obj == null;
+				Arg arg52 = ((!flag71) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag71)
 				{
-					OpenPlugin(arg84);
+					OpenPlugin(arg52);
 					return null;
 				}
 				break;
 			}
 			case 3801308235u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag101 = flag;
-				Arg arg72 = ((!flag101) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag101)
+				bool flag45 = obj is Arg || obj == null;
+				Arg arg35 = ((!flag45) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag45)
 				{
-					OpenPlugins(arg72);
+					OpenPlugins(arg35);
 					return null;
 				}
 				break;
 			}
 			case 2180218250u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag84 = flag;
-				Arg arg58 = ((!flag84) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag84)
+				bool flag29 = obj is Arg || obj == null;
+				Arg arg23 = ((!flag29) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag29)
 				{
-					OpenRoot(arg58);
+					OpenRoot(arg23);
 					return null;
 				}
 				break;
 			}
 			case 1853185048u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag73 = flag;
-				Arg arg52 = ((!flag73) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag73)
+				bool flag8 = obj is Arg || obj == null;
+				Arg arg6 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag8)
 				{
-					PluginCmds(arg52);
+					PluginCmds(arg6);
 					return null;
 				}
 				break;
 			}
 			case 2730263207u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag49 = flag;
-				Arg arg33 = ((!flag49) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag49)
+				bool flag116 = obj is Arg || obj == null;
+				Arg arg83 = ((!flag116) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag116)
 				{
-					PluginInfo(arg33);
+					PluginInfo(arg83);
 					return null;
 				}
 				break;
 			}
 			case 1778989243u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag40 = flag;
-				Arg arg24 = ((!flag40) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag40)
+				bool flag104 = obj is Arg || obj == null;
+				Arg arg72 = ((!flag104) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag104)
 				{
-					Plugins(arg24);
+					Plugins(arg72);
 					return null;
 				}
 				break;
 			}
 			case 958120911u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag19 = flag;
-				Arg arg9 = ((!flag19) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag19)
+				bool flag92 = obj is Arg || obj == null;
+				Arg arg67 = ((!flag92) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag92)
 				{
-					PrintHookPool(arg9);
+					PrintHookPool(arg67);
 					return null;
 				}
 				break;
 			}
 			case 1503455692u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag120 = flag;
-				Arg arg85 = ((!flag120) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag120)
+				bool flag78 = obj is Arg || obj == null;
+				Arg arg58 = ((!flag78) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag78)
 				{
-					Profile(arg85);
+					Profile(arg58);
 					return null;
 				}
 				break;
 			}
 			case 869177234u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag111 = flag;
-				Arg arg77 = ((!flag111) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag111)
+				bool flag54 = obj is Arg || obj == null;
+				Arg arg42 = ((!flag54) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag54)
 				{
-					ProfileAbort(arg77);
+					ProfileAbort(arg42);
 					return null;
 				}
 				break;
 			}
 			case 2285912444u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag93 = flag;
-				Arg arg64 = ((!flag93) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag93)
+				bool flag42 = obj is Arg || obj == null;
+				Arg arg33 = ((!flag42) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag42)
 				{
-					ProfilePlugin(arg64);
+					ProfilePlugin(arg33);
 					return null;
 				}
 				break;
 			}
 			case 2235018487u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag78 = flag;
-				Arg arg54 = ((!flag78) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag78)
+				bool flag38 = obj is Arg || obj == null;
+				Arg arg29 = ((!flag38) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag38)
 				{
-					ProfilerPrint(arg54);
+					ProfilerPrint(arg29);
 					return null;
 				}
 				break;
 			}
 			case 1282370872u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag52 = flag;
-				Arg arg36 = ((!flag52) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag52)
+				bool flag13 = obj is Arg || obj == null;
+				Arg arg11 = ((!flag13) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag13)
 				{
-					ProfilerRemovePlugin(arg36);
+					ProfilerRemovePlugin(arg11);
 					return null;
 				}
 				break;
 			}
 			case 1400659095u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag45 = flag;
-				Arg arg29 = ((!flag45) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag45)
+				bool flag10 = obj is Arg || obj == null;
+				Arg arg8 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag10)
 				{
-					ProfilerTrackPlugin(arg29);
+					ProfilerTrackPlugin(arg8);
 					return null;
 				}
 				break;
 			}
 			case 1603732279u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag26 = flag;
-				Arg arg13 = ((!flag26) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag26)
+				bool flag114 = obj is Arg || obj == null;
+				Arg arg81 = ((!flag114) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag114)
 				{
-					ProfilerTracked(arg13);
+					ProfilerTracked(arg81);
 					return null;
 				}
 				break;
 			}
 			case 4118252168u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag15 = flag;
-				Arg arg6 = ((!flag15) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag15)
+				bool flag98 = obj is Arg || obj == null;
+				Arg arg69 = ((!flag98) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag98)
 				{
-					Protocol(arg6);
+					Protocol(arg69);
 					return null;
 				}
 				break;
 			}
 			case 1669471309u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag14 = flag;
-				Arg arg5 = ((!flag14) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag14)
+				bool flag79 = obj is Arg || obj == null;
+				Arg arg59 = ((!flag79) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag79)
 				{
-					Reload(arg5);
+					Reload(arg59);
 					return null;
 				}
 				break;
 			}
 			case 407700441u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag100 = flag;
-				Arg arg71 = ((!flag100) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag100)
+				bool flag74 = obj is Arg || obj == null;
+				Arg arg55 = ((!flag74) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag74)
 				{
-					ReloadConfig(arg71);
+					ReloadConfig(arg55);
 					return null;
 				}
 				break;
 			}
 			case 3607291287u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag92 = flag;
-				Arg arg63 = ((!flag92) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag92)
+				bool flag61 = obj is Arg || obj == null;
+				Arg arg44 = ((!flag61) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag61)
 				{
-					ReloadModule(arg63);
+					ReloadModule(arg44);
 					return null;
 				}
 				break;
 			}
 			case 165571558u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag77 = flag;
-				Arg arg53 = ((!flag77) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag77)
+				bool flag41 = obj is Arg || obj == null;
+				Arg arg32 = ((!flag41) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag41)
 				{
-					RemoveConditional(arg53);
+					RemoveConditional(arg32);
 					return null;
 				}
 				break;
 			}
 			case 3053121748u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag64 = flag;
-				Arg arg43 = ((!flag64) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag64)
+				bool flag33 = obj is Arg || obj == null;
+				Arg arg27 = ((!flag33) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag33)
 				{
-					ResetHooks(arg43);
+					ResetHooks(arg27);
 					return null;
 				}
 				break;
 			}
 			case 1983852833u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag43 = flag;
-				Arg arg27 = ((!flag43) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag43)
+				bool flag16 = obj is Arg || obj == null;
+				Arg arg13 = ((!flag16) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag16)
 				{
-					Revoke(arg27);
+					Revoke(arg13);
 					return null;
 				}
 				break;
 			}
 			case 3408782460u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag35 = flag;
-				Arg arg20 = ((!flag35) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag35)
+				bool flag2 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag2)
 				{
-					SaveModule(arg20);
+					SaveModule(arg2);
 					return null;
 				}
 				break;
 			}
 			case 523784464u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag25 = flag;
-				Arg arg12 = ((!flag25) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag25)
+				bool flag113 = obj is Arg || obj == null;
+				Arg arg80 = ((!flag113) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag113)
 				{
-					SaveWebControlPanelConfig(arg12);
+					SaveWebControlPanelConfig(arg80);
 					return null;
 				}
 				break;
 			}
 			case 2303807553u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag8 = flag;
-				Arg arg2 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag8)
+				bool flag102 = obj is Arg || obj == null;
+				Arg arg70 = ((!flag102) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag102)
 				{
-					SayAs(arg2);
+					SayAs(arg70);
 					return null;
 				}
 				break;
 			}
 			case 4206019811u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag112 = flag;
-				Arg module = ((!flag112) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag112)
+				bool flag88 = obj is Arg || obj == null;
+				Arg module = ((!flag88) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag88)
 				{
 					SetModule(module);
 					return null;
@@ -6240,10 +6157,9 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 1624709752u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag103 = flag;
-				Arg webControlPanelPort = ((!flag103) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag103)
+				bool flag81 = obj is Arg || obj == null;
+				Arg webControlPanelPort = ((!flag81) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag81)
 				{
 					SetWebControlPanelPort(webControlPanelPort);
 					return null;
@@ -6252,36 +6168,33 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 3296300873u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag85 = flag;
-				Arg arg59 = ((!flag85) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag85)
+				bool flag65 = obj is Arg || obj == null;
+				Arg arg48 = ((!flag65) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag65)
 				{
-					Show(arg59);
+					Show(arg48);
 					return null;
 				}
 				break;
 			}
 			case 414928410u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag71 = flag;
-				Arg arg50 = ((!flag71) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag71)
+				bool flag50 = obj is Arg || obj == null;
+				Arg arg39 = ((!flag50) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag50)
 				{
-					Shutdown(arg50);
+					Shutdown(arg39);
 					return null;
 				}
 				break;
 			}
 			case 1867912083u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag63 = flag;
-				Arg arg42 = ((!flag63) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag63)
+				bool flag43 = obj is Arg || obj == null;
+				Arg arg34 = ((!flag43) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag43)
 				{
-					Skin(arg42);
+					Skin(arg34);
 					return null;
 				}
 				break;
@@ -6290,130 +6203,119 @@ public class CorePlugin : CarbonPlugin
 				return StartPluginProfile();
 			case 2977018099u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag46 = flag;
-				Arg arg30 = ((!flag46) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag46)
+				bool flag28 = obj is Arg || obj == null;
+				Arg arg22 = ((!flag28) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag28)
 				{
-					TryToggleWebControlPanelServer(arg30);
+					TryToggleWebControlPanelServer(arg22);
 					return null;
 				}
 				break;
 			}
 			case 275530773u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag33 = flag;
-				Arg arg18 = ((!flag33) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag33)
+				bool flag18 = obj is Arg || obj == null;
+				Arg arg15 = ((!flag18) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag18)
 				{
-					UnassignAlias(arg18);
+					UnassignAlias(arg15);
 					return null;
 				}
 				break;
 			}
 			case 3547710285u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag24 = flag;
-				Arg arg11 = ((!flag24) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag24)
+				bool flag7 = obj is Arg || obj == null;
+				Arg arg5 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag7)
 				{
-					UninstallPlugin(arg11);
+					UninstallPlugin(arg5);
 					return null;
 				}
 				break;
 			}
 			case 1342457948u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag11 = flag;
-				Arg arg4 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag11)
+				bool flag115 = obj is Arg || obj == null;
+				Arg arg82 = ((!flag115) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag115)
 				{
-					UnloadPlugin(arg4);
+					UnloadPlugin(arg82);
 					return null;
 				}
 				break;
 			}
 			case 2108743044u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag118 = flag;
-				Arg arg83 = ((!flag118) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag118)
+				bool flag107 = obj is Arg || obj == null;
+				Arg arg74 = ((!flag107) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag107)
 				{
-					UserGroup(arg83);
+					UserGroup(arg74);
 					return null;
 				}
 				break;
 			}
 			case 297788813u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag105 = flag;
-				Arg arg74 = ((!flag105) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag105)
+				bool flag94 = obj is Arg || obj == null;
+				Arg arg68 = ((!flag94) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag94)
 				{
-					VaultAdd(arg74);
+					VaultAdd(arg68);
 					return null;
 				}
 				break;
 			}
 			case 1579191406u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag94 = flag;
-				Arg arg65 = ((!flag94) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag94)
+				bool flag83 = obj is Arg || obj == null;
+				Arg arg62 = ((!flag83) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag83)
 				{
-					VaultRemove(arg65);
+					VaultRemove(arg62);
 					return null;
 				}
 				break;
 			}
 			case 3912190147u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag83 = flag;
-				Arg arg57 = ((!flag83) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag83)
+				bool flag73 = obj is Arg || obj == null;
+				Arg arg54 = ((!flag73) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag73)
 				{
-					VersionCall(arg57);
+					VersionCall(arg54);
 					return null;
 				}
 				break;
 			}
 			case 340806103u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag70 = flag;
-				Arg arg49 = ((!flag70) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag70)
+				bool flag63 = obj is Arg || obj == null;
+				Arg arg46 = ((!flag63) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag63)
 				{
-					WhyModded(arg49);
+					WhyModded(arg46);
 					return null;
 				}
 				break;
 			}
 			case 1847800369u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag59 = flag;
-				Arg arg40 = ((!flag59) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag59)
+				bool flag49 = obj is Arg || obj == null;
+				Arg arg38 = ((!flag49) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag49)
 				{
-					WipeUI(arg40);
+					WipeUI(arg38);
 					return null;
 				}
 				break;
 			}
 			case 1250811332u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag47 = flag;
-				Arg arg31 = ((!flag47) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag47)
+				bool flag40 = obj is Arg || obj == null;
+				Arg arg31 = ((!flag40) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag40)
 				{
 					test_beds(arg31);
 					return null;
@@ -6422,46 +6324,42 @@ public class CorePlugin : CarbonPlugin
 			}
 			case 4236641972u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag37 = flag;
-				Arg arg22 = ((!flag37) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag37)
+				bool flag32 = obj is Arg || obj == null;
+				Arg arg26 = ((!flag32) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag32)
 				{
-					test_clear(arg22);
+					test_clear(arg26);
 					return null;
 				}
 				break;
 			}
 			case 473670306u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag27 = flag;
-				Arg arg14 = ((!flag27) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag27)
+				bool flag21 = obj is Arg || obj == null;
+				Arg arg18 = ((!flag21) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag21)
 				{
-					test_collect(arg14);
+					test_collect(arg18);
 					return null;
 				}
 				break;
 			}
 			case 683585953u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag16 = flag;
-				Arg arg7 = ((!flag16) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag16)
+				bool flag11 = obj is Arg || obj == null;
+				Arg arg9 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag11)
 				{
-					test_plugin(arg7);
+					test_plugin(arg9);
 					return null;
 				}
 				break;
 			}
 			case 2426236348u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					test_run(arg);
 					return null;

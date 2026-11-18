@@ -102,13 +102,13 @@ public struct Analytics
 			.Submit("batch_plugin_types");
 	}
 
-	public static void plugin_time_warn(string readableHook, Plugin basePlugin, double afterHookTime, double totalMemory, bool lagSpike, BaseHookable.CachedHook cachedHook, BaseHookable hookable)
+	public static void plugin_time_warn(string readableHook, Plugin basePlugin, double afterHookTime, double totalMemory, bool lagSpike, BaseHookable.CachedHook cachedHook, bool hasGcCollected)
 	{
 		if (Enabled)
 		{
 			Singleton.Include("name", readableHook + " (" + basePlugin.ToPrettyString() + ")").Include("time", $"{afterHookTime.RoundUpToNearestCount(50.0)}ms").Include("memory", totalMemory.Format().ToLower() ?? "")
 				.Include("fires", $"{cachedHook?.TimesFired}")
-				.Include("hasgc", hookable.HasGCCollected)
+				.Include("hasgc", hasGcCollected)
 				.Include("lagspike", lagSpike)
 				.Submit("plugin_time_warn");
 		}

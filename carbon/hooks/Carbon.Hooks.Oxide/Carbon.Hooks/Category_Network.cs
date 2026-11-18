@@ -14,13 +14,13 @@ public class Category_Network
 	public class Network_BaseNetworkable
 	{
 		[Patch("CanNetworkTo", "CanNetworkTo", "BaseNetworkable", "ShouldNetworkTo", new string[] { "BasePlayer" })]
-		[Identifier("94521ccc6bea4acbbe7b4b644c18e166")]
+		[Identifier("73f09a331d8c41ed882afabbabd2c5d7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(bool))]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_94521ccc6bea4acbbe7b4b644c18e166 : Patch
+		public class Network_BaseNetworkable_73f09a331d8c41ed882afabbabd2c5d7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -58,13 +58,13 @@ public class Category_Network
 		}
 
 		[Patch("OnNetworkGroupEntered", "OnNetworkGroupEntered", "BaseNetworkable", "OnNetworkGroupEnter", new string[] { "Network.Visibility.Group" })]
-		[Identifier("fc538eccc224470da159c43d5ebe00ce")]
+		[Identifier("3a7f5c1c78d74df0a8d950110fa84170")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_fc538eccc224470da159c43d5ebe00ce : Patch
+		public class Network_BaseNetworkable_3a7f5c1c78d74df0a8d950110fa84170 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -92,13 +92,13 @@ public class Category_Network
 		}
 
 		[Patch("OnNetworkGroupLeft", "OnNetworkGroupLeft", "BaseNetworkable", "OnNetworkGroupLeave", new string[] { "Network.Visibility.Group" })]
-		[Identifier("c93506e71e134a68a9ba0c8e661bfa1c")]
+		[Identifier("efad048bd3c34dae8a3e5461ee470b97")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_c93506e71e134a68a9ba0c8e661bfa1c : Patch
+		public class Network_BaseNetworkable_efad048bd3c34dae8a3e5461ee470b97 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -129,13 +129,13 @@ public class Category_Network
 	public class Network_NetworkVisibilityGrid
 	{
 		[Patch("OnNetworkSubscriptionsGather", "OnNetworkSubscriptionsGather", "NetworkVisibilityGrid", "GetVisibleFrom", new string[] { "Network.Visibility.Group", "ListHashSet`1<Network.Visibility.Group>", "System.Int32" })]
-		[Identifier("bf333f54a9114d0ba49368f573f85898")]
+		[Identifier("b3f11929ad04416db609938457158986")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NetworkVisibilityGrid", false)]
 		[Return(typeof(void))]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_NetworkVisibilityGrid_bf333f54a9114d0ba49368f573f85898 : Patch
+		public class Network_NetworkVisibilityGrid_b3f11929ad04416db609938457158986 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -175,11 +175,11 @@ public class Category_Network
 	public class Network_NetworkNetworkable
 	{
 		[Patch("OnNetworkSubscriptionsUpdate", "OnNetworkSubscriptionsUpdate", "Network.Networkable", "UpdateSubscriptions", new string[] { "System.Int32", "System.Int32" })]
-		[Identifier("843b44c890c44311b573d9e971dd7ef2")]
+		[Identifier("8c4feca387b440a7853aa95b21220797")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Network")]
 		[Assembly("Facepunch.Network.dll")]
-		public class Network_NetworkNetworkable_843b44c890c44311b573d9e971dd7ef2 : Patch
+		public class Network_NetworkNetworkable_8c4feca387b440a7853aa95b21220797 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -218,11 +218,11 @@ public class Category_Network
 		}
 
 		[Patch("OnNetworkSubscriptionsUpdate", "OnNetworkSubscriptionsUpdate [2]", "Network.Networkable", "UpdateHighPrioritySubscriptions", new string[] { })]
-		[Identifier("3cb87527bc99405582cbcb3f939451ae")]
+		[Identifier("d04147793e1349c6a0990e2f3a3d9bb0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Network")]
 		[Assembly("Facepunch.Network.dll")]
-		public class Network_NetworkNetworkable_3cb87527bc99405582cbcb3f939451ae : Patch
+		public class Network_NetworkNetworkable_d04147793e1349c6a0990e2f3a3d9bb0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

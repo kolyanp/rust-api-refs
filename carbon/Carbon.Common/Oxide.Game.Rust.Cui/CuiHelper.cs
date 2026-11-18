@@ -134,6 +134,39 @@ public static class CuiHelper
 		return false;
 	}
 
+	public static bool DestroyUi(BasePlayer player, List<string> names)
+	{
+		if (((BaseNetworkable)(player?)).net == null || names == null || names.Count == 0)
+		{
+			return false;
+		}
+		HashSet<string> activePanelList = GetActivePanelList(player);
+		for (int i = 0; i < names.Count; i++)
+		{
+			string text = names[i];
+			activePanelList.Remove(text);
+			HookCaller.CallStaticHook(503981600u, player, text);
+		}
+		CommunityEntity.ServerInstance.SendDestroyUIs(player, names);
+		return true;
+	}
+
+	public static bool DestroyUi(BasePlayer player, string[] names)
+	{
+		if (((BaseNetworkable)(player?)).net == null || names == null || names.Length == 0)
+		{
+			return false;
+		}
+		HashSet<string> activePanelList = GetActivePanelList(player);
+		foreach (string text in names)
+		{
+			activePanelList.Remove(text);
+			HookCaller.CallStaticHook(503981600u, player, text);
+		}
+		CommunityEntity.ServerInstance.SendDestroyUIs(player, names);
+		return true;
+	}
+
 	public static void SetColor(this ICuiColor elem, Color color)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)

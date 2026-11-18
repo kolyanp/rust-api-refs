@@ -21,4 +21,6 @@ public struct LuiScrollbar
 	public string trackSprite;
 
 	public string trackColor;
+
+	public float? fadeDuration;
 }

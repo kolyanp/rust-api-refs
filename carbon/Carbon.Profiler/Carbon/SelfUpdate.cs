@@ -143,7 +143,7 @@ public class SelfUpdate
 		{
 			File.Delete(path);
 		}
-		catch (Exception ex) when ((ex is IOException || ex is UnauthorizedAccessException) ? true : false)
+		catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
 		{
 		}
 	}
@@ -172,7 +172,7 @@ public class SelfUpdate
 			ReadExactly(stream, array2);
 			ReadExactly(stream, new byte[(512 - num % 512) % 512]);
 			char c = (char)array[156];
-			if ((c == '\0' || c == '0') ? true : false)
+			if (c == '\0' || c == '0')
 			{
 				string text = ReadField(array, 345, 155);
 				string text2 = ReadField(array, 0, 100);

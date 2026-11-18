@@ -1,17 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Carbon.Base;
 using Carbon.Components;
 using Carbon.Pooling;
 using Facepunch;
 using Oxide.Core.Plugins;
-using UnityEngine;
 
 namespace Carbon.Hooks;
 
 public class HookCallerInternal : HookCallerCommon
 {
+	private static readonly long _timestampsPerTick = Stopwatch.Frequency / 10000000;
+
+	private static bool IsHookTimeTracked(BaseHookable hookable)
+	{
+		if (Community.IsServerInitialized)
+		{
+			return !(hookable is Plugin plugin) || !plugin.IsCorePlugin;
+		}
+		return false;
+	}
+
+	private static TimeSpan GetHookTime(BaseHookable hookable, long startTimestamp, int startGcCount)
+	{
+		TimeSpan result = (hookable.CurrentHookTime = TimeSpan.FromTicks((Stopwatch.GetTimestamp() - startTimestamp) / _timestampsPerTick));
+		hookable._currentGcCount = startGcCount;
+		return result;
+	}
+
 	public override object[] AllocateBuffer(int count)
 	{
 		if (_argumentBuffer.TryGetValue(count, out var value))
@@ -99,9 +117,9 @@ public class HookCallerInternal : HookCallerCommon
 			{
 				cachedHook = value.PrimaryHook;
 			}
-			hookable.TrackStart();
-			bool trackHookMemory = Community.Runtime.Config.Debugging.TrackHookMemory;
-			long num = (trackHookMemory ? BaseHookable.CurrentMemory : 0);
+			bool flag = IsHookTimeTracked(hookable);
+			long startTimestamp = (flag ? Stopwatch.GetTimestamp() : 0);
+			int num = (flag ? BaseHookable.CurrentGcCount : 0);
 			if (cachedHook != null && args != null)
 			{
 				int num2 = cachedHook.Parameters.Length;
@@ -115,16 +133,19 @@ public class HookCallerInternal : HookCallerCommon
 					HookCaller.Caller.ProcessDefaults(args, cachedHook);
 				}
 			}
-			if (cachedHook != null && cachedHook.IsAsync)
-			{
-				hookable.InternalCallHook(hookId, args);
-				hookable.TrackEnd();
-			}
-			else
+			HookMemory.Scope scope = HookMemory.Begin();
+			long num3 = 0L;
+			TimeSpan hookTime = TimeSpan.Zero;
+			bool flag2 = false;
+			try
 			{
 				object obj = hookable.InternalCallHook(hookId, args);
-				hookable.TrackEnd();
-				if (obj != null)
+				if (flag)
+				{
+					hookTime = GetHookTime(hookable, startTimestamp, num);
+					flag2 = hookTime.TotalMilliseconds > 100.0 && num != BaseHookable.CurrentGcCount;
+				}
+				if (obj != null && (cachedHook == null || !cachedHook.IsAsync))
 				{
 					if (conflicts == null)
 					{
@@ -133,11 +154,12 @@ public class HookCallerInternal : HookCallerCommon
 					HookCaller.ResultOverride(conflicts, hookable, hookId, result = obj);
 				}
 			}
-			TimeSpan currentHookTime = hookable.CurrentHookTime;
-			long num3 = (trackHookMemory ? BaseHookable.CurrentMemory : 0);
-			float num4 = (trackHookMemory ? Mathf.Abs((float)(num3 - num)) : 0f);
-			cachedHook?.OnFired(hookable, currentHookTime, num4);
-			double totalMilliseconds = currentHookTime.TotalMilliseconds;
+			finally
+			{
+				num3 = HookMemory.End(in scope);
+			}
+			double totalMilliseconds = hookTime.TotalMilliseconds;
+			cachedHook?.OnFired(hookable, hookTime, num3);
 			if (totalMilliseconds > 100.0 && hookable is Plugin { IsCorePlugin: false } plugin)
 			{
 				string orAdd = HookStringPool.GetOrAdd(hookId);
@@ -146,14 +168,14 @@ public class HookCallerInternal : HookCallerCommon
 					hookable.ToPrettyString(),
 					orAdd,
 					totalMilliseconds,
-					hookable.HasGCCollected ? " [GC]" : string.Empty
+					flag2 ? " [GC]" : string.Empty
 				}));
-				bool flag = totalMilliseconds >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
-				if (flag)
+				bool flag3 = totalMilliseconds >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
+				if (flag3)
 				{
 					cachedHook?.OnLagSpike(hookable);
 				}
-				Analytics.plugin_time_warn(orAdd, plugin, totalMilliseconds, num4, flag, cachedHook, hookable);
+				Analytics.plugin_time_warn(orAdd, plugin, totalMilliseconds, num3, flag3, cachedHook, flag2);
 			}
 			HookCaller.ConflictCheck(conflicts, ref result, hookId);
 			FrameDispose(hasRescaledBuffer, args, ref conflicts);
@@ -197,14 +219,14 @@ public class HookCallerInternal : HookCallerCommon
 		return result;
 		static object DoCall(T val, uint name, BaseHookable.CachedHook hook, object[] array)
 		{
-			bool flag2 = false;
+			bool flag4 = false;
 			if (array != null)
 			{
-				int num5 = hook.Parameters.Length;
-				if (num5 != array.Length)
+				int num4 = hook.Parameters.Length;
+				if (num4 != array.Length)
 				{
-					array = HookCaller.Caller.RescaleBuffer(array, num5, hook);
-					flag2 = true;
+					array = HookCaller.Caller.RescaleBuffer(array, num4, hook);
+					flag4 = true;
 				}
 				else
 				{
@@ -213,15 +235,18 @@ public class HookCallerInternal : HookCallerCommon
 			}
 			if (array != null && !SequenceEqual(hook.Parameters, array))
 			{
-				if (flag2)
+				if (flag4)
 				{
 					HookCaller.Caller.ReturnBuffer(array);
 				}
 				return null;
 			}
 			object result2 = null;
-			val.TrackStart();
-			double totalMemoryUsed = val.TotalMemoryUsed;
+			bool flag5 = IsHookTimeTracked(val);
+			long startTimestamp2 = (flag5 ? Stopwatch.GetTimestamp() : 0);
+			int num5 = (flag5 ? BaseHookable.CurrentGcCount : 0);
+			HookMemory.Scope scope2 = HookMemory.Begin();
+			long num6 = 0L;
 			try
 			{
 				result2 = hook.Method.Invoke(val, array);
@@ -232,12 +257,14 @@ public class HookCallerInternal : HookCallerCommon
 				string orAdd3 = HookStringPool.GetOrAdd(name);
 				Logger.Error($"Failed to call hook '{orAdd3}' on plugin '{val.Name} v{val.Version}'", ex4);
 			}
-			val.TrackEnd();
-			TimeSpan currentHookTime2 = val.CurrentHookTime;
-			double totalMemoryUsed2 = val.TotalMemoryUsed;
-			double num6 = totalMemoryUsed2 - totalMemoryUsed;
-			hook?.OnFired(val, currentHookTime2, num6);
-			double totalMilliseconds2 = currentHookTime2.TotalMilliseconds;
+			finally
+			{
+				num6 = HookMemory.End(in scope2);
+			}
+			TimeSpan hookTime2 = (flag5 ? GetHookTime(val, startTimestamp2, num5) : TimeSpan.Zero);
+			double totalMilliseconds2 = hookTime2.TotalMilliseconds;
+			bool flag6 = totalMilliseconds2 > 100.0 && num5 != BaseHookable.CurrentGcCount;
+			hook?.OnFired(val, hookTime2, num6);
 			if (totalMilliseconds2 > 100.0 && val is Plugin { IsCorePlugin: false } plugin2)
 			{
 				string orAdd4 = HookStringPool.GetOrAdd(name);
@@ -246,24 +273,24 @@ public class HookCallerInternal : HookCallerCommon
 					val.ToPrettyString(),
 					orAdd4,
 					totalMilliseconds2,
-					val.HasGCCollected ? " [GC]" : string.Empty
+					flag6 ? " [GC]" : string.Empty
 				}));
-				bool flag3 = totalMilliseconds2 >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
-				if (flag3)
+				bool flag7 = totalMilliseconds2 >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
+				if (flag7)
 				{
 					hook.OnLagSpike(val);
 				}
-				Analytics.plugin_time_warn(orAdd4, plugin2, totalMilliseconds2, num6, flag3, hook, val);
+				Analytics.plugin_time_warn(orAdd4, plugin2, totalMilliseconds2, num6, flag7, hook, flag6);
 			}
-			if (flag2)
+			if (flag4)
 			{
 				HookCaller.Caller.ReturnBuffer(array);
 			}
 			return result2;
 		}
-		static void FrameDispose(bool flag2, object[] buffer, ref List<Conflict> reference)
+		static void FrameDispose(bool flag4, object[] buffer, ref List<Conflict> reference)
 		{
-			if (flag2)
+			if (flag4)
 			{
 				HookCaller.Caller.ReturnBuffer(buffer);
 			}

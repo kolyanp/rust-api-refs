@@ -266,16 +266,15 @@ public class FileModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		object obj = ((args?.Length > 0) ? args[0] : null);
 		try
 		{
 			if (hook == 2520824062u)
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					FileAction(arg);
 					return null;

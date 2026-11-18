@@ -727,19 +727,19 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0447: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_040b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -750,67 +750,58 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			{
 			case 3161252930u:
 			{
-				bool flag = ((obj is BradleyAPC || obj == null) ? true : false);
-				bool flag12 = flag;
-				BradleyAPC apc = ((!flag12) ? ((BradleyAPC)null) : ((BradleyAPC)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag13 = flag;
-				BasePlayer player6 = ((!flag13) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag12 & flag13)
+				bool flag13 = obj is BradleyAPC || obj == null;
+				BradleyAPC apc = ((!flag13) ? ((BradleyAPC)null) : ((BradleyAPC)(obj ?? null)));
+				bool flag14 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player7 = ((!flag14) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				if (flag13 & flag14)
 				{
-					return CanBradleyApcTarget(apc, player6);
+					return CanBradleyApcTarget(apc, player7);
 				}
 				break;
 			}
 			case 1627232611u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag10 = flag;
-				BasePlayer player5 = ((!flag10) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is ContainerIOEntity || obj2 == null) ? true : false);
-				bool flag11 = flag;
-				ContainerIOEntity container = ((!flag11) ? ((ContainerIOEntity)null) : ((ContainerIOEntity)(obj2 ?? null)));
-				if (flag10 & flag11)
+				bool flag2 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag3 = obj2 is ContainerIOEntity || obj2 == null;
+				ContainerIOEntity container = ((!flag3) ? ((ContainerIOEntity)null) : ((ContainerIOEntity)(obj2 ?? null)));
+				if (flag2 & flag3)
 				{
-					CanLootEntity(player5, container);
+					CanLootEntity(player2, container);
 					return null;
 				}
 				break;
 			}
 			case 3615154331u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag3 = flag;
-				BasePlayer player2 = ((!flag3) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is BaseLock || obj2 == null) ? true : false);
-				bool flag4 = flag;
-				BaseLock val = ((!flag4) ? ((BaseLock)null) : ((BaseLock)(obj2 ?? null)));
-				if (flag3 & flag4)
+				bool flag8 = obj is BasePlayer || obj == null;
+				BasePlayer player5 = ((!flag8) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag9 = obj2 is BaseLock || obj2 == null;
+				BaseLock val = ((!flag9) ? ((BaseLock)null) : ((BaseLock)(obj2 ?? null)));
+				if (flag8 & flag9)
 				{
-					return CanUseLockedEntity(player2, val);
+					return CanUseLockedEntity(player5, val);
 				}
 				break;
 			}
 			case 1437762689u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag14 = flag;
-				BasePlayer player7 = ((!flag14) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is HitInfo || obj2 == null) ? true : false);
-				bool flag15 = flag;
-				HitInfo hit = ((!flag15) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
-				if (flag14 & flag15)
+				bool flag10 = obj is BasePlayer || obj == null;
+				BasePlayer player6 = ((!flag10) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag11 = obj2 is HitInfo || obj2 == null;
+				HitInfo hit = ((!flag11) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
+				if (flag10 & flag11)
 				{
-					return OnPlayerAttack(player7, hit);
+					return OnPlayerAttack(player6, hit);
 				}
 				break;
 			}
 			case 3025469128u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag9 = flag;
-				BasePlayer self = ((!flag9) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag9)
+				bool flag12 = obj is BasePlayer || obj == null;
+				BasePlayer self = ((!flag12) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag12)
 				{
 					OnPlayerSleepEnded(self);
 					return null;
@@ -819,16 +810,13 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			}
 			case 2358926271u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag6 = flag;
-				BasePlayer player4 = ((!flag6) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag7 = flag;
-				string cmd = (flag7 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag8 = flag;
-				string[] args2 = (flag8 ? ((string[])(obj3 ?? null)) : null);
-				if (flag6 & flag7 & flag8)
+				bool flag5 = obj is BasePlayer || obj == null;
+				BasePlayer player4 = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag6 = obj2 is string || obj2 == null;
+				string cmd = (flag6 ? ((string)(obj2 ?? null)) : null);
+				bool flag7 = obj3 is string[] || obj3 == null;
+				string[] args2 = (flag7 ? ((string[])(obj3 ?? null)) : null);
+				if (flag5 & flag6 & flag7)
 				{
 					Vanish(player4, cmd, args2);
 					return null;
@@ -837,10 +825,9 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			}
 			case 2343271809u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag5 = flag;
-				BasePlayer player3 = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag5)
+				bool flag4 = obj is BasePlayer || obj == null;
+				BasePlayer player3 = ((!flag4) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag4)
 				{
 					_clearTriggers(player3);
 					return null;
@@ -849,10 +836,9 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			}
 			case 1486685506u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag2 = flag;
-				BasePlayer player = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag)
 				{
 					_drawUI(player);
 					return null;

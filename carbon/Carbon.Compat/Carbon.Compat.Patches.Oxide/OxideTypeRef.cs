@@ -177,15 +177,15 @@ public class OxideTypeRef : BaseOxidePatch
 				else
 				{
 					string fullName = type.FullName;
-					if ((!(fullName == "Oxide.Core.Libraries.Timer") && !(fullName == "Oxide.Plugins.PluginTimers")) || 1 == 0)
+					if (!(fullName == "Oxide.Core.Libraries.Timer") && !(fullName == "Oxide.Plugins.PluginTimers"))
 					{
 						if (type.FullName == "Oxide.Core.Plugins.HookMethodAttribute")
 						{
 							type.Namespace = Utf8String.op_Implicit(string.Empty);
-							goto IL_0307;
+							goto IL_02f5;
 						}
 						fullName = type.FullName;
-						if ((fullName == "Oxide.Plugins.CSharpPlugin" || fullName == "Oxide.Core.Plugins.CSPlugin") ? true : false)
+						if (fullName == "Oxide.Plugins.CSharpPlugin" || fullName == "Oxide.Core.Plugins.CSPlugin")
 						{
 							type.Name = Utf8String.op_Implicit("RustPlugin");
 							type.Namespace = Utf8String.op_Implicit("Oxide.Plugins");
@@ -201,8 +201,8 @@ public class OxideTypeRef : BaseOxidePatch
 			}
 			type.Namespace = Utf8String.op_Implicit(string.Empty);
 		}
-		goto IL_0307;
-		IL_0307:
+		goto IL_02f5;
+		IL_02f5:
 		type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.SDK).ImportWith(importer);
 		return true;
 	}

@@ -7,9 +7,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using API.Hooks;
 using API.Logger;
 using Carbon.Base;
@@ -4917,31 +4921,23 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		public interface IVendorAuthenticated
 		{
-			string AuthCode { get; set; }
+			string AuthCode { get; }
 
 			string AuthRequestEndpoint { get; }
 
 			string AuthRequestEndpointPreview { get; }
 
-			string AuthValidationEndpoint { get; }
-
-			string AuthUserInfoEndpoint { get; }
-
-			string AuthOwnedPluginsEndpoint { get; }
-
-			string AuthDownloadFileEndpoint { get; }
-
-			KeyValuePair<HttpRequestHeader, string> AuthHeader { get; }
-
-			float AuthValidationCheckRate { get; }
-
-			Oxide.Plugins.Timer ValidationTimer { get; set; }
-
 			LoggedInUser User { get; set; }
 
 			bool IsLoggedIn { get; }
 
-			void Validate(PlayerSession session, Action onCompletion);
+			bool IsPairingFor(PlayerSession session);
+
+			void BeginPairing(PlayerSession session);
+
+			void CancelPairing(PlayerSession session);
+
+			void SignOut();
 
 			void RefreshUser(PlayerSession session);
 		}
@@ -5000,9 +4996,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		[ProtoContract]
 		public class Codefling : Vendor, IVendorStored, IVendorAuthenticated
 		{
-			private Dictionary<string, string> _headers = new Dictionary<string, string>();
-
 			private static readonly string _backSlashes = "\\";
+
+			private PlayerSession _pairingSession;
+
+			private Oxide.Plugins.Timer _pairingTimer;
+
+			private string _deviceCode;
+
+			private int _pairingAttempt;
 
 			public override string Type => "Codefling";
 
@@ -5025,27 +5027,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			[ProtoMember(50, IsRequired = false)]
 			public LoggedInUser User { get; set; }
 
-			public string AuthRequestEndpoint => "https://codefling.com/auth/?pin={0}";
+			public string AuthCode { get; private set; }
 
-			public string AuthRequestEndpointPreview => "codefling.com/auth";
+			public string AuthRequestEndpoint => "https://auth.carbonmod.gg/?pin={0}";
 
-			public string AuthValidationEndpoint => "https://codefling.com/auth/bearer?code={0}";
+			public string AuthRequestEndpointPreview => "auth.carbonmod.gg";
 
-			public string AuthUserInfoEndpoint => "https://codefling.com/api/core/me";
-
-			public string AuthOwnedPluginsEndpoint => "https://codefling.com/api/nexus/purchases?perPage=100000&itemType=file&itemApp=downloads";
-
-			public string AuthDownloadFileEndpoint => "https://codefling.com/api/downloads/files/{0}/download";
-
-			public KeyValuePair<HttpRequestHeader, string> AuthHeader => new KeyValuePair<HttpRequestHeader, string>(HttpRequestHeader.Authorization, "Bearer {0}");
-
-			public float AuthValidationCheckRate => 5f;
-
-			public Oxide.Plugins.Timer ValidationTimer { get; set; }
-
-			public string AuthCode { get; set; }
-
-			public bool IsLoggedIn => User != null;
+			public bool IsLoggedIn => !string.IsNullOrEmpty(User?.AccessToken);
 
 			public override void Refresh()
 			{
@@ -5095,9 +5083,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public override void FetchList(Action<Vendor> callback = null)
 			{
-				Community.Runtime.Core.webrequest.Enqueue(ListEndpoint, null, (int error, string data) =>
+				RequestCodefling(ListEndpoint, null, null, download: false, (int error, byte[] data, int _) =>
 				{
-					if (error != 200)
+					if (error != 200 || data == null)
 					{
 						Logger.Log($"[{Type}] Failed fetching vendor. Error code {error}!");
 					}
@@ -5106,11 +5094,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						FetchedPlugins.Clear();
 						List<RustPlugin> list = Pool.Get<List<RustPlugin>>();
 						Community.Runtime.Core.plugins.GetAllNonAlloc(list);
-						ParseData(data, doSave: true, insert: false, FetchedPlugins, callback, this, list);
+						ParseData(Encoding.UTF8.GetString(data).TrimStart('\ufeff'), doSave: true, insert: false, FetchedPlugins, callback, this, list);
 						Pool.FreeUnmanaged<RustPlugin>(ref list);
 						VersionCheck();
 					}
-				}, Community.Runtime.Core);
+				});
 				static void ParseData(string data, bool doSave, bool insert, List<Plugin> fetchedPlugins, Action<Vendor> action, Vendor vendor, List<RustPlugin> plugins)
 				{
 					try
@@ -5193,151 +5181,169 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public override void Download(string id, Action onTimeout = null)
 			{
-				Plugin plugin = FetchedPlugins.FirstOrDefault((Plugin x) => x.Id.Equals(id, StringComparison.CurrentCultureIgnoreCase) || x.Name.Equals(id, StringComparison.CurrentCultureIgnoreCase) || Path.GetFileNameWithoutExtension(x.File).Equals(id, StringComparison.CurrentCultureIgnoreCase));
+				Plugin plugin = FetchedPlugins.FirstOrDefault((Plugin x) => string.Equals(x.Id, id, StringComparison.CurrentCultureIgnoreCase) || string.Equals(x.Name, id, StringComparison.CurrentCultureIgnoreCase) || string.Equals(Path.GetFileNameWithoutExtension(x.File), id, StringComparison.CurrentCultureIgnoreCase));
+				LoggedInUser user;
+				string extension;
 				if (plugin == null)
 				{
 					Logger.Error("Couldn't find '" + id + "' on " + Type);
 				}
-				plugin.IsBusy = true;
-				plugin.DownloadCount++;
-				CorePlugin core = Community.Runtime.Core;
-				core.timer.In(2f, () =>
+				else
 				{
 					if (plugin.IsBusy)
 					{
-						plugin.IsBusy = false;
-						onTimeout?.Invoke();
-					}
-				});
-				if (IsLoggedIn)
-				{
-					string extension = Path.GetExtension(plugin.File);
-					if (!(extension == ".zip"))
-					{
-						if (!(extension == ".cs"))
-						{
-							return;
-						}
-						core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, (int error, string source) =>
-						{
-							if (error != 200)
-							{
-								Logger.Error("Auth token for Codefling is expired! Please log in once again.");
-								User = null;
-							}
-							else
-							{
-								JObject val = JObject.Parse(source);
-								string url2 = ((object)val["files"][(object)0][(object)"url"]).ToString();
-								string path2 = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), plugin.File) : plugin.ExistentPlugin.FilePath);
-								core.webrequest.Enqueue(url2, null, (int _, string content) =>
-								{
-									plugin.IsBusy = false;
-									Singleton.Puts("Downloaded " + plugin.Name);
-									OsEx.File.Move(path2, Path.Combine(Defines.GetScriptsFolder(), "backups", plugin.File));
-									OsEx.File.Create(path2, content);
-								}, core, RequestMethod.GET, _headers);
-							}
-						}, core, RequestMethod.GET, _headers);
 						return;
 					}
-					core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, (int error, string source) =>
+					user = User;
+					extension = Path.GetExtension(plugin.File);
+					plugin.IsBusy = true;
+					plugin.DownloadCount++;
+					if (!IsLoggedIn)
 					{
-						if (error != 200)
+						RequestCodefling(DownloadEndpoint.Replace("[ID]", plugin.Id), null, null, download: true, (int status, byte[] bytes, int _) =>
 						{
-							Logger.Error("Auth token for Codefling is expired! Please log in once again.");
-							User = null;
+							StoreDownload(status, bytes, plugin.File);
+						});
+						return;
+					}
+					if (!(extension == ".cs") && !(extension == ".zip"))
+					{
+						FailDownload("Unsupported plugin file type.");
+						return;
+					}
+					RequestCodeflingApi("https://codefling.com/api/downloads/files/" + plugin.Id + "/download", user.AccessToken, (int status, JObject result, int _) =>
+					{
+						if (User != user)
+						{
+							FailDownload("The linked Codefling account changed.");
 						}
 						else
 						{
-							JObject val = JObject.Parse(source);
-							string path2 = ((object)val["files"][(object)0][(object)"name"]).ToString();
-							string url2 = ((object)val["files"][(object)0][(object)"url"]).ToString();
-							string path3 = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), path2) : plugin.ExistentPlugin.FilePath);
-							core.webrequest.EnqueueData(url2, null, (int _, byte[] array) =>
+							switch (status)
 							{
-								plugin.IsBusy = false;
-								using MemoryStream stream = new MemoryStream(array);
-								using ZipArchive zipArchive = new ZipArchive(stream);
-								foreach (ZipArchiveEntry entry in zipArchive.Entries)
+							case 401:
+								SignOut();
+								FailDownload("The Codefling authorization expired. Sign in again.");
+								break;
+							case 200:
+							{
+								JToken obj = ((result != null) ? result["files"] : null);
+								JArray val = (JArray)(object)((obj is JArray) ? obj : null);
+								if (val != null)
 								{
-									switch (Path.GetExtension(entry.Name))
+									JToken val2 = ((IEnumerable<JToken>)val).FirstOrDefault();
+									JObject file = (JObject)(object)((val2 is JObject) ? val2 : null);
+									if (file != null)
 									{
-									case ".cs":
-									{
-										using (StreamReader streamReader = new StreamReader(entry.Open()))
+										RequestCodefling(ReadValue(file["url"]), user.AccessToken, null, download: true, (int fileStatus, byte[] bytes, int num) =>
 										{
-											string content = streamReader.ReadToEnd();
-											OsEx.File.Move(Path.Combine(Defines.GetScriptsFolder(), entry.Name), Path.Combine(Defines.GetScriptsFolder(), "backups", entry.Name));
-											OsEx.File.Create(Path.Combine(Defines.GetScriptsFolder(), entry.Name), content);
-											Singleton.Puts(" Extracted plugin file " + entry.Name);
-										}
+											StoreDownload(fileStatus, bytes, (extension == ".zip") ? Path.GetFileName((ReadValue(file["name"]) ?? plugin.File).Replace('\\', '/')) : plugin.File);
+										});
 										break;
-									}
-									case ".dll":
-										StoreFile(entry, Path.Combine(Defines.GetLibFolder(), entry.Name ?? ""), "extension");
-										break;
-									case ".json":
-									{
-										string fullName = entry.FullName;
-										if (fullName.Contains("data"))
-										{
-											int startIndex = fullName.IndexOf("data") + 5;
-											string directoryName = Path.GetDirectoryName(fullName.Substring(startIndex));
-											StoreFile(entry, Path.Combine(Defines.GetDataFolder(), directoryName, entry.Name), "data");
-										}
-										else
-										{
-											string text = fullName;
-											if (text.Contains("config"))
-											{
-												int startIndex2 = text.IndexOf("config") + 5;
-												string directoryName2 = Path.GetDirectoryName(text.Substring(startIndex2));
-												StoreFile(entry, Path.Combine(Defines.GetConfigsFolder(), directoryName2, entry.Name), "config");
-											}
-										}
-										break;
-									}
 									}
 								}
-								Singleton.Puts("Downloaded " + plugin.Name);
-								OsEx.File.Create(path3, array);
-							}, core, RequestMethod.GET, _headers);
+								goto default;
+							}
+							default:
+								FailDownload($"Codefling could not provide a download URL (HTTP {status}).");
+								break;
+							}
 						}
-					}, core, RequestMethod.GET, _headers);
-					return;
+					});
 				}
-				string path = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), plugin.File) : plugin.ExistentPlugin.FilePath);
-				string url = DownloadEndpoint.Replace("[ID]", id);
-				core.webrequest.Enqueue(url, null, (int error, string source) =>
+				void FailDownload(string message)
 				{
-					if (error != 200)
+					plugin.IsBusy = false;
+					Logger.Error("[Codefling] " + message);
+					onTimeout?.Invoke();
+				}
+				void StoreDownload(int status, byte[] bytes, string name)
+				{
+					if (User != user || status != 200 || bytes == null || bytes.Length == 0 || string.IsNullOrEmpty(name) || name == "." || name == "..")
 					{
-						Logger.Error(string.Format("[{0}] Failed downloading item '{1} by {2}'. Error code {3}!", new object[4] { Type, plugin.Name, plugin.Author, error }));
+						FailDownload($"Could not download '{plugin.Name}' (HTTP {status}).");
+						return;
 					}
-					else
+					plugin.IsBusy = false;
+					try
 					{
-						plugin.IsBusy = false;
-						if (!source.StartsWith("<!DOCTYPE html>"))
+						string file = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), name) : plugin.ExistentPlugin.FilePath);
+						if (!string.IsNullOrEmpty(user?.AccessToken) && extension == ".zip")
 						{
-							Singleton.Puts("Downloaded " + plugin.Name);
-							OsEx.File.Move(path, Path.Combine(Defines.GetScriptsFolder(), "backups", plugin.File));
-							OsEx.File.Create(path, source);
+							StoreArchive(bytes);
+							OsEx.File.Create(file, bytes);
+						}
+						else
+						{
+							string text = Encoding.UTF8.GetString(bytes).TrimStart('\ufeff');
+							if (text.TrimStart().StartsWith("<", StringComparison.Ordinal))
+							{
+								FailDownload("Codefling returned an HTML page for the download.");
+								return;
+							}
+							OsEx.File.Move(file, Path.Combine(Defines.GetScriptsFolder(), "backups", plugin.File));
+							OsEx.File.Create(file, text);
+						}
+						Singleton.Puts("Downloaded " + plugin.Name);
+					}
+					catch (Exception ex) when ((ex is IOException || ex is InvalidDataException || ex is UnauthorizedAccessException || ex is ArgumentException) ? true : false)
+					{
+						FailDownload("Could not save '" + plugin.Name + "' (" + ex.GetType().Name + ").");
+					}
+				}
+			}
+
+			private static void StoreArchive(byte[] bytes)
+			{
+				using (MemoryStream stream = new MemoryStream(bytes))
+				{
+					using ZipArchive zipArchive = new ZipArchive(stream);
+					foreach (ZipArchiveEntry entry in zipArchive.Entries)
+					{
+						if (entry.FullName.Contains(':') || entry.FullName.Contains('\\') || entry.FullName.Split('/').Any((string part) => part == "." || part == ".."))
+						{
+							continue;
+						}
+						switch (Path.GetExtension(entry.Name))
+						{
+						case ".cs":
+						{
+							using (StreamReader streamReader = new StreamReader(entry.Open()))
+							{
+								OsEx.File.Move(Path.Combine(Defines.GetScriptsFolder(), entry.Name), Path.Combine(Defines.GetScriptsFolder(), "backups", entry.Name));
+								OsEx.File.Create(Path.Combine(Defines.GetScriptsFolder(), entry.Name), streamReader.ReadToEnd());
+								Singleton.Puts(" Extracted plugin file " + entry.Name);
+							}
+							break;
+						}
+						case ".dll":
+							StoreFile(entry, Path.Combine(Defines.GetLibFolder(), entry.Name), "extension");
+							break;
+						case ".json":
+						{
+							string fullName = entry.FullName;
+							if (fullName.Contains("data"))
+							{
+								StoreFile(entry, Path.Combine(Defines.GetDataFolder(), Path.GetDirectoryName(fullName.Substring(fullName.IndexOf("data") + 5)) ?? string.Empty, entry.Name), "data");
+								break;
+							}
+							string text = fullName;
+							if (text.Contains("config"))
+							{
+								StoreFile(entry, Path.Combine(Defines.GetConfigsFolder(), Path.GetDirectoryName(text.Substring(text.IndexOf("config") + 7)) ?? string.Empty, entry.Name), "config");
+							}
+							break;
+						}
 						}
 					}
-				}, core, RequestMethod.GET, new Dictionary<string, string>
-				{
-					["user-agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.63",
-					["accept"] = "ext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
-				});
-				static void StoreFile(ZipArchiveEntry entry, string text, string context)
+				}
+				static void StoreFile(ZipArchiveEntry entry, string path, string context)
 				{
 					using MemoryStream memoryStream = new MemoryStream();
-					using Stream stream = entry.Open();
-					stream.CopyTo(memoryStream);
-					byte[] contents = memoryStream.ToArray();
-					OsEx.File.Move(text, Path.Combine(Defines.GetScriptsFolder(), "backups", Path.GetFileName(text)));
-					OsEx.File.Create(text, contents);
+					using Stream stream2 = entry.Open();
+					stream2.CopyTo(memoryStream);
+					OsEx.File.Move(path, Path.Combine(Defines.GetScriptsFolder(), "backups", Path.GetFileName(path)));
+					OsEx.File.Create(path, memoryStream.ToArray());
 					Singleton.Puts(" Extracted plugin " + context + " file '" + entry.Name + "'");
 				}
 			}
@@ -5354,49 +5360,232 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 			}
 
-			public void Validate(PlayerSession session, Action onComplete)
+			public bool IsPairingFor(PlayerSession session)
 			{
-				CorePlugin core = Community.Runtime.Core;
-				ValidationTimer = core.timer.Every(AuthValidationCheckRate, () =>
+				if (session != null)
 				{
-					if (User == null || !session.IsInMenu)
+					return _pairingSession == session;
+				}
+				return false;
+			}
+
+			public void BeginPairing(PlayerSession session)
+			{
+				//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+				//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+				//IL_00d2: Expected Obj, but got Unknown
+				if (_pairingSession != null || IsLoggedIn)
+				{
+					return;
+				}
+				PlayerSession playerSession = session;
+				if (playerSession == null || !playerSession.IsInMenu || (Object)(object)session.Player == (Object)null || !session.Player.IsConnected || !Singleton.HasAccess(session.Player, "plugins.setup"))
+				{
+					return;
+				}
+				_pairingSession = session;
+				int attempt = ++_pairingAttempt;
+				RequestCodeflingApi("https://auth.carbonmod.gg/bearer/", null, (int status, JObject result, int retryAfter) =>
+				{
+					string deviceCode = ReadValue((result != null) ? result["device_code"] : null);
+					if (deviceCode != null && !Regex.IsMatch(deviceCode, "\\A[a-f0-9]{64}\\z"))
 					{
-						ValidationTimer?.Destroy();
-						ValidationTimer = null;
-						User = null;
+						deviceCode = null;
+					}
+					int interval;
+					DateTime expiresAt;
+					if (!CanContinuePairing(session, attempt))
+					{
+						if (deviceCode != null)
+						{
+							CancelDeviceCode(deviceCode);
+						}
 					}
 					else
 					{
-						string url = string.Format(AuthValidationEndpoint, AuthCode);
-						core.webrequest.Enqueue(url, null, (int code, string result) =>
+						_deviceCode = deviceCode;
+						string text = ReadValue((result != null) ? result["user_code"] : null);
+						int.TryParse(ReadValue((result != null) ? result["expires_in"] : null), out var result2);
+						int.TryParse(ReadValue((result != null) ? result["interval"] : null), out interval);
+						switch (status)
 						{
-							if (User == null)
+						case 429:
+							StopPairing(session, $"Too many Codefling sign-in attempts. Try again in {Math.Max(5, retryAfter)} seconds.");
+							break;
+						case 200:
+							if (deviceCode != null && text != null && Regex.IsMatch(text, "\\A[23456789A-HJ-NP-Z]{6}\\z") && result2 > 0 && result2 <= 600 && interval > 0 && interval < result2)
 							{
-								LoggedInUser loggedInUser = (User = new LoggedInUser());
-							}
-							if (code == 401)
-							{
-								LoggedInUser.RequestResult pendingResult = User.PendingResult;
-								User.PendingResult = LoggedInUser.RequestResult.Processing;
-								if (pendingResult != User.PendingResult)
+								expiresAt = DateTime.UtcNow.AddSeconds(result2);
+								AuthCode = text;
+								User = new LoggedInUser
 								{
-									Singleton.Draw(session.Player);
-								}
+									PendingAccessToken = true
+								};
+								Singleton.Draw(session.Player);
+								_pairingTimer = Community.Runtime.Core.timer.In(interval, Poll);
+								break;
+							}
+							goto default;
+						default:
+							StopPairing(session, "Couldn't start Codefling sign-in. Try again.");
+							break;
+						}
+					}
+					void Poll()
+					{
+						//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+						//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+						//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+						//IL_00bf: Expected Obj, but got Unknown
+						if (CanContinuePairing(session, attempt))
+						{
+							_pairingTimer = null;
+							if (DateTime.UtcNow >= expiresAt)
+							{
+								StopPairing(session, "The Codefling code expired. Sign in again for a new code.");
 							}
 							else
 							{
-								JObject val = JObject.Parse(result);
-								User.AccessToken = ((object)val["accesstoken"]).ToString();
-								User.AccessTokenEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(User.AccessToken));
-								ValidationTimer.Destroy();
-								ValidationTimer = null;
-								_headers[AuthHeader.Key.ToString()] = string.Format(AuthHeader.Value, User.AccessToken);
-								Analytics.codefling_login();
-								User.PendingResult = LoggedInUser.RequestResult.Complete;
-								onComplete?.Invoke();
+								RequestCodeflingApi("https://auth.carbonmod.gg/bearer/", null, (int pollStatus, JObject pollResult, int pollRetryAfter) =>
+								{
+									if (CanContinuePairing(session, attempt))
+									{
+										string text2 = ReadValue((pollResult != null) ? pollResult["error"] : null);
+										if (text2 == "expired_token")
+										{
+											StopPairing(session, "The Codefling code expired. Sign in again for a new code.");
+										}
+										else
+										{
+											bool flag = text2 == "slow_down" || pollStatus == 0 || pollStatus == 429 || pollStatus >= 500;
+											if ((text2 == "authorization_pending") | flag)
+											{
+												if (flag)
+												{
+													interval += 5;
+												}
+												int num = Math.Max(interval, pollRetryAfter);
+												if (DateTime.UtcNow.AddSeconds(num) >= expiresAt)
+												{
+													StopPairing(session, "The Codefling code will expire before the next retry. Sign in again for a new code.");
+												}
+												else
+												{
+													_pairingTimer = Community.Runtime.Core.timer.In(num, Poll);
+												}
+											}
+											else
+											{
+												string token = ReadValue((pollResult != null) ? pollResult["access_token"] : null);
+												if (pollStatus != 200 || !string.Equals(ReadValue((pollResult != null) ? pollResult["token_type"] : null), "Bearer", StringComparison.OrdinalIgnoreCase) || !ValidToken(token))
+												{
+													StopPairing(session, "Couldn't finish Codefling sign-in. Try again.");
+												}
+												else
+												{
+													_deviceCode = null;
+													LoadCodeflingUser(token, (int _, LoggedInUser user) =>
+													{
+														if (CanContinuePairing(session, attempt))
+														{
+															if (user == null)
+															{
+																StopPairing(session, "Couldn't load the linked Codefling account and purchases. Try again.");
+															}
+															else
+															{
+																User = user;
+																Refresh();
+																Save();
+																StopPairing(session);
+																Analytics.codefling_login();
+															}
+														}
+													});
+												}
+											}
+										}
+									}
+								}, new JObject
+								{
+									["action"] = JToken.op_Implicit("poll"),
+									["device_code"] = JToken.op_Implicit(deviceCode)
+								});
 							}
-						}, null);
+						}
 					}
+				}, new JObject { ["action"] = JToken.op_Implicit("start") });
+			}
+
+			public void CancelPairing(PlayerSession session)
+			{
+				if (IsPairingFor(session))
+				{
+					StopPairing(session);
+				}
+			}
+
+			public void SignOut()
+			{
+				User = null;
+				Refresh();
+				Save();
+			}
+
+			private bool CanContinuePairing(PlayerSession session, int attempt)
+			{
+				if (_pairingAttempt != attempt || !IsPairingFor(session))
+				{
+					return false;
+				}
+				if (session.IsInMenu && (Object)(object)session.Player != (Object)null && session.Player.IsConnected && Singleton.HasAccess(session.Player, "plugins.setup"))
+				{
+					return true;
+				}
+				StopPairing(session);
+				return false;
+			}
+
+			private void StopPairing(PlayerSession session, string message = null)
+			{
+				_pairingAttempt++;
+				_pairingSession = null;
+				_pairingTimer?.Destroy();
+				_pairingTimer = null;
+				AuthCode = null;
+				if (_deviceCode != null)
+				{
+					CancelDeviceCode(_deviceCode);
+					_deviceCode = null;
+				}
+				LoggedInUser user = User;
+				if (user != null && user.PendingAccessToken)
+				{
+					User = null;
+				}
+				if (!((Object)(object)session.Player == (Object)null) && session.Player.IsConnected)
+				{
+					if (message != null)
+					{
+						session.Player.ChatMessage(message);
+					}
+					if (session.IsInMenu && Singleton.HasAccess(session.Player, "plugins.setup"))
+					{
+						Singleton.Draw(session.Player);
+					}
+				}
+			}
+
+			private void CancelDeviceCode(string deviceCode)
+			{
+				//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+				//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0038: Expected Obj, but got Unknown
+				RequestCodeflingApi("https://auth.carbonmod.gg/bearer/", null, null, new JObject
+				{
+					["action"] = JToken.op_Implicit("cancel"),
+					["device_code"] = JToken.op_Implicit(deviceCode)
 				});
 			}
 
@@ -5406,41 +5595,257 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					return;
 				}
-				CorePlugin core = Community.Runtime.Core;
-				KeyValuePair<HttpRequestHeader, string> authHeader = AuthHeader;
-				Dictionary<string, string> headers = new Dictionary<string, string> { [authHeader.Key.ToString()] = string.Format(authHeader.Value, User.AccessToken) };
-				core.webrequest.Enqueue(AuthUserInfoEndpoint, null, (int code, string info) =>
+				LoggedInUser previous = User;
+				LoadCodeflingUser(previous.AccessToken, (int status, LoggedInUser user) =>
 				{
-					if (code == 200)
+					if (User == previous && (user != null || status == 401))
 					{
-						JObject val = JObject.Parse(info);
-						User.Authority = ((object)val["primaryGroup"][(object)"name"])?.ToString();
-						User.AvatarUrl = ((object)val["photoUrl"])?.ToString();
-						User.DisplayName = ((object)val["formattedName"])?.ToString();
-						User.CoverUrl = ((object)val["coverPhotoUrl"])?.ToString();
-						User.Id = ((object)val["id"]).ToString().ToInt();
-						User.IsAdmin = User.Authority == "Administrator";
-						core.webrequest.Enqueue(AuthOwnedPluginsEndpoint, null, (int num, string data) =>
-						{
-							JObject val2 = JObject.Parse(data);
-							User.OwnedFiles.Clear();
-							foreach (JToken item in (IEnumerable<JToken>)val2["results"])
-							{
-								User.OwnedFiles.Add(((object)item[(object)"itemId"]).ToString());
-							}
-							Refresh();
-							Save();
-							Singleton.Draw(session.Player);
-						}, core, RequestMethod.GET, headers);
-					}
-					else
-					{
-						User = null;
+						User = user;
 						Refresh();
 						Save();
-						Singleton.Draw(session.Player);
+						if (session.IsInMenu && (Object)(object)session.Player != (Object)null && session.Player.IsConnected)
+						{
+							Singleton.Draw(session.Player);
+						}
 					}
-				}, core, RequestMethod.GET, headers);
+				});
+			}
+
+			private void LoadCodeflingUser(string token, Action<int, LoggedInUser> callback)
+			{
+				RequestCodeflingApi("https://codefling.com/api/core/me", token, (int status, JObject profile, int _) =>
+				{
+					if (status == 200)
+					{
+						JObject val = profile;
+						if (int.TryParse(ReadValue((val != null) ? val["id"] : null), out var id) && id > 0)
+						{
+							RequestCodeflingApi("https://codefling.com/api/nexus/purchases?perPage=100000&itemType=file&itemApp=downloads", token, (int purchasesStatus, JObject purchases, int num) =>
+							{
+								if (purchasesStatus == 200)
+								{
+									JToken obj = ((purchases != null) ? purchases["results"] : null);
+									JArray val2 = (JArray)(object)((obj is JArray) ? obj : null);
+									if (val2 != null)
+									{
+										JToken val3 = profile["primaryGroup"];
+										JToken obj2 = ((val3 is JObject) ? val3 : null);
+										string text = ReadValue((obj2 != null) ? ((JObject)obj2)["name"] : null);
+										LoggedInUser loggedInUser = new LoggedInUser
+										{
+											Id = id,
+											Authority = text,
+											DisplayName = ReadValue(profile["formattedName"]),
+											AvatarUrl = ReadValue(profile["photoUrl"]),
+											CoverUrl = ReadValue(profile["coverPhotoUrl"]),
+											IsAdmin = (text == "Administrator"),
+											AccessToken = token,
+											AccessTokenEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(token))
+										};
+										loggedInUser.OwnedFiles.AddRange(from item in ((IEnumerable)val2).OfType<JObject>()
+											select ReadValue(item["itemId"]) into itemId
+											where !string.IsNullOrEmpty(itemId)
+											select itemId);
+										callback(200, loggedInUser);
+										return;
+									}
+								}
+								callback(purchasesStatus, null);
+							});
+							return;
+						}
+					}
+					callback(status, null);
+				});
+			}
+
+			private static string ReadValue(JToken token)
+			{
+				JToken obj = ((token is JValue) ? token : null);
+				if (obj == null)
+				{
+					return null;
+				}
+				return ((JValue)obj).ToString((IFormatProvider)CultureInfo.InvariantCulture);
+			}
+
+			private static bool ValidToken(string token)
+			{
+				if (token != null)
+				{
+					return Regex.IsMatch(token, "\\A[A-Za-z0-9._~+/\\-]{1,8192}={0,2}\\z");
+				}
+				return false;
+			}
+
+			private void RequestCodeflingApi(string url, string token, Action<int, JObject, int> callback, JObject form = null)
+			{
+				RequestCodefling(url, token, (form == null) ? null : Encoding.UTF8.GetBytes(((JToken)form).ToString((Formatting)0, Array.Empty<JsonConverter>())), download: false, (int status, byte[] bytes, int retryAfter) =>
+				{
+					if (callback != null)
+					{
+						JObject arg;
+						try
+						{
+							arg = ((bytes == null || bytes.Length == 0) ? null : JObject.Parse(Encoding.UTF8.GetString(bytes).TrimStart('\ufeff')));
+						}
+						catch (JsonException)
+						{
+							arg = null;
+						}
+						callback(status, arg, retryAfter);
+					}
+				});
+			}
+
+			private void RequestCodefling(string url, string token, byte[] payload, bool download, Action<int, byte[], int> callback)
+			{
+				if (!Uri.TryCreate(url, UriKind.Absolute, out Uri address))
+				{
+					Community.Runtime.Core.NextTick(() =>
+					{
+						callback(0, null, 0);
+					});
+					return;
+				}
+				string userAgent = Community.Runtime.Analytics.UserAgent;
+				Task.Run(() =>
+				{
+					int status = 0;
+					int retryAfter = 0;
+					byte[] result = null;
+					try
+					{
+						for (int i = 0; i <= 4 && !(address.Scheme != Uri.UriSchemeHttps) && address.IsDefaultPort && address.UserInfo.Length == 0; i++)
+						{
+							bool flag = address.Host == "codefling.com";
+							bool num;
+							if (payload == null)
+							{
+								if (download)
+								{
+									goto IL_00b1;
+								}
+								num = !flag;
+							}
+							else
+							{
+								num = address.AbsoluteUri != "https://auth.carbonmod.gg/bearer/";
+							}
+							if (num)
+							{
+								break;
+							}
+							goto IL_00b1;
+							IL_00b1:
+							HttpWebRequest httpWebRequest = WebRequest.CreateHttp(address);
+							httpWebRequest.Proxy = null;
+							httpWebRequest.AllowAutoRedirect = false;
+							httpWebRequest.KeepAlive = false;
+							httpWebRequest.ConnectionGroupName = "CarbonCodefling";
+							httpWebRequest.Timeout = (download ? 30000 : 8000);
+							httpWebRequest.ReadWriteTimeout = httpWebRequest.Timeout;
+							httpWebRequest.UserAgent = (string.IsNullOrEmpty(userAgent) ? "Carbon-Codefling/2.0" : userAgent);
+							httpWebRequest.Accept = (download ? "*/*" : "application/json");
+							httpWebRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+							httpWebRequest.ServerCertificateValidationCallback = (object _, X509Certificate _, X509Chain _, SslPolicyErrors errors) => errors == SslPolicyErrors.None;
+							if (!flag)
+							{
+								token = null;
+							}
+							else if (token != null)
+							{
+								httpWebRequest.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
+							}
+							using (HttpWebResponse httpWebResponse = SendRequest(httpWebRequest, payload))
+							{
+								status = (int)httpWebResponse.StatusCode;
+								if (status == 429)
+								{
+									string text = httpWebResponse.Headers[HttpResponseHeader.RetryAfter];
+									if (!int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out retryAfter) && DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var result2))
+									{
+										retryAfter = (int)Math.Min(2147483647.0, Math.Max(0.0, Math.Ceiling((result2 - DateTimeOffset.UtcNow).TotalSeconds)));
+									}
+								}
+								bool flag2 = download;
+								bool flag3 = flag2;
+								if (flag3)
+								{
+									int num2 = status;
+									bool flag4 = (((uint)(num2 - 301) <= 2u || (uint)(num2 - 307) <= 1u) ? true : false);
+									flag3 = flag4;
+								}
+								if (flag3 && Uri.TryCreate(address, httpWebResponse.Headers[HttpResponseHeader.Location], out Uri result3))
+								{
+									address = result3;
+									continue;
+								}
+								if (!download || status == 200)
+								{
+									using Stream stream = httpWebResponse.GetResponseStream();
+									using MemoryStream memoryStream = new MemoryStream();
+									byte[] array = new byte[download ? 81920 : 8192];
+									while (true)
+									{
+										int? num3 = stream?.Read(array, 0, array.Length);
+										if (!num3.HasValue)
+										{
+											break;
+										}
+										int valueOrDefault = num3.GetValueOrDefault();
+										if (valueOrDefault <= 0)
+										{
+											break;
+										}
+										if (!download && memoryStream.Length + valueOrDefault > 16777216)
+										{
+											throw new IOException("The Codefling response exceeded 16 MB.");
+										}
+										memoryStream.Write(array, 0, valueOrDefault);
+									}
+									result = memoryStream.ToArray();
+								}
+							}
+							break;
+						}
+					}
+					catch (Exception ex) when ((ex is WebException || ex is IOException || ex is FormatException || ex is InvalidOperationException) ? true : false)
+					{
+						status = 0;
+						result = null;
+					}
+					Community.Runtime.Core.NextTick(() =>
+					{
+						callback(status, result, retryAfter);
+					});
+				});
+			}
+
+			private static HttpWebResponse SendRequest(HttpWebRequest request, byte[] payload)
+			{
+				HttpWebResponse httpWebResponse = default;
+				try
+				{
+					if (payload != null)
+					{
+						request.Method = "POST";
+						request.ContentType = "application/json";
+						request.ContentLength = payload.Length;
+						using Stream stream = request.GetRequestStream();
+						stream.Write(payload, 0, payload.Length);
+					}
+					return (HttpWebResponse)request.GetResponse();
+				}
+				catch (WebException ex) when (((Func<bool>)delegate
+				{
+					// Could not convert BlockContainer to single expression
+					httpWebResponse = ex.Response as HttpWebResponse;
+					return httpWebResponse != null;
+				}).Invoke())
+				{
+					return httpWebResponse;
+				}
 			}
 
 			public bool Load()
@@ -5457,11 +5862,22 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					LastTick = codefling.LastTick;
 					FetchedPlugins.Clear();
 					FetchedPlugins.AddRange(codefling.FetchedPlugins);
-					User = codefling.User;
-					if (User != null && !string.IsNullOrEmpty(User.AccessTokenEncoded))
+					User = null;
+					LoggedInUser user = codefling.User;
+					if (user != null && !user.PendingAccessToken && !string.IsNullOrEmpty(codefling.User.AccessTokenEncoded))
 					{
-						User.AccessToken = Encoding.UTF8.GetString(Convert.FromBase64String(User.AccessTokenEncoded));
-						_headers[AuthHeader.Key.ToString()] = string.Format(AuthHeader.Value, User.AccessToken);
+						try
+						{
+							codefling.User.AccessToken = Encoding.UTF8.GetString(Convert.FromBase64String(codefling.User.AccessTokenEncoded));
+							if (ValidToken(codefling.User.AccessToken))
+							{
+								User = codefling.User;
+							}
+						}
+						catch (FormatException)
+						{
+							Logger.Warn("Ignored an invalid saved access token.");
+						}
 					}
 					if ((DateTime.Now - new DateTime(codefling.LastTick)).TotalHours >= 24.0)
 					{
@@ -5471,8 +5887,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					Singleton.Puts("Loaded " + Type + " plugin metadata cache from file.");
 					Refresh();
 				}
-				catch
+				catch (Exception ex2)
 				{
+					Logger.Warn("Failed to load the " + Type + " vendor cache (" + ex2.GetType().Name + ").");
 					return false;
 				}
 				return true;
@@ -6427,9 +6844,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						cui.CreateClientImage(container, pair3, (vendorAuthenticated != null && vendorAuthenticated.IsLoggedIn) ? vendorAuthenticated.User.AvatarUrl : keyImage, "1 1 1 0.7", null, 0.91f, 0.96f, 1f, 1f, 0f, 0f, -65f, -20f);
 						cui.CreateText(container, pair3, "0.8 0.8 0.8 0.9", (vendorAuthenticated == null || !vendorAuthenticated.IsLoggedIn) ? "GUEST" : vendorAuthenticated.User?.DisplayName?.ToUpper(), 15, 0f, 0.9f, 1f, 1f, 0f, 0f, -100f, -30f, (TextAnchor)2, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 						cui.CreateText(container, pair3, "0.85 0.8 0.1 0.9", (vendorAuthenticated == null || !vendorAuthenticated.IsLoggedIn) ? "NOT AUTHENTICATED" : vendorAuthenticated.User?.Authority?.ToUpper(), 10, 0f, 0.9f, 1f, 1f, 0f, 0f, -100f, -50f, (TextAnchor)2, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-						if (vendorAuthenticated != null)
+						if (Singleton.HasAccess(ap.Player, "plugins.setup"))
 						{
-							cui.CreateProtectedButton(container, pair3, (vendorAuthenticated != null && vendorAuthenticated.IsLoggedIn) ? "0.55 0.1 0.1 1" : "0.1 0.55 0.1 1", (vendorAuthenticated != null && vendorAuthenticated.IsLoggedIn) ? "1 0.5 0.5 1" : "0.5 1 0.5 1", (vendorAuthenticated != null && vendorAuthenticated.IsLoggedIn) ? "LOG OUT" : "LOG IN", 10, null, 0.85f, 0.9f, 1f, 1f, 0f, 0f, -90f, -70f, "pluginbrowser.login", (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold);
+							LoggedInUser user = vendorAuthenticated.User;
+							if (user == null || !user.PendingAccessToken)
+							{
+								cui.CreateProtectedButton(container, pair3, vendorAuthenticated.IsLoggedIn ? "0.55 0.1 0.1 1" : "0.1 0.55 0.1 1", vendorAuthenticated.IsLoggedIn ? "1 0.5 0.5 1" : "0.5 1 0.5 1", vendorAuthenticated.IsLoggedIn ? "LOG OUT" : "LOG IN", 10, null, 0.85f, 0.9f, 1f, 1f, 0f, 0f, -90f, -70f, "pluginbrowser.login", (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold);
+							}
 						}
 					}
 					float num4 = 50f;
@@ -6583,7 +7004,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					DrawButton(cui, container, pair14, "selectedplugin_b3", "selectedplugin_b3_icn", "selectedplugin_b3_txt", "selectedplugin_b3_fade", 80f, ref offset);
 					DrawButton(cui, container, pair14, "selectedplugin_b4", "selectedplugin_b4_icn", "selectedplugin_b4_txt", "selectedplugin_b4_fade", 75f, ref offset);
 					DrawButton(cui, container, pair14, "selectedplugin_b5", "selectedplugin_b5_icn", "selectedplugin_b5_txt", "selectedplugin_b5_fade", 80f, ref offset);
-					if (vendor is IVendorAuthenticated { IsLoggedIn: not false, User: not null } vendorAuthenticated2 && vendorAuthenticated2.User.PendingAccessToken)
+					if (vendor is IVendorAuthenticated { User: { PendingAccessToken: not false } } vendorAuthenticated2 && vendorAuthenticated2.IsPairingFor(ap) && Singleton.HasAccess(ap.Player, "plugins.setup"))
 					{
 						CUI.Pair<string, CuiElement> pair21 = cui.CreatePanel(container, panel, "0.15 0.15 0.15 0.35", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, blur: true);
 						cui.CreatePanel(container, pair21, "0 0 0 0.9");
@@ -6592,26 +7013,25 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						cui.CreateText(container, panel, "1 1 1 1", "Authorization code:", 13, 0.51f, 1f, 0f, 0.35f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 						cui.CreateProtectedButton(container, panel, Cache.CUI.BlankColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, "pluginbrowser.closelogin", (TextAnchor)4);
 						CUI.Pair<string, CuiElement> pair22 = cui.CreatePanel(container, panel, "1 1 1 1", null, 0.12f, 0.45f, 0.2f, 0.8f);
-						string text2 = string.Format(vendorAuthenticated2.AuthRequestEndpoint, vendorAuthenticated2.AuthCode);
-						cui.CreateQRCodeImage(container, pair22, text2, vendor.Logo, "0 0 0 1", "1 1 1 1", 15, transparent: true, quietZones: true, "0 0 0 1");
+						cui.CreateQRCodeImage(container, pair22, string.Format(vendorAuthenticated2.AuthRequestEndpoint, vendorAuthenticated2.AuthCode), vendor.Logo, "0 0 0 1", "1 1 1 1", 15, transparent: true, quietZones: true, "0 0 0 1");
 						CUI.Pair<string, CuiElement> pair23 = cui.CreatePanel(container, panel, "0.1 0.1 0.1 1", null, 0.5f, 0.8f, 0.21f, 0.31f);
 						CUI.Pair<string, CuiElement> pair24 = cui.CreatePanel(container, pair22, "0.1 0.1 0.1 0.8", null, 0f, 1f, 0f, 0f, 0f, 0f, -20f);
 						cui.CreateInputField(container, pair24, "1 1 1 1", vendorAuthenticated2.AuthRequestEndpointPreview, 9, 0, readOnly: true, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, null, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, autoFocus: false, hudMenuInput: false, (LineType)0);
 						cui.CreateInputField(container, pair23, "1 1 1 1", vendorAuthenticated2.AuthCode, 30, 0, readOnly: true, 0.05f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, null, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedBold, autoFocus: false, hudMenuInput: false, (LineType)0);
 						if (vendorAuthenticated2.User.PendingResult != LoggedInUser.RequestResult.None)
 						{
-							string text3 = string.Empty;
+							string text2 = string.Empty;
 							string color = string.Empty;
 							LoggedInUser.RequestResult pendingResult = vendorAuthenticated2.User.PendingResult;
 							if (pendingResult == LoggedInUser.RequestResult.Complete)
 							{
-								text3 = "checkmark";
+								text2 = "checkmark";
 								color = "#81c740";
 							}
-							if (!string.IsNullOrEmpty(text3))
+							if (!string.IsNullOrEmpty(text2))
 							{
 								cui.CreatePanel(container, pair22, "0 0 0 0.4", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, blur: true);
-								cui.CreateImage(container, pair22, text3, color, null, 0.3f, 0.7f, 0.3f, 0.7f);
+								cui.CreateImage(container, pair22, text2, color, null, 0.3f, 0.7f, 0.3f, 0.7f);
 							}
 						}
 					}
@@ -10318,7 +10738,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		PlayerSession playerSession = Singleton.GetPlayerSession(ArgEx.Player(arg));
 		Tab selectedTab = playerSession.SelectedTab;
 		PluginsTab.Vendor vendor = PluginsTab.GetVendor(playerSession.GetStorage(selectedTab, "vendor", PluginsTab.VendorTypes.Installed));
-		string pluginName = arg.GetString(0, "").Replace("\"", string.Empty);
+		string pluginName = arg.GetFullString().Replace("\"", string.Empty);
 		PluginsTab.Plugin plugin = vendor.FetchedPlugins.FirstOrDefault((PluginsTab.Plugin x) => Path.GetFileNameWithoutExtension(x.File).Equals(pluginName, StringComparison.CurrentCultureIgnoreCase));
 		try
 		{
@@ -10473,73 +10893,52 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[ProtectedCommand("pluginbrowser.login")]
 	private void PluginBrowserLogin(Arg args)
 	{
-		PlayerSession ap = Singleton.GetPlayerSession(ArgEx.Player(args));
-		BasePlayer player = ap.Player;
-		Tab tab = Singleton.GetTab(ap.Player);
-		PluginsTab.Vendor vendor = PluginsTab.GetVendor(ap.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed));
+		BasePlayer player = ArgEx.Player(args);
+		if ((Object)(object)player == (Object)null || !Singleton.HasAccess(player, "plugins.setup"))
+		{
+			return;
+		}
+		PlayerSession session = Singleton.GetPlayerSession(player);
+		Tab tab = Singleton.GetTab(player);
+		if (!session.IsInMenu || tab == null)
+		{
+			return;
+		}
+		PluginsTab.Vendor vendor = PluginsTab.GetVendor(session.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed));
 		PluginsTab.IVendorAuthenticated auth = vendor as PluginsTab.IVendorAuthenticated;
 		if (auth == null)
 		{
 			return;
 		}
-		if (auth.IsLoggedIn)
+		if (!auth.IsLoggedIn)
 		{
-			tab.CreateDialog("Are you sure you want to log out?", (PlayerSession playerSession) =>
-			{
-				auth.User = null;
-				vendor.Refresh();
-				Singleton.Draw(player);
-				if (vendor is PluginsTab.IVendorStored vendorStored)
-				{
-					vendorStored.Save();
-				}
-			});
+			auth.BeginPairing(session);
+			return;
 		}
-		else
+		PluginsTab.LoggedInUser user = auth.User;
+		tab.CreateDialog("Are you sure you want to log out?", (PlayerSession currentSession) =>
 		{
-			auth.AuthCode = StringEx.Truncate(Guid.NewGuid().ToString(), 6).ToUpper();
-			auth.User = new PluginsTab.LoggedInUser
+			if (currentSession == session && currentSession.IsInMenu && auth.User == user && Singleton.HasAccess(player, "plugins.setup"))
 			{
-				PendingAccessToken = true
-			};
-			string currentCode = auth.AuthCode;
-			CorePlugin core = Community.Runtime.Core;
-			core.timer.In(5f, () =>
-			{
-				if (currentCode != auth.AuthCode || !ap.IsInMenu)
-				{
-					auth.User = null;
-				}
-				else
-				{
-					auth.Validate(ap, () =>
-					{
-						core.timer.In(2f, () =>
-						{
-							auth.User.PendingAccessToken = false;
-							Singleton.Draw(player);
-							auth.RefreshUser(ap);
-						});
-						Singleton.Draw(player);
-					});
-				}
-			});
-		}
-		Singleton.Draw(ArgEx.Player(args));
+				auth.SignOut();
+			}
+		});
+		Singleton.Draw(player);
 	}
 
 	[Conditional("!MINIMAL")]
 	[ProtectedCommand("pluginbrowser.closelogin")]
 	private void PluginBrowserCloseLogin(Arg args)
 	{
-		PlayerSession playerSession = Singleton.GetPlayerSession(ArgEx.Player(args));
-		Tab tab = Singleton.GetTab(playerSession.Player);
-		PluginsTab.Vendor vendor = PluginsTab.GetVendor(playerSession.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed));
-		if (vendor is PluginsTab.IVendorAuthenticated vendorAuthenticated)
+		BasePlayer val = ArgEx.Player(args);
+		if (!((Object)(object)val == (Object)null) && Singleton.HasAccess(val, "plugins.setup"))
 		{
-			vendorAuthenticated.User = null;
-			vendorAuthenticated.ValidationTimer?.Destroy();
-			Singleton.Draw(ArgEx.Player(args));
+			PlayerSession playerSession = Singleton.GetPlayerSession(val);
+			Tab tab = Singleton.GetTab(val);
+			if (tab != null && PluginsTab.GetVendor(playerSession.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed)) is PluginsTab.IVendorAuthenticated vendorAuthenticated)
+			{
+				vendorAuthenticated.CancelPairing(playerSession);
+			}
 		}
 	}
 
@@ -10939,59 +11338,59 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_1061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_070c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0452: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e51: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0580: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0604: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1442: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1127: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0494: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f59: Unknown result type (might be due to invalid IL or missing references)
-		//IL_10a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1484: Unknown result type (might be due to invalid IL or missing references)
-		//IL_077d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c41: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0872: Unknown result type (might be due to invalid IL or missing references)
-		//IL_053a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0830: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e0f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0dcd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0fdd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0d49: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f2f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d4f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_055c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_087e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fe3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0488: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e3f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f6b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0729: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b6f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0806: Unknown result type (might be due to invalid IL or missing references)
+		//IL_051c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d13: Unknown result type (might be due to invalid IL or missing references)
+		//IL_078e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0cd7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eb7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c5f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_064c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ef3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_10d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0688: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0610: Unknown result type (might be due to invalid IL or missing references)
 		//IL_101f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_122f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c83: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0646: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ed5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a81: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f9b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e93: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0dc7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_105b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e7b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0598: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0d8b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0968: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f17: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1505: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_10e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0737: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0921: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0aac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0993: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0bf5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0bfa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c0e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c9b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e03: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1364: Unknown result type (might be due to invalid IL or missing references)
+		//IL_132b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fa7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0842: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_074e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a04: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0909: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b29: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b2e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b42: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -11008,28 +11407,24 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 			case 3567215104u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag23 = flag;
-				Arg args6 = ((!flag23) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag23)
+				bool flag11 = obj is Arg || obj == null;
+				Arg args7 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag11)
 				{
-					CallAction(args6);
+					CallAction(args7);
 					return null;
 				}
 				break;
 			}
 			case 1360889797u:
 			{
-				bool flag = ((obj is ItemContainer || obj == null) ? true : false);
-				bool flag19 = flag;
-				ItemContainer container = ((!flag19) ? ((ItemContainer)null) : ((ItemContainer)(obj ?? null)));
-				flag = ((obj2 is Item || obj2 == null) ? true : false);
-				bool flag20 = flag;
-				Item item = ((!flag20) ? ((Item)null) : ((Item)(obj2 ?? null)));
-				flag = ((obj3 is int || obj3 == null) ? true : false);
-				bool flag21 = flag;
-				int targetPos = (flag21 ? ((int)(obj3 ?? ((object)0))) : 0);
-				if (flag19 & flag20 & flag21)
+				bool flag26 = obj is ItemContainer || obj == null;
+				ItemContainer container = ((!flag26) ? ((ItemContainer)null) : ((ItemContainer)(obj ?? null)));
+				bool flag27 = obj2 is Item || obj2 == null;
+				Item item = ((!flag27) ? ((Item)null) : ((Item)(obj2 ?? null)));
+				bool flag28 = obj3 is int || obj3 == null;
+				int targetPos = (flag28 ? ((int)(obj3 ?? ((object)0))) : 0);
+				if (flag26 & flag27 & flag28)
 				{
 					return CanAcceptItem(container, item, targetPos);
 				}
@@ -11037,236 +11432,206 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 3983791359u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag72 = flag;
-				BasePlayer player7 = ((!flag72) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag72)
+				bool flag49 = obj is BasePlayer || obj == null;
+				BasePlayer player5 = ((!flag49) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag49)
 				{
-					return CanAccess(player7);
+					return CanAccess(player5);
 				}
 				break;
 			}
 			case 2673788810u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag31 = flag;
-				Arg args10 = ((!flag31) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag31)
+				bool flag21 = obj is Arg || obj == null;
+				Arg args9 = ((!flag21) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag21)
 				{
-					ChangeColumnPage(args10);
+					ChangeColumnPage(args9);
 					return null;
 				}
 				break;
 			}
 			case 2461250588u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag32 = flag;
-				Arg arg12 = ((!flag32) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag32)
+				bool flag44 = obj is Arg || obj == null;
+				Arg arg13 = ((!flag44) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag44)
 				{
-					ChangePage(arg12);
+					ChangePage(arg13);
 					return null;
 				}
 				break;
 			}
 			case 2281510334u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg args2 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag8 = obj is Arg || obj == null;
+				Arg args4 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag8)
 				{
-					ChangeTab(args2);
+					ChangeTab(args4);
 					return null;
 				}
 				break;
 			}
 			case 4151318565u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag56 = flag;
-				Arg args17 = ((!flag56) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag56)
+				bool flag70 = obj is Arg || obj == null;
+				Arg args18 = ((!flag70) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag70)
 				{
-					CloseUI(args17);
+					CloseUI(args18);
 					return null;
 				}
 				break;
 			}
 			case 1294167637u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag42 = flag;
-				Arg args12 = ((!flag42) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag42)
+				bool flag22 = obj is Arg || obj == null;
+				Arg args10 = ((!flag22) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag22)
 				{
-					Dialog_Action(args12);
+					Dialog_Action(args10);
 					return null;
 				}
 				break;
 			}
 			case 821139628u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag14 = flag;
-				Arg args3 = ((!flag14) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag14)
+				bool flag66 = obj is Arg || obj == null;
+				Arg args17 = ((!flag66) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag66)
 				{
-					DownloadPlugin(args3);
+					DownloadPlugin(args17);
 					return null;
 				}
 				break;
 			}
 			case 3944193281u:
 			{
-				bool flag = ((obj is BaseMountable || obj == null) ? true : false);
-				bool flag25 = flag;
-				BaseMountable mountable = ((!flag25) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag26 = flag;
-				BasePlayer player = ((!flag26) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag25 & flag26)
+				bool flag47 = obj is BaseMountable || obj == null;
+				BaseMountable mountable = ((!flag47) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
+				bool flag48 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player4 = ((!flag48) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				if (flag47 & flag48)
 				{
-					return IModBackpack(mountable, player);
+					return IModBackpack(mountable, player4);
 				}
 				break;
 			}
 			case 513549662u:
 			{
-				bool flag = ((obj is BaseMountable || obj == null) ? true : false);
-				bool flag57 = flag;
-				BaseMountable mountable2 = ((!flag57) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag58 = flag;
-				BasePlayer player5 = ((!flag58) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag57 & flag58)
+				bool flag67 = obj is BaseMountable || obj == null;
+				BaseMountable mountable2 = ((!flag67) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
+				bool flag68 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player7 = ((!flag68) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				if (flag67 & flag68)
 				{
-					return IValidDismountPosition(mountable2, player5);
+					return IValidDismountPosition(mountable2, player7);
 				}
 				break;
 			}
 			case 2737989634u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag6 = flag;
-				Arg arg3 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag6)
+				bool flag69 = obj is Arg || obj == null;
+				Arg arg17 = ((!flag69) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag69)
 				{
-					ItemClear(arg3);
+					ItemClear(arg17);
 					return null;
 				}
 				break;
 			}
 			case 3688899430u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag60 = flag;
-				Arg arg18 = ((!flag60) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag60)
+				bool flag64 = obj is Arg || obj == null;
+				Arg arg16 = ((!flag64) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag64)
 				{
-					ItemCreate(arg18);
+					ItemCreate(arg16);
 					return null;
 				}
 				break;
 			}
 			case 4063786885u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag16 = flag;
-				Arg arg9 = ((!flag16) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag16)
+				bool flag41 = obj is Arg || obj == null;
+				Arg arg11 = ((!flag41) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag41)
 				{
-					ItemSetting(arg9);
+					ItemSetting(arg11);
 					return null;
 				}
 				break;
 			}
 			case 347761043u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag18 = flag;
-				Arg args4 = ((!flag18) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag18)
+				bool flag42 = obj is Arg || obj == null;
+				Arg args14 = ((!flag42) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag42)
 				{
-					Maximize(args4);
+					Maximize(args14);
 					return null;
 				}
 				break;
 			}
 			case 2026747374u:
 			{
-				bool flag = ((obj is BaseMountable || obj == null) ? true : false);
-				bool flag53 = flag;
-				BaseMountable entity = ((!flag53) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag54 = flag;
-				BasePlayer player4 = ((!flag54) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag53 & flag54)
+				bool flag51 = obj is BaseMountable || obj == null;
+				BaseMountable entity = ((!flag51) ? ((BaseMountable)null) : ((BaseMountable)(obj ?? null)));
+				bool flag52 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player6 = ((!flag52) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				if (flag51 & flag52)
 				{
-					OnEntityDismounted(entity, player4);
+					OnEntityDismounted(entity, player6);
 					return null;
 				}
 				break;
 			}
 			case 1582967250u:
 			{
-				bool flag = ((obj is BaseEntity || obj == null) ? true : false);
-				bool flag36 = flag;
-				BaseEntity ent = ((!flag36) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag37 = flag;
-				BasePlayer player2 = ((!flag37) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				flag = ((obj3 is uint || obj3 == null) ? true : false);
-				bool flag38 = flag;
-				uint id = (flag38 ? ((uint)(obj3 ?? ((object)0u))) : 0u);
-				flag = ((obj4 is string || obj4 == null) ? true : false);
-				bool flag39 = flag;
-				string debugName = (flag39 ? ((string)(obj4 ?? null)) : null);
-				flag = ((obj5 is float || obj5 == null) ? true : false);
-				bool flag40 = flag;
-				float maximumDistance = (flag40 ? ((float)(obj5 ?? ((object)0f))) : 0f);
-				if (flag36 & flag37 & flag38 & flag39 & flag40)
+				bool flag31 = obj is BaseEntity || obj == null;
+				BaseEntity ent2 = ((!flag31) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
+				bool flag32 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player2 = ((!flag32) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				bool flag33 = obj3 is uint || obj3 == null;
+				uint id2 = (flag33 ? ((uint)(obj3 ?? ((object)0u))) : 0u);
+				bool flag34 = obj4 is string || obj4 == null;
+				string debugName2 = (flag34 ? ((string)(obj4 ?? null)) : null);
+				bool flag35 = obj5 is float || obj5 == null;
+				float maximumDistance2 = (flag35 ? ((float)(obj5 ?? ((object)0f))) : 0f);
+				if (flag31 & flag32 & flag33 & flag34 & flag35)
 				{
-					return OnEntityDistanceCheck(ent, player2, id, debugName, maximumDistance);
+					return OnEntityDistanceCheck(ent2, player2, id2, debugName2, maximumDistance2);
 				}
 				break;
 			}
 			case 3141188509u:
 			{
-				bool flag = ((obj is BaseEntity || obj == null) ? true : false);
-				bool flag45 = flag;
-				BaseEntity ent2 = ((!flag45) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
-				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
-				bool flag46 = flag;
-				BasePlayer player3 = ((!flag46) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				flag = ((obj3 is uint || obj3 == null) ? true : false);
-				bool flag47 = flag;
-				uint id2 = (flag47 ? ((uint)(obj3 ?? ((object)0u))) : 0u);
-				flag = ((obj4 is string || obj4 == null) ? true : false);
-				bool flag48 = flag;
-				string debugName2 = (flag48 ? ((string)(obj4 ?? null)) : null);
-				flag = ((obj5 is float || obj5 == null) ? true : false);
-				bool flag49 = flag;
-				float maximumDistance2 = (flag49 ? ((float)(obj5 ?? ((object)0f))) : 0f);
-				if (flag45 & flag46 & flag47 & flag48 & flag49)
+				bool flag16 = obj is BaseEntity || obj == null;
+				BaseEntity ent = ((!flag16) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
+				bool flag17 = obj2 is BasePlayer || obj2 == null;
+				BasePlayer player = ((!flag17) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
+				bool flag18 = obj3 is uint || obj3 == null;
+				uint id = (flag18 ? ((uint)(obj3 ?? ((object)0u))) : 0u);
+				bool flag19 = obj4 is string || obj4 == null;
+				string debugName = (flag19 ? ((string)(obj4 ?? null)) : null);
+				bool flag20 = obj5 is float || obj5 == null;
+				float maximumDistance = (flag20 ? ((float)(obj5 ?? ((object)0f))) : 0f);
+				if (flag16 & flag17 & flag18 & flag19 & flag20)
 				{
-					return OnEntityVisibilityCheck(ent2, player3, id2, debugName2, maximumDistance2);
+					return OnEntityVisibilityCheck(ent, player, id, debugName, maximumDistance);
 				}
 				break;
 			}
 			case 3088593565u:
 			{
-				bool flag = ((obj is string || obj == null) ? true : false);
-				bool flag8 = flag;
-				string condition = (flag8 ? ((string)(obj ?? null)) : null);
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag9 = flag;
-				string stackTrace = (flag9 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is LogType || obj3 == null) ? true : false);
-				bool flag10 = flag;
-				LogType type = (LogType)(flag10 ? ((int)(LogType)(obj3 ?? ((object)(LogType)0))) : 0);
-				if (flag8 & flag9 & flag10)
+				bool flag3 = obj is string || obj == null;
+				string condition = (flag3 ? ((string)(obj ?? null)) : null);
+				bool flag4 = obj2 is string || obj2 == null;
+				string stackTrace = (flag4 ? ((string)(obj2 ?? null)) : null);
+				bool flag5 = obj3 is LogType || obj3 == null;
+				LogType type = (LogType)(flag5 ? ((int)(LogType)(obj3 ?? ((object)(LogType)0))) : 0);
+				if (flag3 & flag4 & flag5)
 				{
 					OnLog(condition, stackTrace, type);
 					return null;
@@ -11275,22 +11640,20 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 72085565u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag70 = flag;
-				BasePlayer player6 = ((!flag70) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag70)
+				bool flag46 = obj is BasePlayer || obj == null;
+				BasePlayer player3 = ((!flag46) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag46)
 				{
-					OnPlayerDisconnected(player6);
+					OnPlayerDisconnected(player3);
 					return null;
 				}
 				break;
 			}
 			case 78733418u:
 			{
-				bool flag = ((obj is PlayerLoot || obj == null) ? true : false);
-				bool flag27 = flag;
-				PlayerLoot loot = ((!flag27) ? ((PlayerLoot)null) : ((PlayerLoot)(obj ?? null)));
-				if (flag27)
+				bool flag15 = obj is PlayerLoot || obj == null;
+				PlayerLoot loot = ((!flag15) ? ((PlayerLoot)null) : ((PlayerLoot)(obj ?? null)));
+				if (flag15)
 				{
 					OnPlayerLootEnd(loot);
 					return null;
@@ -11299,10 +11662,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 3051933177u:
 			{
-				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag35 = flag;
-				RustPlugin plugin2 = (flag35 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag35)
+				bool flag45 = obj is RustPlugin || obj == null;
+				RustPlugin plugin2 = (flag45 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag45)
 				{
 					OnPluginLoaded(plugin2);
 					return null;
@@ -11311,10 +11673,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 1250294368u:
 			{
-				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag3 = flag;
-				RustPlugin plugin = (flag3 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag3)
+				bool flag37 = obj is RustPlugin || obj == null;
+				RustPlugin plugin = (flag37 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag37)
 				{
 					OnPluginUnloaded(plugin);
 					return null;
@@ -11323,58 +11684,53 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 1575289668u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag52 = flag;
-				Arg args15 = ((!flag52) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag52)
+				bool flag7 = obj is Arg || obj == null;
+				Arg args3 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag7)
 				{
-					PluginBrowserChange(args15);
+					PluginBrowserChange(args3);
 					return null;
 				}
 				break;
 			}
 			case 1844112064u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag24 = flag;
-				Arg args7 = ((!flag24) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag24)
+				bool flag40 = obj is Arg || obj == null;
+				Arg args13 = ((!flag40) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag40)
 				{
-					PluginBrowserChangeSelected(args7);
+					PluginBrowserChangeSelected(args13);
 					return null;
 				}
 				break;
 			}
 			case 2086187233u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag71 = flag;
-				Arg args18 = ((!flag71) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag71)
+				bool flag9 = obj is Arg || obj == null;
+				Arg args5 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag9)
 				{
-					PluginBrowserChangeSetting(args18);
+					PluginBrowserChangeSetting(args5);
 					return null;
 				}
 				break;
 			}
 			case 3307168968u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag28 = flag;
-				Arg args8 = ((!flag28) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag28)
+				bool flag65 = obj is Arg || obj == null;
+				Arg args16 = ((!flag65) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag65)
 				{
-					PluginBrowserCloseLogin(args8);
+					PluginBrowserCloseLogin(args16);
 					return null;
 				}
 				break;
 			}
 			case 3216105140u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag12 = flag;
-				Arg arg6 = ((!flag12) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag12)
+				bool flag24 = obj is Arg || obj == null;
+				Arg arg6 = ((!flag24) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag24)
 				{
 					PluginBrowserDeselectPlugin(arg6);
 					return null;
@@ -11383,178 +11739,163 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 2137231192u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag51 = flag;
-				Arg args14 = ((!flag51) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag51)
+				bool flag10 = obj is Arg || obj == null;
+				Arg args6 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag10)
 				{
-					PluginBrowserInteract(args14);
+					PluginBrowserInteract(args6);
 					return null;
 				}
 				break;
 			}
 			case 3865171010u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag30 = flag;
-				Arg args9 = ((!flag30) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag30)
+				bool flag50 = obj is Arg || obj == null;
+				Arg args15 = ((!flag50) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag50)
 				{
-					PluginBrowserLogin(args9);
+					PluginBrowserLogin(args15);
 					return null;
 				}
 				break;
 			}
 			case 1494079807u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag7 = flag;
-				Arg arg4 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag7)
+				bool flag30 = obj is Arg || obj == null;
+				Arg arg8 = ((!flag30) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag30)
 				{
-					PluginBrowserPage(arg4);
+					PluginBrowserPage(arg8);
 					return null;
 				}
 				break;
 			}
 			case 1286856038u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag55 = flag;
-				Arg args16 = ((!flag55) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag55)
+				bool flag12 = obj is Arg || obj == null;
+				Arg args8 = ((!flag12) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag12)
 				{
-					PluginBrowserRefreshVendor(args16);
+					PluginBrowserRefreshVendor(args8);
 					return null;
 				}
 				break;
 			}
 			case 3027434422u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag22 = flag;
-				Arg args5 = ((!flag22) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag22)
+				bool flag6 = obj is Arg || obj == null;
+				Arg args2 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag6)
 				{
-					PluginBrowserSearch(args5);
+					PluginBrowserSearch(args2);
 					return null;
 				}
 				break;
 			}
 			case 1756664287u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag5 = flag;
-				Arg arg2 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag5)
+				bool flag39 = obj is Arg || obj == null;
+				Arg arg10 = ((!flag39) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag39)
 				{
-					PluginBrowserSelectPlugin(arg2);
+					PluginBrowserSelectPlugin(arg10);
 					return null;
 				}
 				break;
 			}
 			case 1200368304u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag43 = flag;
-				Arg arg15 = ((!flag43) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag43)
+				bool flag14 = obj is Arg || obj == null;
+				Arg arg4 = ((!flag14) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag14)
 				{
-					ProfilerClear(arg15);
+					ProfilerClear(arg4);
 					return null;
 				}
 				break;
 			}
 			case 4013736532u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag33 = flag;
-				Arg arg13 = ((!flag33) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag33)
+				bool flag2 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag2)
 				{
-					ProfilerExport(arg13);
+					ProfilerExport(arg2);
 					return null;
 				}
 				break;
 			}
 			case 1104199099u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag13 = flag;
-				Arg arg7 = ((!flag13) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag13)
+				bool flag53 = obj is Arg || obj == null;
+				Arg arg14 = ((!flag53) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag53)
 				{
-					ProfilerImport(arg7);
+					ProfilerImport(arg14);
 					return null;
 				}
 				break;
 			}
 			case 939287569u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag59 = flag;
-				Arg arg17 = ((!flag59) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag59)
+				bool flag36 = obj is Arg || obj == null;
+				Arg arg9 = ((!flag36) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag36)
 				{
-					ProfilerPreviewClose(arg17);
+					ProfilerPreviewClose(arg9);
 					return null;
 				}
 				break;
 			}
 			case 1496207780u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag34 = flag;
-				Arg arg14 = ((!flag34) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag34)
+				bool flag23 = obj is Arg || obj == null;
+				Arg arg5 = ((!flag23) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag23)
 				{
-					ProfilerSelect(arg14);
+					ProfilerSelect(arg5);
 					return null;
 				}
 				break;
 			}
 			case 3990053074u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag17 = flag;
-				Arg arg10 = ((!flag17) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag17)
+				bool flag71 = obj is Arg || obj == null;
+				Arg arg18 = ((!flag71) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag71)
 				{
-					ProfilerSelectCall(arg10);
+					ProfilerSelectCall(arg18);
 					return null;
 				}
 				break;
 			}
 			case 3314827294u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag11 = flag;
-				Arg arg5 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag11)
+				bool flag54 = obj is Arg || obj == null;
+				Arg arg15 = ((!flag54) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag54)
 				{
-					ProfilerToggle(arg5);
+					ProfilerToggle(arg15);
 					return null;
 				}
 				break;
 			}
 			case 2369215218u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag50 = flag;
-				Arg args13 = ((!flag50) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag50)
+				bool flag38 = obj is Arg || obj == null;
+				Arg args12 = ((!flag38) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag38)
 				{
-					ShowConfig(args13);
+					ShowConfig(args12);
 					return null;
 				}
 				break;
 			}
 			case 1081434670u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag41 = flag;
-				Arg args11 = ((!flag41) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag41)
+				bool flag25 = obj is Arg || obj == null;
+				Arg args11 = ((!flag25) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag25)
 				{
 					ShowProfiler(args11);
 					return null;
@@ -11563,76 +11904,65 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			case 1462991777u:
 			{
-				bool flag = ((obj is CUI || obj == null) ? true : false);
-				bool flag61 = flag;
-				CUI cui = (flag61 ? ((CUI)(obj ?? ((object)default(CUI)))) : default(CUI));
-				flag = ((obj2 is CuiElementContainer || obj2 == null) ? true : false);
-				bool flag62 = flag;
-				CuiElementContainer container2 = (flag62 ? ((CuiElementContainer)(obj2 ?? null)) : null);
-				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag63 = flag;
-				string parent = (flag63 ? ((string)(obj3 ?? null)) : null);
-				flag = ((obj4 is string || obj4 == null) ? true : false);
-				bool flag64 = flag;
-				string text = (flag64 ? ((string)(obj4 ?? null)) : null);
-				flag = ((obj5 is string || obj5 == null) ? true : false);
-				bool flag65 = flag;
-				string command = (flag65 ? ((string)(obj5 ?? null)) : null);
-				flag = ((obj6 is float || obj6 == null) ? true : false);
-				bool flag66 = flag;
-				float width = (flag66 ? ((float)(obj6 ?? ((object)0f))) : 0f);
-				flag = ((obj7 is float || obj7 == null) ? true : false);
-				bool flag67 = flag;
-				float offset = (flag67 ? ((float)(obj7 ?? ((object)0f))) : 0f);
-				if (flag61 & flag62 & flag63 & flag64 & flag65 & flag66 & flag67)
+				bool flag55 = obj is CUI || obj == null;
+				CUI cui = (flag55 ? ((CUI)(obj ?? ((object)default(CUI)))) : default(CUI));
+				bool flag56 = obj2 is CuiElementContainer || obj2 == null;
+				CuiElementContainer container2 = (flag56 ? ((CuiElementContainer)(obj2 ?? null)) : null);
+				bool flag57 = obj3 is string || obj3 == null;
+				string parent = (flag57 ? ((string)(obj3 ?? null)) : null);
+				bool flag58 = obj4 is string || obj4 == null;
+				string text = (flag58 ? ((string)(obj4 ?? null)) : null);
+				bool flag59 = obj5 is string || obj5 == null;
+				string command = (flag59 ? ((string)(obj5 ?? null)) : null);
+				bool flag60 = obj6 is float || obj6 == null;
+				float width = (flag60 ? ((float)(obj6 ?? ((object)0f))) : 0f);
+				bool flag61 = obj7 is float || obj7 == null;
+				float offset = (flag61 ? ((float)(obj7 ?? ((object)0f))) : 0f);
+				if (flag55 & flag56 & flag57 & flag58 & flag59 & flag60 & flag61)
 				{
-					TabButton(cui, container2, parent, text, command, width, offset, obj8 is bool flag68 && flag68, obj9 is bool flag69 && flag69);
+					TabButton(cui, container2, parent, text, command, width, offset, obj8 is bool flag62 && flag62, obj9 is bool flag63 && flag63);
 					return null;
 				}
 				break;
 			}
 			case 1709151936u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag44 = flag;
-				Arg arg16 = ((!flag44) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag44)
+				bool flag43 = obj is Arg || obj == null;
+				Arg arg12 = ((!flag43) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag43)
 				{
-					TimelineClear(arg16);
+					TimelineClear(arg12);
 					return null;
 				}
 				break;
 			}
 			case 1042898331u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag29 = flag;
-				Arg arg11 = ((!flag29) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				bool flag29 = obj is Arg || obj == null;
+				Arg arg7 = ((!flag29) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag29)
 				{
-					TimelineMode(arg11);
+					TimelineMode(arg7);
 					return null;
 				}
 				break;
 			}
 			case 1088631640u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag15 = flag;
-				Arg arg8 = ((!flag15) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag15)
+				bool flag13 = obj is Arg || obj == null;
+				Arg arg3 = ((!flag13) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag13)
 				{
-					TimelineToggle(arg8);
+					TimelineToggle(arg3);
 					return null;
 				}
 				break;
 			}
 			case 1322676003u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					UpdateVendor(arg);
 					return null;

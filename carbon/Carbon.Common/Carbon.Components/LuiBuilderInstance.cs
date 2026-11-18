@@ -952,6 +952,10 @@ public struct LuiBuilderInstance : IDisposable
 		{
 			this.WriteFieldComma("trackColor", scroll.trackColor);
 		}
+		if (scroll.fadeDuration.HasValue)
+		{
+			this.WriteFieldComma("fadeDuration", scroll.fadeDuration.Value);
+		}
 	}
 
 	internal unsafe int WriteUtf8To(Span<byte> destination)

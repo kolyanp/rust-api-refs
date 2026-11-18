@@ -15,13 +15,13 @@ public class Category_Vehicle
 	public class Vehicle_HelicopterTurret
 	{
 		[Patch("OnHelicopterTarget", "OnHelicopterTarget", "HelicopterTurret", "SetTarget", new string[] { "BaseCombatEntity" })]
-		[Identifier("d2662e9126f44578a46cb4c802ec7e70")]
+		[Identifier("615d2328d5604925ab3cd9e6b833956e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "HelicopterTurret", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_HelicopterTurret_d2662e9126f44578a46cb4c802ec7e70 : Patch
+		public class Vehicle_HelicopterTurret_615d2328d5604925ab3cd9e6b833956e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -56,13 +56,13 @@ public class Category_Vehicle
 	public class Vehicle_PatrolHelicopterAI
 	{
 		[Patch("CanHelicopterStrafeTarget", "CanHelicopterStrafeTarget", "PatrolHelicopterAI", "ValidRocketTarget", new string[] { "BasePlayer" })]
-		[Identifier("e2c54e71490e4ec39282387cd601ee49")]
+		[Identifier("a60798fd1e63495a850d245f29ab53dd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_e2c54e71490e4ec39282387cd601ee49 : Patch
+		public class Vehicle_PatrolHelicopterAI_a60798fd1e63495a850d245f29ab53dd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -100,13 +100,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanHelicopterUseNapalm", "CanHelicopterUseNapalm", "PatrolHelicopterAI", "CanUseNapalm", new string[] { })]
-		[Identifier("c5e2501fb9a64840a76f4f161aed1f0b")]
+		[Identifier("246d64f28e754ec996795ece36c38c9c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_c5e2501fb9a64840a76f4f161aed1f0b : Patch
+		public class Vehicle_PatrolHelicopterAI_246d64f28e754ec996795ece36c38c9c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -142,13 +142,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanHelicopterStrafe", "CanHelicopterStrafe", "PatrolHelicopterAI", "CanStrafe", new string[] { })]
-		[Identifier("0a87343ac41c4092925235328311bdf2")]
+		[Identifier("fa9d457835ab467ba2de11ea3b9afcf2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_0a87343ac41c4092925235328311bdf2 : Patch
+		public class Vehicle_PatrolHelicopterAI_fa9d457835ab467ba2de11ea3b9afcf2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -184,14 +184,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanHelicopterTarget", "CanHelicopterTarget", "PatrolHelicopterAI", "PlayerVisible", new string[] { "BasePlayer" })]
-		[Identifier("7571b18be96043578c1e0c06c93cb307")]
+		[Identifier("9caa372c5aab4da08d13411b2f6cc7ce")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Parameter("ply", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_7571b18be96043578c1e0c06c93cb307 : Patch
+		public class Vehicle_PatrolHelicopterAI_9caa372c5aab4da08d13411b2f6cc7ce : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -229,7 +229,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterStrafeEnter", "OnHelicopterStrafeEnter", "PatrolHelicopterAI", "StartStrafe", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("1ae90f164ab043fcaa60fb0d767d7af4")]
+		[Identifier("d2e9aadc497e4834aa613be0df669d67")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Parameter("position", "UnityEngine.Vector3", false)]
@@ -237,7 +237,7 @@ public class Category_Vehicle
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_1ae90f164ab043fcaa60fb0d767d7af4 : Patch
+		public class Vehicle_PatrolHelicopterAI_d2e9aadc497e4834aa613be0df669d67 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -275,13 +275,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterRetire", "OnHelicopterRetire", "PatrolHelicopterAI", "Retire", new string[] { })]
-		[Identifier("5d37f76d85214734a15367a174d9d794")]
+		[Identifier("fecdb297878642a3a41b036b263b984d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopterAI", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_PatrolHelicopterAI_5d37f76d85214734a15367a174d9d794 : Patch
+		public class Vehicle_PatrolHelicopterAI_fecdb297878642a3a41b036b263b984d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -314,13 +314,13 @@ public class Category_Vehicle
 	public class Vehicle_BradleyAPC
 	{
 		[Patch("CanBradleyApcTarget", "CanBradleyApcTarget", "BradleyAPC", "VisibilityTest", new string[] { "BaseEntity" })]
-		[Identifier("79e5cc32f02249a08e5c2c2223db287f")]
+		[Identifier("508532411e034d65930428fc9ab4ac15")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BradleyAPC_79e5cc32f02249a08e5c2c2223db287f : Patch
+		public class Vehicle_BradleyAPC_508532411e034d65930428fc9ab4ac15 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -358,13 +358,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnBradleyApcInitialize", "OnBradleyApcInitialize", "BradleyAPC", "Initialize", new string[] { })]
-		[Identifier("7e837574b6f1465faf4f83cc4e69b3af")]
+		[Identifier("766da44e77a6432585f4d128f4fe0847")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BradleyAPC_7e837574b6f1465faf4f83cc4e69b3af : Patch
+		public class Vehicle_BradleyAPC_766da44e77a6432585f4d128f4fe0847 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -394,13 +394,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnBradleyApcHunt", "OnBradleyApcHunt", "BradleyAPC", "UpdateMovement_Hunt", new string[] { })]
-		[Identifier("31995ef1510349aea87e549a2f081ea2")]
+		[Identifier("b17096c4c9624d4aa5c772b60cdfe403")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BradleyAPC_31995ef1510349aea87e549a2f081ea2 : Patch
+		public class Vehicle_BradleyAPC_b17096c4c9624d4aa5c772b60cdfe403 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -432,13 +432,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnBradleyApcPatrol", "OnBradleyApcPatrol", "BradleyAPC", "UpdateMovement_Patrol", new string[] { })]
-		[Identifier("4b29584de6d041e7ae93001408b1e4ce")]
+		[Identifier("6cde62f3e5df4d6dbd39aefea0c2bfe0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BradleyAPC_4b29584de6d041e7ae93001408b1e4ce : Patch
+		public class Vehicle_BradleyAPC_6cde62f3e5df4d6dbd39aefea0c2bfe0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -470,13 +470,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnBradleyApcThink", "OnBradleyApcThink", "BradleyAPC", "DoSimpleAI", new string[] { })]
-		[Identifier("f7196303608c4270a72fac3d67acb7f1")]
+		[Identifier("a788aa61df5d4871ae39881a967692b0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BradleyAPC_f7196303608c4270a72fac3d67acb7f1 : Patch
+		public class Vehicle_BradleyAPC_a788aa61df5d4871ae39881a967692b0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -511,13 +511,13 @@ public class Category_Vehicle
 	public class Vehicle_CH47HelicopterAIController
 	{
 		[Patch("CanHelicopterDropCrate", "CanHelicopterDropCrate", "CH47HelicopterAIController", "CanDropCrate", new string[] { })]
-		[Identifier("011d298bf20944d0a275a2651e1b522b")]
+		[Identifier("3671ae8ade5d45d895d8c0e00e95e43f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_011d298bf20944d0a275a2651e1b522b : Patch
+		public class Vehicle_CH47HelicopterAIController_3671ae8ade5d45d895d8c0e00e95e43f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -553,13 +553,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterDropCrate", "OnHelicopterDropCrate", "CH47HelicopterAIController", "DropCrate", new string[] { })]
-		[Identifier("19c4e47ead404962bc558860338a3969")]
+		[Identifier("8d316c8d810c4231a6c7a803744b90d7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_19c4e47ead404962bc558860338a3969 : Patch
+		public class Vehicle_CH47HelicopterAIController_8d316c8d810c4231a6c7a803744b90d7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -585,13 +585,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterAttack", "OnHelicopterAttack", "CH47HelicopterAIController", "OnAttacked", new string[] { "HitInfo" })]
-		[Identifier("2dd8c7ca27e74cecb047bb6484c05cd1")]
+		[Identifier("1ffb06da34b24f5791c26ab6a6cbdde3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_2dd8c7ca27e74cecb047bb6484c05cd1 : Patch
+		public class Vehicle_CH47HelicopterAIController_1ffb06da34b24f5791c26ab6a6cbdde3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -625,13 +625,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterOutOfCrates", "OnHelicopterOutOfCrates", "CH47HelicopterAIController", "OutOfCrates", new string[] { })]
-		[Identifier("e7bac34971e34b42ab5d1c49453dbfe5")]
+		[Identifier("73857c815bdc43c2adf7cf11d5a5d442")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_e7bac34971e34b42ab5d1c49453dbfe5 : Patch
+		public class Vehicle_CH47HelicopterAIController_73857c815bdc43c2adf7cf11d5a5d442 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -667,13 +667,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnHelicopterDropDoorOpen", "OnHelicopterDropDoorOpen", "CH47HelicopterAIController", "SetDropDoorOpen", new string[] { "System.Boolean" })]
-		[Identifier("8afd99da862444d19ffd9300d8b7ff8a")]
+		[Identifier("8b600d15fe4c4da5ad5e180038407273")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_8afd99da862444d19ffd9300d8b7ff8a : Patch
+		public class Vehicle_CH47HelicopterAIController_8b600d15fe4c4da5ad5e180038407273 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -705,14 +705,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanUseHelicopter", "CanUseHelicopter", "CH47HelicopterAIController", "AttemptMount", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("364d28b1ea604beeabefd7dc0a6d6425")]
+		[Identifier("d8b793a796894af3b6c988ad460b2abd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "CH47HelicopterAIController", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_CH47HelicopterAIController_364d28b1ea604beeabefd7dc0a6d6425 : Patch
+		public class Vehicle_CH47HelicopterAIController_d8b793a796894af3b6c988ad460b2abd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -747,12 +747,12 @@ public class Category_Vehicle
 	public class Vehicle_BaseBoat
 	{
 		[Patch("OnBoatPathGenerate", "OnBoatPathGenerate", "BaseBoat", "GenerateOceanPatrolPath", new string[] { "System.Single", "System.Single" })]
-		[Identifier("aff82ebe98af4c4b80812007951cef82")]
+		[Identifier("83a24248711f4688be953068405a751e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(List<Vector3>))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BaseBoat_aff82ebe98af4c4b80812007951cef82 : Patch
+		public class Vehicle_BaseBoat_83a24248711f4688be953068405a751e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -786,14 +786,14 @@ public class Category_Vehicle
 	public class Vehicle_BaseVehicle
 	{
 		[Patch("OnVehiclePush", "OnVehiclePush", "BaseVehicle", "RPC_WantsPush", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5999d8671a3c428b9d84760742190c9a")]
+		[Identifier("4dc6582b82f74d5da5424fb69e5ffbbe")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseVehicle", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BaseVehicle_5999d8671a3c428b9d84760742190c9a : Patch
+		public class Vehicle_BaseVehicle_4dc6582b82f74d5da5424fb69e5ffbbe : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -829,14 +829,14 @@ public class Category_Vehicle
 	public class Vehicle_VehicleModuleEngine
 	{
 		[Patch("OnEngineStatsRefresh", "OnEngineStatsRefresh", "VehicleModuleEngine", "RefreshPerformanceStats", new string[] { "Rust.Modular.EngineStorage" })]
-		[Identifier("91351fd7f06e437dbfc76af013ed03d3")]
+		[Identifier("d74ec19a0c2a4844a9a29735d6e71663")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehicleModuleEngine", false)]
 		[Parameter("engineStorage", "Rust.Modular.EngineStorage", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleModuleEngine_91351fd7f06e437dbfc76af013ed03d3 : Patch
+		public class Vehicle_VehicleModuleEngine_d74ec19a0c2a4844a9a29735d6e71663 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -868,7 +868,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStatsRefreshed", "OnEngineStatsRefreshed", "VehicleModuleEngine", "RefreshPerformanceStats", new string[] { "Rust.Modular.EngineStorage" })]
-		[Identifier("8f7207abfb50405cab25ab4dc4f7bddd")]
+		[Identifier("e7fd4286d4c64d99bfb65c390ac340d4")]
 		[Dependencies(new string[] { "OnEngineStatsRefresh" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehicleModuleEngine", false)]
@@ -876,7 +876,7 @@ public class Category_Vehicle
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleModuleEngine_8f7207abfb50405cab25ab4dc4f7bddd : Patch
+		public class Vehicle_VehicleModuleEngine_e7fd4286d4c64d99bfb65c390ac340d4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -907,14 +907,14 @@ public class Category_Vehicle
 	public class Vehicle_ModularCar
 	{
 		[Patch("OnVehicleModulesAssign", "OnVehicleModulesAssign", "ModularCar", "SpawnPreassignedModules", new string[] { })]
-		[Identifier("8997aadca410437b97d9a44b1fe2b579")]
+		[Identifier("0707dd6f9d8d47388c6090e59ea4efc7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ModularCar", false)]
 		[Parameter("socketItemDefs", "Rust.Modular.ItemModVehicleModule[]", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCar_8997aadca410437b97d9a44b1fe2b579 : Patch
+		public class Vehicle_ModularCar_0707dd6f9d8d47388c6090e59ea4efc7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -947,7 +947,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnVehicleModulesAssigned", "OnVehicleModulesAssigned", "ModularCar", "SpawnPreassignedModules", new string[] { })]
-		[Identifier("97d088a9b67c4620a4017a15d637e73e")]
+		[Identifier("e589c06626cf4f55a35b852a736ba7f1")]
 		[Dependencies(new string[] { "OnVehicleModulesAssign" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ModularCar", false)]
@@ -955,7 +955,7 @@ public class Category_Vehicle
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCar_97d088a9b67c4620a4017a15d637e73e : Patch
+		public class Vehicle_ModularCar_e589c06626cf4f55a35b852a736ba7f1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -984,7 +984,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanDestroyLock", "CanDestroyLock", "ModularCar", "PlayerCanDestroyLock", new string[] { "BasePlayer", "BaseVehicleModule" })]
-		[Identifier("445e58f8c64548a08e2b4bd78cdcc946")]
+		[Identifier("60f27d781bfa420da55dfe487e4a3abf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "ModularCar", false)]
@@ -992,7 +992,7 @@ public class Category_Vehicle
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCar_445e58f8c64548a08e2b4bd78cdcc946 : Patch
+		public class Vehicle_ModularCar_60f27d781bfa420da55dfe487e4a3abf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1035,7 +1035,7 @@ public class Category_Vehicle
 	public class Vehicle_ModularCarGarage
 	{
 		[Patch("OnVehicleModuleSelect", "OnVehicleModuleSelect", "ModularCarGarage", "RPC_SelectedLootItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ce156964c547466f9adb58e6f916ca57")]
+		[Identifier("7d4e5dbc0a704cdfa1034181dfe98f0d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local2", "Item", false)]
 		[Parameter("self", "ModularCarGarage", false)]
@@ -1043,7 +1043,7 @@ public class Category_Vehicle
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_ce156964c547466f9adb58e6f916ca57 : Patch
+		public class Vehicle_ModularCarGarage_7d4e5dbc0a704cdfa1034181dfe98f0d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1077,7 +1077,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnVehicleModuleSelected", "OnVehicleModuleSelected", "ModularCarGarage", "RPC_SelectedLootItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d72f161265b14b5981ad593ee5d40d4a")]
+		[Identifier("f4a06a52dc1645f7afaa17805e242f36")]
 		[Dependencies(new string[] { "OnVehicleModuleSelect" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local2", "Item", false)]
@@ -1086,7 +1086,7 @@ public class Category_Vehicle
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_d72f161265b14b5981ad593ee5d40d4a : Patch
+		public class Vehicle_ModularCarGarage_f4a06a52dc1645f7afaa17805e242f36 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1116,14 +1116,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnVehicleModuleDeselected", "OnVehicleModuleDeselected", "ModularCarGarage", "RPC_DeselectedLootItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8a50fe4080ca424b96eb6165f15dd1ea")]
+		[Identifier("66f6feaa0fff429a87f7de451c13fa2d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ModularCarGarage", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_8a50fe4080ca424b96eb6165f15dd1ea : Patch
+		public class Vehicle_ModularCarGarage_66f6feaa0fff429a87f7de451c13fa2d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1151,7 +1151,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnVehicleLockRequest", "OnVehicleLockRequest", "ModularCarGarage", "RPC_RequestAddLock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("df51c0d84ad1461b9d3f5bb81580980c")]
+		[Identifier("5cfb57a8aeaf4b13a3f8aade1364990a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ModularCarGarage", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -1159,7 +1159,7 @@ public class Category_Vehicle
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_df51c0d84ad1461b9d3f5bb81580980c : Patch
+		public class Vehicle_ModularCarGarage_5cfb57a8aeaf4b13a3f8aade1364990a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1193,14 +1193,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnLockRemove", "OnLockRemove", "ModularCarGarage", "RPC_RequestRemoveLock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("dd6098a79daa44249e2417a804a2d4eb")]
+		[Identifier("e36ba8c96585424fb11d37adafe0afcd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("carOccupant", "ModularCar", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_dd6098a79daa44249e2417a804a2d4eb : Patch
+		public class Vehicle_ModularCarGarage_e36ba8c96585424fb11d37adafe0afcd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1234,7 +1234,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnCodeChange", "OnCodeChange", "ModularCarGarage", "RPC_RequestNewCode", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("6fa9e3bd67a44ef1be7155cdf1c41cbe")]
+		[Identifier("0d448e0d0ea94d8f9677ac092e7ad849")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("carOccupant", "ModularCar", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -1242,7 +1242,7 @@ public class Category_Vehicle
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_6fa9e3bd67a44ef1be7155cdf1c41cbe : Patch
+		public class Vehicle_ModularCarGarage_0d448e0d0ea94d8f9677ac092e7ad849 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1277,12 +1277,12 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnVehicleModuleSelectedFix [patch]", "OnVehicleModuleSelectedFix [patch]", "ModularCarGarage", "RPC_SelectedLootItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a038f319f8dd457cab93ba78559c9e8e")]
+		[Identifier("5a4bf1885838416587c1585a6a12fc74")]
 		[Dependencies(new string[] { "OnVehicleModuleSelected" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarGarage_a038f319f8dd457cab93ba78559c9e8e : Patch
+		public class Vehicle_ModularCarGarage_5a4bf1885838416587c1585a6a12fc74 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1312,13 +1312,13 @@ public class Category_Vehicle
 	public class Vehicle_ModularCarCodeLock
 	{
 		[Patch("OnVehicleLockableCheck", "OnVehicleLockableCheck", "ModularCarCodeLock", "CanHaveALock", new string[] { })]
-		[Identifier("9f85e8d2ef6a4254b0323b24a90cfa50")]
+		[Identifier("4730155a40054c42a072e1030ce628b5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ModularCarCodeLock", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarCodeLock_9f85e8d2ef6a4254b0323b24a90cfa50 : Patch
+		public class Vehicle_ModularCarCodeLock_4730155a40054c42a072e1030ce628b5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1358,7 +1358,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("CanLock", "CanLock", "ModularCarCodeLock", "HasLockPermission", new string[] { "BasePlayer" })]
-		[Identifier("0111577e73ba4eb6bc2ed143ba50368f")]
+		[Identifier("feb8065f78fc4b37a9ad2ba6ae8b858f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("owner", "ModularCar", false)]
@@ -1366,7 +1366,7 @@ public class Category_Vehicle
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_ModularCarCodeLock_0111577e73ba4eb6bc2ed143ba50368f : Patch
+		public class Vehicle_ModularCarCodeLock_feb8065f78fc4b37a9ad2ba6ae8b858f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1410,13 +1410,13 @@ public class Category_Vehicle
 	public class Vehicle_RustModularEngineStorage
 	{
 		[Patch("OnEngineLoadoutRefresh", "OnEngineLoadoutRefresh", "Rust.Modular.EngineStorage", "RefreshLoadoutData", new string[] { })]
-		[Identifier("a50097f8ef8b4bdca6eca900b8f360e9")]
+		[Identifier("892a861939ea46c7bfe87d98729a100d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Rust.Modular.EngineStorage", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_RustModularEngineStorage_a50097f8ef8b4bdca6eca900b8f360e9 : Patch
+		public class Vehicle_RustModularEngineStorage_892a861939ea46c7bfe87d98729a100d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1449,7 +1449,7 @@ public class Category_Vehicle
 	public class Vehicle_BaseModularVehicle
 	{
 		[Patch("OnVehicleModuleMove", "OnVehicleModuleMove", "BaseModularVehicle", "CanMoveFrom", new string[] { "BasePlayer", "Item" })]
-		[Identifier("8f6c78dfe8524f9d82cfae4288e97a6e")]
+		[Identifier("e310063b34294086aa4acd6ca561f558")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BaseVehicleModule", false)]
 		[Parameter("self", "BaseModularVehicle", false)]
@@ -1457,7 +1457,7 @@ public class Category_Vehicle
 		[Return(typeof(CanMoveFromResponse))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_BaseModularVehicle_8f6c78dfe8524f9d82cfae4288e97a6e : Patch
+		public class Vehicle_BaseModularVehicle_e310063b34294086aa4acd6ca561f558 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1500,14 +1500,14 @@ public class Category_Vehicle
 	public class Vehicle_MLRS
 	{
 		[Patch("OnMlrsFire", "OnMlrsFire", "MLRS", "Fire", new string[] { "BasePlayer" })]
-		[Identifier("6ace0fc02e094fa8952e146184a16cb5")]
+		[Identifier("5d8433b57e8a40eb88b17198c86c19f4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
 		[Parameter("owner", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_6ace0fc02e094fa8952e146184a16cb5 : Patch
+		public class Vehicle_MLRS_5d8433b57e8a40eb88b17198c86c19f4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1541,7 +1541,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnMlrsFired", "OnMlrsFired", "MLRS", "Fire", new string[] { "BasePlayer" })]
-		[Identifier("6b27da7e68ce46ee962772993a26e5ae")]
+		[Identifier("1d20170eac554651bf6c44f4a7e7d177")]
 		[Dependencies(new string[] { "OnMlrsFire" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
@@ -1549,7 +1549,7 @@ public class Category_Vehicle
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_6b27da7e68ce46ee962772993a26e5ae : Patch
+		public class Vehicle_MLRS_1d20170eac554651bf6c44f4a7e7d177 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1577,14 +1577,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnMlrsRocketFired", "OnMlrsRocketFired", "MLRS", "FireNextRocket", new string[] { })]
-		[Identifier("8f1074e5dea94052a38f2bef08c1f118")]
+		[Identifier("3b0b5e9664374e62b81ddb2585f68a3d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
 		[Parameter("local7", "ServerProjectile", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_8f1074e5dea94052a38f2bef08c1f118 : Patch
+		public class Vehicle_MLRS_3b0b5e9664374e62b81ddb2585f68a3d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1612,13 +1612,13 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnMlrsFiringEnded", "OnMlrsFiringEnded", "MLRS", "EndFiring", new string[] { })]
-		[Identifier("b2e758ac562c4e22b5516ecf882cfe3f")]
+		[Identifier("821420c2079243f9ae2c909905de0f87")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_b2e758ac562c4e22b5516ecf882cfe3f : Patch
+		public class Vehicle_MLRS_821420c2079243f9ae2c909905de0f87 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1644,7 +1644,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnMlrsTarget", "OnMlrsTarget", "MLRS", "SetUserTargetHitPos", new string[] { "UnityEngine.Vector3" })]
-		[Identifier("1702750bee234d6fbfa89cecbd4b8837")]
+		[Identifier("064fdab6a48140dfba889cd416013b52")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
 		[Parameter("worldPos", "UnityEngine.Vector3", false)]
@@ -1652,7 +1652,7 @@ public class Category_Vehicle
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_1702750bee234d6fbfa89cecbd4b8837 : Patch
+		public class Vehicle_MLRS_064fdab6a48140dfba889cd416013b52 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1690,7 +1690,7 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnMlrsTargetSet", "OnMlrsTargetSet", "MLRS", "SetUserTargetHitPos", new string[] { "UnityEngine.Vector3" })]
-		[Identifier("62d81d2e18e749dfa5eed9a0e84aa874")]
+		[Identifier("2b4f2848725a4886b20aad7551b633b3")]
 		[Dependencies(new string[] { "OnMlrsTarget" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MLRS", false)]
@@ -1699,7 +1699,7 @@ public class Category_Vehicle
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MLRS_62d81d2e18e749dfa5eed9a0e84aa874 : Patch
+		public class Vehicle_MLRS_2b4f2848725a4886b20aad7551b633b3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1735,14 +1735,14 @@ public class Category_Vehicle
 	public class Vehicle_TrainCar
 	{
 		[Patch("OnTrainCarUncouple", "OnTrainCarUncouple", "TrainCar", "RPC_WantsUncouple", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9ba61640f560459e944d4325d2297274")]
+		[Identifier("e2166bf7ec3549578e12cd999455c4eb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "TrainCar", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_TrainCar_9ba61640f560459e944d4325d2297274 : Patch
+		public class Vehicle_TrainCar_e2166bf7ec3549578e12cd999455c4eb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1778,14 +1778,14 @@ public class Category_Vehicle
 	public class Vehicle_TrainCoupling
 	{
 		[Patch("CanTrainCarCouple", "CanTrainCarCouple", "TrainCoupling", "TryCouple", new string[] { "TrainCoupling", "System.Boolean" })]
-		[Identifier("d75676da374844688265f6182fcd2a18")]
+		[Identifier("aac604c3d8ec411d80faef4ea1ac33e7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("owner", "TrainCar", false)]
 		[Parameter("owner1", "TrainCar", false)]
 		[Return(typeof(bool))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_TrainCoupling_d75676da374844688265f6182fcd2a18 : Patch
+		public class Vehicle_TrainCoupling_aac604c3d8ec411d80faef4ea1ac33e7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1828,14 +1828,14 @@ public class Category_Vehicle
 	public class Vehicle_VehicleModuleSeating
 	{
 		[Patch("OnVehicleHornPressed", "OnVehicleHornPressed", "VehicleModuleSeating", "PlayerServerInput", new string[] { "InputState", "BasePlayer" })]
-		[Identifier("6afc5e6b433049cba7b95e0c044e82b8")]
+		[Identifier("c537bb0698f74f17b7db79b31d5037d9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehicleModuleSeating", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleModuleSeating_6afc5e6b433049cba7b95e0c044e82b8 : Patch
+		public class Vehicle_VehicleModuleSeating_c537bb0698f74f17b7db79b31d5037d9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1866,14 +1866,14 @@ public class Category_Vehicle
 	public class Vehicle_VehiclePrivilege
 	{
 		[Patch("OnCupboardAuthorize", "OnCupboardAuthorize [VehiclePrivilege]", "VehiclePrivilege", "AddSelfAuthorize", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("dbb82367457e45d28030b2838286335d")]
+		[Identifier("44c100491a594b509c334bb98d58595f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehiclePrivilege", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehiclePrivilege_dbb82367457e45d28030b2838286335d : Patch
+		public class Vehicle_VehiclePrivilege_44c100491a594b509c334bb98d58595f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1906,14 +1906,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnCupboardDeauthorize", "OnCupboardDeauthorize [VehiclePrivilege]", "VehiclePrivilege", "RemoveSelfAuthorize", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("f5af3a88a51649b2a122974c3ddad99c")]
+		[Identifier("924eb5b0dd1e47138efe512cfe03feba")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehiclePrivilege", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehiclePrivilege_f5af3a88a51649b2a122974c3ddad99c : Patch
+		public class Vehicle_VehiclePrivilege_924eb5b0dd1e47138efe512cfe03feba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1946,14 +1946,14 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnCupboardClearList", "OnCupboardClearList [VehiclePrivilege]", "VehiclePrivilege", "ClearList", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("293591a3c940402cbd7b019c1cd4a3d8")]
+		[Identifier("67281c1e178949e28b17237a897870b8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VehiclePrivilege", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehiclePrivilege_293591a3c940402cbd7b019c1cd4a3d8 : Patch
+		public class Vehicle_VehiclePrivilege_67281c1e178949e28b17237a897870b8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1989,14 +1989,14 @@ public class Category_Vehicle
 	public class Vehicle_MotorRowboat
 	{
 		[Patch("OnEngineStarted", "OnEngineStarted [MotorRowboat]", "MotorRowboat", "EngineToggle", new string[] { "System.Boolean" })]
-		[Identifier("cf2140c7525d423cb153a7a0720fbcf2")]
+		[Identifier("889225452b8c4bdaad1bf2f66360fc3e")]
 		[Dependencies(new string[] { "OnEngineStart [MotorRowboat]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MotorRowboat", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MotorRowboat_cf2140c7525d423cb153a7a0720fbcf2 : Patch
+		public class Vehicle_MotorRowboat_889225452b8c4bdaad1bf2f66360fc3e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2024,11 +2024,11 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStart", "OnEngineStart [MotorRowboat]", "MotorRowboat", "EngineToggle", new string[] { "System.Boolean" })]
-		[Identifier("695e5192f74043a48a2d17482a1b36a8")]
+		[Identifier("eb96e8db81384b4cb40e3fb4073f345c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_MotorRowboat_695e5192f74043a48a2d17482a1b36a8 : Patch
+		public class Vehicle_MotorRowboat_eb96e8db81384b4cb40e3fb4073f345c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2084,11 +2084,11 @@ public class Category_Vehicle
 	public class Vehicle_VehicleEngineController1
 	{
 		[Patch("OnEngineStart", "OnEngineStart", "VehicleEngineController`1", "TryStartEngine", new string[] { "BasePlayer" })]
-		[Identifier("32189e0532664b8abcaefb55b47212f7")]
+		[Identifier("310b37a3e3b14557a2156db558a01dad")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleEngineController1_32189e0532664b8abcaefb55b47212f7 : Patch
+		public class Vehicle_VehicleEngineController1_310b37a3e3b14557a2156db558a01dad : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2136,12 +2136,12 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStarted", "OnEngineStarted", "VehicleEngineController`1", "TryStartEngine", new string[] { "BasePlayer" })]
-		[Identifier("8f3400d77c2a4712ab3d7a61532c34c0")]
+		[Identifier("f8f4cbdbdf5d425ab4b03742d2a0b346")]
 		[Dependencies(new string[] { "OnEngineStart" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleEngineController1_8f3400d77c2a4712ab3d7a61532c34c0 : Patch
+		public class Vehicle_VehicleEngineController1_f8f4cbdbdf5d425ab4b03742d2a0b346 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2180,11 +2180,11 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStop", "OnEngineStop", "VehicleEngineController`1", "StopEngine", new string[] { })]
-		[Identifier("e4eeb08fc4e64a7bbe36d5a0899c6c2b")]
+		[Identifier("4eae69438226417a92dfef1143558ada")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleEngineController1_e4eeb08fc4e64a7bbe36d5a0899c6c2b : Patch
+		public class Vehicle_VehicleEngineController1_4eae69438226417a92dfef1143558ada : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2228,12 +2228,12 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStopped", "OnEngineStopped", "VehicleEngineController`1", "StopEngine", new string[] { })]
-		[Identifier("78f8b249728c428c88c045ccb190dd2e")]
+		[Identifier("f6db9c53bd44425c8a63213f8eb49aa1")]
 		[Dependencies(new string[] { "OnEngineStop" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleEngineController1_78f8b249728c428c88c045ccb190dd2e : Patch
+		public class Vehicle_VehicleEngineController1_f6db9c53bd44425c8a63213f8eb49aa1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2268,11 +2268,11 @@ public class Category_Vehicle
 		}
 
 		[Patch("OnEngineStartFinished", "OnEngineStartFinished", "VehicleEngineController`1", "FinishStartingEngine", new string[] { })]
-		[Identifier("9f38daf9b5544b479624ae42d8bd4adf")]
+		[Identifier("25ae04b8a43e4de9a1ee3ef3592bf963")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Vehicle")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vehicle_VehicleEngineController1_9f38daf9b5544b479624ae42d8bd4adf : Patch
+		public class Vehicle_VehicleEngineController1_25ae04b8a43e4de9a1ee3ef3592bf963 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

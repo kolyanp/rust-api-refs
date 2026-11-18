@@ -637,15 +637,15 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0414: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0357: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0315: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0327: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0399: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0360: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -666,16 +666,13 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 				return null;
 			case 252653938u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag5 = flag;
-				BasePlayer player = ((!flag5) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag6 = flag;
-				string cmd = (flag6 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is string[] || obj3 == null) ? true : false);
-				bool flag7 = flag;
-				string[] args2 = (flag7 ? ((string[])(obj3 ?? null)) : null);
-				if (flag5 & flag6 & flag7)
+				bool flag2 = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag2) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag3 = obj2 is string || obj2 == null;
+				string cmd = (flag3 ? ((string)(obj2 ?? null)) : null);
+				bool flag4 = obj3 is string[] || obj3 == null;
+				string[] args2 = (flag4 ? ((string[])(obj3 ?? null)) : null);
+				if (flag2 & flag3 & flag4)
 				{
 					WipeChat(player, cmd, args2);
 					return null;
@@ -687,22 +684,20 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 				return null;
 			case 769232612u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag8 = flag;
-				Arg arg4 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				bool flag8 = obj is Arg || obj == null;
+				Arg arg5 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag8)
 				{
-					add_map(arg4);
+					add_map(arg5);
 					return null;
 				}
 				break;
 			}
 			case 2453418844u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag11 = flag;
-				Arg arg7 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag11)
+				bool flag10 = obj is Arg || obj == null;
+				Arg arg7 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag10)
 				{
 					add_wipe(arg7);
 					return null;
@@ -711,10 +706,9 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 			}
 			case 1791877600u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag3 = flag;
-				Arg arg2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag3)
+				bool flag5 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag5)
 				{
 					delete_map(arg2);
 					return null;
@@ -723,34 +717,31 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 			}
 			case 2562168397u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg arg3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag7 = obj is Arg || obj == null;
+				Arg arg4 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag7)
 				{
-					delete_wipe(arg3);
+					delete_wipe(arg4);
 					return null;
 				}
 				break;
 			}
 			case 1689166025u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag9 = flag;
-				Arg arg5 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag9)
+				bool flag6 = obj is Arg || obj == null;
+				Arg arg3 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag6)
 				{
-					print_maps(arg5);
+					print_maps(arg3);
 					return null;
 				}
 				break;
 			}
 			case 2650953489u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag10 = flag;
-				Arg arg6 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag10)
+				bool flag9 = obj is Arg || obj == null;
+				Arg arg6 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag9)
 				{
 					print_wipes(arg6);
 					return null;
@@ -759,10 +750,9 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 			}
 			case 4226930406u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					wipe_chat(arg);
 					return null;

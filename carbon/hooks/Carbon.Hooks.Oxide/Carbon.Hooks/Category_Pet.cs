@@ -12,14 +12,14 @@ public class Category_Pet
 	public class Pet_FrankensteinTable
 	{
 		[Patch("OnFrankensteinPetWake", "OnFrankensteinPetWake [FrankensteinTable]", "FrankensteinTable", "WakeFrankenstein", new string[] { "BasePlayer" })]
-		[Identifier("fb2ec85e1a6e47789c2542af79bd3f19")]
+		[Identifier("c40fb1b311684b888c07f372808926c6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "FrankensteinTable", false)]
 		[Parameter("owner", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Pet")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Pet_FrankensteinTable_fb2ec85e1a6e47789c2542af79bd3f19 : Patch
+		public class Pet_FrankensteinTable_c40fb1b311684b888c07f372808926c6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -51,7 +51,7 @@ public class Category_Pet
 		}
 
 		[Patch("OnFrankensteinPetSleep", "OnFrankensteinPetSleep [FrankensteinTable]", "FrankensteinTable", "SleepFrankenstein", new string[] { "BasePlayer" })]
-		[Identifier("01383b0350ea4acaaf7416becc70be7a")]
+		[Identifier("89eaecd3182b4ec3956f71d01c2ce525")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "FrankensteinPet", false)]
 		[Parameter("self", "FrankensteinTable", false)]
@@ -59,7 +59,7 @@ public class Category_Pet
 		[Return(typeof(void))]
 		[Category("Pet")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Pet_FrankensteinTable_01383b0350ea4acaaf7416becc70be7a : Patch
+		public class Pet_FrankensteinTable_89eaecd3182b4ec3956f71d01c2ce525 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

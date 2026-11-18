@@ -715,8 +715,8 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 
 	public bool ShouldShowUI(HammerEditor editor, out BaseEntity entity)
 	{
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		entity = null;
 		BasePlayer player = editor.GetPlayer();
 		float num = editor.uiDistance;
@@ -725,23 +725,26 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			num *= UIDistanceFlyMultiplier;
 		}
 		Item activeItem = player.GetActiveItem();
-		bool bypassHammer = editor.bypassHammer;
-		bool flag = bypassHammer;
-		if (!flag)
+		int num2;
+		if (!editor.bypassHammer)
 		{
-			bool flag2 = activeItem != null;
-			bool flag3 = flag2;
-			if (flag3)
+			if (activeItem != null)
 			{
 				int itemid = activeItem.info.itemid;
-				bool flag4 = ((itemid == 200773292 || itemid == 1803831286) ? true : false);
-				flag3 = flag4;
+				num2 = ((itemid == 200773292 || itemid == 1803831286) ? 1 : 0);
 			}
-			flag = flag3;
+			else
+			{
+				num2 = 0;
+			}
 		}
-		bool flag5 = flag;
+		else
+		{
+			num2 = 1;
+		}
+		bool flag = (byte)num2 != 0;
 		RaycastHit val = default;
-		if ((!player.IsInCreativeMode && !editor.bypassCreativeMode) || !flag5 || !Physics.Raycast(player.eyes.HeadRay(), ref val, num, -1, (QueryTriggerInteraction)1))
+		if ((!player.IsInCreativeMode && !editor.bypassCreativeMode) || !flag || !Physics.Raycast(player.eyes.HeadRay(), ref val, num, -1, (QueryTriggerInteraction)1))
 		{
 			return false;
 		}
@@ -1266,25 +1269,20 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			return;
 		}
 		HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
-		bool bypassHammer = orCreateEditor.bypassHammer;
-		bool flag = bypassHammer;
-		if (!flag)
+		if (!orCreateEditor.bypassHammer)
 		{
-			bool flag2 = oldItem != null;
-			bool flag3 = flag2;
-			if (flag3)
+			if (oldItem == null)
 			{
-				int itemid = oldItem.info.itemid;
-				bool flag4 = ((itemid == 200773292 || itemid == 1803831286) ? true : false);
-				flag3 = flag4;
+				return;
 			}
-			flag = flag3;
+			int itemid = oldItem.info.itemid;
+			if (itemid != 200773292 && itemid != 1803831286)
+			{
+				return;
+			}
 		}
-		if (flag)
-		{
-			orCreateEditor.Reset();
-			ClearGUI(player);
-		}
+		orCreateEditor.Reset();
+		ClearGUI(player);
 	}
 
 	private void OnPlayerSleep(BasePlayer player)
@@ -1826,30 +1824,30 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_05fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0506: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0320: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0411: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0584: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0548: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0482: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0573: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0375: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0380: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0392: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_046a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0507: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0339: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0351: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0356: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0383: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039c: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -1861,24 +1859,21 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			{
 			case 3176354530u:
 			{
-				bool flag = ((obj is HammerEditor || obj == null) ? true : false);
-				bool flag4 = flag;
-				HammerEditor editor2 = (flag4 ? ((HammerEditor)(obj ?? null)) : null);
-				flag = ((obj2 is List<BaseEntity> || obj2 == null) ? true : false);
-				bool flag5 = flag;
-				List<BaseEntity> entities2 = (flag5 ? ((List<BaseEntity>)(obj2 ?? null)) : null);
-				if (flag4 & flag5)
+				bool flag21 = obj is HammerEditor || obj == null;
+				HammerEditor editor3 = (flag21 ? ((HammerEditor)(obj ?? null)) : null);
+				bool flag22 = obj2 is List<BaseEntity> || obj2 == null;
+				List<BaseEntity> entities2 = (flag22 ? ((List<BaseEntity>)(obj2 ?? null)) : null);
+				if (flag21 & flag22)
 				{
-					return DestroyEntitiesOverTime(editor2, entities2);
+					return DestroyEntitiesOverTime(editor3, entities2);
 				}
 				break;
 			}
 			case 3750013587u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag10 = flag;
-				Arg arg = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag10)
+				bool flag14 = obj is Arg || obj == null;
+				Arg arg = ((!flag14) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag14)
 				{
 					EditOption(arg);
 					return null;
@@ -1887,137 +1882,120 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			}
 			case 1994070204u:
 			{
-				bool flag = ((obj is HammerEditor || obj == null) ? true : false);
-				bool flag16 = flag;
-				HammerEditor editor3 = (flag16 ? ((HammerEditor)(obj ?? null)) : null);
-				flag = ((obj2 is BaseEntity || obj2 == null) ? true : false);
-				bool flag17 = flag;
-				BaseEntity entity2 = ((!flag17) ? ((BaseEntity)null) : ((BaseEntity)(obj2 ?? null)));
-				if (flag16 & flag17)
+				bool flag19 = obj is HammerEditor || obj == null;
+				HammerEditor editor2 = (flag19 ? ((HammerEditor)(obj ?? null)) : null);
+				bool flag20 = obj2 is BaseEntity || obj2 == null;
+				BaseEntity entity2 = ((!flag20) ? ((BaseEntity)null) : ((BaseEntity)(obj2 ?? null)));
+				if (flag19 & flag20)
 				{
-					return MoveEntityRoutine(editor3, entity2);
+					return MoveEntityRoutine(editor2, entity2);
 				}
 				break;
 			}
 			case 2268037981u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag22 = flag;
-				BasePlayer player8 = ((!flag22) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is Item || obj2 == null) ? true : false);
-				bool flag23 = flag;
-				Item oldItem = ((!flag23) ? ((Item)null) : ((Item)(obj2 ?? null)));
-				if (flag22 & flag23)
+				bool flag10 = obj is BasePlayer || obj == null;
+				BasePlayer player5 = ((!flag10) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag11 = obj2 is Item || obj2 == null;
+				Item oldItem = ((!flag11) ? ((Item)null) : ((Item)(obj2 ?? null)));
+				if (flag10 & flag11)
 				{
-					OnActiveItemChanged(player8, oldItem);
+					OnActiveItemChanged(player5, oldItem);
 					return null;
 				}
 				break;
 			}
 			case 1614693435u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag18 = flag;
-				BasePlayer player7 = ((!flag18) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag19 = flag;
-				string name = (flag19 ? ((string)(obj2 ?? null)) : null);
-				flag = ((obj3 is Vector3 || obj3 == null) ? true : false);
-				bool flag20 = flag;
-				Vector3 position = (flag20 ? ((Vector3)(obj3 ?? ((object)default(Vector3)))) : default(Vector3));
-				flag = ((obj4 is DraggablePositionSendType || obj4 == null) ? true : false);
-				bool flag21 = flag;
-				DraggablePositionSendType type = (DraggablePositionSendType)(flag21 ? ((int)(DraggablePositionSendType)(obj4 ?? ((object)(DraggablePositionSendType)0))) : 0);
-				if (flag18 & flag19 & flag20 & flag21)
+				bool flag15 = obj is BasePlayer || obj == null;
+				BasePlayer player8 = ((!flag15) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag16 = obj2 is string || obj2 == null;
+				string name = (flag16 ? ((string)(obj2 ?? null)) : null);
+				bool flag17 = obj3 is Vector3 || obj3 == null;
+				Vector3 position = (flag17 ? ((Vector3)(obj3 ?? ((object)default(Vector3)))) : default(Vector3));
+				bool flag18 = obj4 is DraggablePositionSendType || obj4 == null;
+				DraggablePositionSendType type = (DraggablePositionSendType)(flag18 ? ((int)(DraggablePositionSendType)(obj4 ?? ((object)(DraggablePositionSendType)0))) : 0);
+				if (flag15 & flag16 & flag17 & flag18)
 				{
-					OnCuiDraggableDrag(player7, name, position, type);
+					OnCuiDraggableDrag(player8, name, position, type);
 					return null;
 				}
 				break;
 			}
 			case 4229965862u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag14 = flag;
-				BasePlayer player6 = ((!flag14) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is HitInfo || obj2 == null) ? true : false);
-				bool flag15 = flag;
-				HitInfo info = ((!flag15) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
-				if (flag14 & flag15)
+				bool flag7 = obj is BasePlayer || obj == null;
+				BasePlayer player4 = ((!flag7) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag8 = obj2 is HitInfo || obj2 == null;
+				HitInfo info = ((!flag8) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
+				if (flag7 & flag8)
 				{
-					return OnHammerHit(player6, info);
+					return OnHammerHit(player4, info);
 				}
 				break;
 			}
 			case 2848347654u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag6 = flag;
-				BasePlayer player = ((!flag6) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag6 = obj is BasePlayer || obj == null;
+				BasePlayer player3 = ((!flag6) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
 				if (flag6)
 				{
-					OnPlayerConnected(player);
+					OnPlayerConnected(player3);
 					return null;
 				}
 				break;
 			}
 			case 3560982762u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag7 = flag;
-				BasePlayer player2 = ((!flag7) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag7)
+				bool flag13 = obj is BasePlayer || obj == null;
+				BasePlayer player7 = ((!flag13) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag13)
 				{
-					OnPlayerDeath(player2);
+					OnPlayerDeath(player7);
 					return null;
 				}
 				break;
 			}
 			case 72085565u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag12 = flag;
-				BasePlayer player5 = ((!flag12) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag12 = obj is BasePlayer || obj == null;
+				BasePlayer player6 = ((!flag12) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
 				if (flag12)
 				{
-					OnPlayerDisconnected(player5);
+					OnPlayerDisconnected(player6);
 					return null;
 				}
 				break;
 			}
 			case 3411611961u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag8 = flag;
-				BasePlayer player3 = ((!flag8) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				flag = ((obj2 is InputState || obj2 == null) ? true : false);
-				bool flag9 = flag;
-				InputState state = ((!flag9) ? ((InputState)null) : ((InputState)(obj2 ?? null)));
-				if (flag8 & flag9)
+				bool flag4 = obj is BasePlayer || obj == null;
+				BasePlayer player2 = ((!flag4) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag5 = obj2 is InputState || obj2 == null;
+				InputState state = ((!flag5) ? ((InputState)null) : ((InputState)(obj2 ?? null)));
+				if (flag4 & flag5)
 				{
-					OnPlayerInput(player3, state);
+					OnPlayerInput(player2, state);
 					return null;
 				}
 				break;
 			}
 			case 4058415132u:
 			{
-				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag11 = flag;
-				BasePlayer player4 = ((!flag11) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag11)
+				bool flag3 = obj is BasePlayer || obj == null;
+				BasePlayer player = ((!flag3) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag3)
 				{
-					OnPlayerSleep(player4);
+					OnPlayerSleep(player);
 					return null;
 				}
 				break;
 			}
 			case 3047062756u:
 			{
-				bool flag = ((obj is BaseEntity || obj == null) ? true : false);
-				bool flag13 = flag;
-				BaseEntity entity = ((!flag13) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
-				if (flag13)
+				bool flag9 = obj is BaseEntity || obj == null;
+				BaseEntity entity = ((!flag9) ? ((BaseEntity)null) : ((BaseEntity)(obj ?? null)));
+				if (flag9)
 				{
 					ReconstructEntity(entity);
 					return null;
@@ -2026,13 +2004,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			}
 			case 1897255792u:
 			{
-				bool flag = ((obj is HammerEditor || obj == null) ? true : false);
-				bool flag2 = flag;
-				HammerEditor editor = (flag2 ? ((HammerEditor)(obj ?? null)) : null);
-				flag = ((obj2 is List<BaseCombatEntity> || obj2 == null) ? true : false);
-				bool flag3 = flag;
-				List<BaseCombatEntity> entities = (flag3 ? ((List<BaseCombatEntity>)(obj2 ?? null)) : null);
-				if (flag2 & flag3)
+				bool flag = obj is HammerEditor || obj == null;
+				HammerEditor editor = (flag ? ((HammerEditor)(obj ?? null)) : null);
+				bool flag2 = obj2 is List<BaseCombatEntity> || obj2 == null;
+				List<BaseCombatEntity> entities = (flag2 ? ((List<BaseCombatEntity>)(obj2 ?? null)) : null);
+				if (flag & flag2)
 				{
 					return RepairEntitiesOverTime(editor, entities);
 				}

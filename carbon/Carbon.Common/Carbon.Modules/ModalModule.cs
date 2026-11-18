@@ -516,10 +516,10 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		object obj = ((args?.Length > 0) ? args[0] : null);
 		try
 		{
@@ -527,10 +527,9 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			{
 			case 104934377u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg arg3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag3 = obj is Arg || obj == null;
+				Arg arg3 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag3)
 				{
 					ModalAction(arg3);
 					return null;
@@ -539,10 +538,9 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 1752466352u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag3 = flag;
-				Arg arg2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag3)
+				bool flag2 = obj is Arg || obj == null;
+				Arg arg2 = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag2)
 				{
 					ModalCancel(arg2);
 					return null;
@@ -551,10 +549,9 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 3879514865u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag5 = flag;
-				Arg arg4 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag5)
+				bool flag4 = obj is Arg || obj == null;
+				Arg arg4 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag4)
 				{
 					ModalConfirm(arg4);
 					return null;
@@ -563,10 +560,9 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 			case 4001517656u:
 			{
-				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag2 = flag;
-				Arg arg = ((!flag2) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag2)
+				bool flag = obj is Arg || obj == null;
+				Arg arg = ((!flag) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag)
 				{
 					ModalPage(arg);
 					return null;

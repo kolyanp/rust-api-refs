@@ -161,14 +161,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 
 	private static void PrepareNextLoad(MonoProfilerConfig.ProfileTypes type, string value, bool tracked)
 	{
-		bool flag = tracked;
-		bool flag2 = flag;
-		if (flag2)
-		{
-			bool flag3 = ((type == MonoProfilerConfig.ProfileTypes.Plugin || type == MonoProfilerConfig.ProfileTypes.Harmony) ? true : false);
-			flag2 = flag3;
-		}
-		if (flag2)
+		if (tracked && (type == MonoProfilerConfig.ProfileTypes.Plugin || type == MonoProfilerConfig.ProfileTypes.Harmony))
 		{
 			MonoProfiler.Start();
 		}

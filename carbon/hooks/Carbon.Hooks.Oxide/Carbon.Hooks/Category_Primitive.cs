@@ -14,14 +14,14 @@ public class Category_Primitive
 	public class Primitive_BaseMountedWeapon
 	{
 		[Patch("OnMountedWeaponReload", "OnMountedWeaponReload", "BaseMountedWeapon", "ServerStartReload", new string[] { "BasePlayer" })]
-		[Identifier("9d9f70bc26b84d75bf66db4241f8c77f")]
+		[Identifier("fcac48090a3a4fdb84daae71bea0aa81")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseMountedWeapon", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BaseMountedWeapon_9d9f70bc26b84d75bf66db4241f8c77f : Patch
+		public class Primitive_BaseMountedWeapon_fcac48090a3a4fdb84daae71bea0aa81 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -66,7 +66,7 @@ public class Category_Primitive
 	public class Primitive_Catapult
 	{
 		[Patch("OnCatapultFireForce", "OnCatapultFireForce", "Catapult", "Fire", new string[] { "BasePlayer", "System.Single" })]
-		[Identifier("db10c3045b604d0ea228281147687515")]
+		[Identifier("da977e41ae5a4036bfd298ed2eccf967")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Catapult", false)]
 		[Parameter("shooter", "BasePlayer", false)]
@@ -74,7 +74,7 @@ public class Category_Primitive
 		[Return(typeof(float), Continues = true)]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_Catapult_db10c3045b604d0ea228281147687515 : Patch
+		public class Primitive_Catapult_da977e41ae5a4036bfd298ed2eccf967 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -115,14 +115,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponFire", "OnSiegeWeaponFire [Catapult]", "Catapult", "SERVER_WantsFire", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("b8fee7a3751a4be2a1e6fef65d8ecde5")]
+		[Identifier("8357180bfc094124afd4dacb728d287f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Catapult", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_Catapult_b8fee7a3751a4be2a1e6fef65d8ecde5 : Patch
+		public class Primitive_Catapult_8357180bfc094124afd4dacb728d287f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -157,14 +157,14 @@ public class Category_Primitive
 	public class Primitive_BatteringRam
 	{
 		[Patch("OnSiegeWeaponFire", "OnSiegeWeaponFire [BatteringRam]", "BatteringRam", "SERVER_WantsAttack", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1f89e1e251b54de1b06aad95541bfa1c")]
+		[Identifier("43c9ab6ba4cd4b48b9747d535b5c1e5f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("local1", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_1f89e1e251b54de1b06aad95541bfa1c : Patch
+		public class Primitive_BatteringRam_43c9ab6ba4cd4b48b9747d535b5c1e5f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -198,14 +198,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponDoorOpen", "OnSiegeWeaponDoorOpen [BatteringRam]", "BatteringRam", "RPC_OpenDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e5972b47c11d45ba9f53e0b1dbee6498")]
+		[Identifier("ecae55edc5a84c6a87dfa0a90a0e4818")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_e5972b47c11d45ba9f53e0b1dbee6498 : Patch
+		public class Primitive_BatteringRam_ecae55edc5a84c6a87dfa0a90a0e4818 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -238,14 +238,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponDoorClose", "OnSiegeWeaponDoorClose [BatteringRam]", "BatteringRam", "RPC_CloseDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("59f0e5aa39474d0fbeb82be50333ad47")]
+		[Identifier("8410320d11424aa5b5a6dea5893f19d6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_59f0e5aa39474d0fbeb82be50333ad47 : Patch
+		public class Primitive_BatteringRam_8410320d11424aa5b5a6dea5893f19d6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -281,14 +281,14 @@ public class Category_Primitive
 	public class Primitive_BaseSiegeWeapon
 	{
 		[Patch("OnSiegeWeaponPull", "OnSiegeWeaponPull", "BaseSiegeWeapon", "SERVER_StartPulling", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("cb085fd7039645bda0f93b7bd3bdf9b8")]
+		[Identifier("ead013177cc14f6490723e409a609f7f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseSiegeWeapon", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BaseSiegeWeapon_cb085fd7039645bda0f93b7bd3bdf9b8 : Patch
+		public class Primitive_BaseSiegeWeapon_ead013177cc14f6490723e409a609f7f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
