@@ -74,8 +74,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[SerializeField]
 	[Header("Intro Sequence")]
+	[SerializeField]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]

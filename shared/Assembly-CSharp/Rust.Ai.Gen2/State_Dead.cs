@@ -32,8 +32,8 @@ public class State_Dead : FSMStateBase
 	[SerializeField]
 	public GameObjectRef DeathEffect;
 
-	[Tooltip("The gait from which a death reads as being carried forward mid stride rather than dropping where it stood.")]
 	[SerializeField]
+	[Tooltip("The gait from which a death reads as being carried forward mid stride rather than dropping where it stood.")]
 	private RustNavMeshAgent.Speeds forwardMotionFrom = RustNavMeshAgent.Speeds.Jog;
 
 	[Tooltip("Whether an animal that dies with nobody having attacked it - old age - lies down and goes quietly instead of playing its combat death. Needs the owner to provide a held sleeping pose; a species without one falls back to a death clip.")]

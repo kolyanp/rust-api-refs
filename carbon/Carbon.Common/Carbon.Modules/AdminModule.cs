@@ -4772,8 +4772,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				return;
 			}
 			tab.AddName(column, "Crafting", (TextAnchor)3);
-			IEnumerable<ItemCraftTask> enumerable = player.inventory.crafting.queue.Where((ItemCraftTask x) => !x.cancelled);
-			foreach (ItemCraftTask craft in enumerable)
+			LinkedList<ItemCraftTask> queue = player.inventory.crafting.queue;
+			foreach (ItemCraftTask craft in queue)
 			{
 				tab.AddInputButton(column, $"{craft.blueprint.targetItem.displayName.english} (x{craft.amount}, {TimeEx.Format(craft.endTime - Time.realtimeSinceStartup)})", 0.1f, new Tab.OptionInput(null, (PlayerSession _) => "<size=8>" + craft.takenItems.Select((Item x) => $"{x.info.displayName.english} x {x.amount}").ToString(", ") + "</size>", 0, readOnly: true, null), new Tab.OptionButton("X", (TextAnchor)4, (PlayerSession ap) =>
 				{
@@ -4781,7 +4781,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					ShowInfo(column, tab, ap, player);
 				}, (PlayerSession _) => Tab.OptionButton.Types.Important));
 			}
-			if (!enumerable.Any())
+			if (!queue.Any())
 			{
 				tab.AddText(column, "No crafts.", 8, "1 1 1 0.5", (TextAnchor)4);
 			}

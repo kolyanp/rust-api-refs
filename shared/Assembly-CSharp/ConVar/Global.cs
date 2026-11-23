@@ -23,8 +23,8 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
@@ -38,8 +38,8 @@ public class Global : ConsoleSystem
 
 	public static readonly string UndergroundFlag = "--underground";
 
-	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
+	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	public static int perf = 0;
 
 	[ClientVar(Saved = true, ClientAdmin = true, Help = "Media: This can be used to disable the performance text info when GC gets triggered")]
@@ -79,8 +79,8 @@ public class Global : ConsoleSystem
 	[ClientVar(Saved = true, Help = "Displays any emoji rendering errors in the console")]
 	public static bool showEmojiErrors = false;
 
-	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
+	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	public static int developer
 	{
 		get
@@ -146,8 +146,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	[ClientVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
+	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs())
@@ -177,8 +177,8 @@ public class Global : ConsoleSystem
 		ServerPerformance.DoReport();
 	}
 
-	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
+	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	public static void objects(Arg args)
 	{
 		Object[] array = Object.FindObjectsByType<Object>((FindObjectsSortMode)0);
@@ -792,8 +792,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Teleport to the current closest entity matching the first argument name. Add second int argument to teleport to the nth closest entity (teleport2nearest horse 2 will teleport to the 3rd closest horse)")]
+	[ServerVar]
 	public static void teleport2nearest(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -1316,8 +1316,8 @@ public class Global : ConsoleSystem
 		GC.unload();
 	}
 
-	[ServerVar(ServerUser = true, Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
 	[ClientVar(Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
+	[ServerVar(ServerUser = true, Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
 	public static void version(Arg arg)
 	{
 		arg.ReplyWith(string.Format("Protocol: {0}\nBuild Date: {1}\nUnity Version: {2}\nChangeset: {3}\nBranch: {4}", new object[5]
@@ -1572,8 +1572,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

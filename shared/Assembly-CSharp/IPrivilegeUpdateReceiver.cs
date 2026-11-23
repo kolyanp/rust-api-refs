@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
 public interface IPrivilegeUpdateReceiver
 {
-	void OnPrivilegeUpdated(BaseEntity privilegeEntity, HashSet<ulong> authorizedPlayers);
+	void OnPrivilegeUpdated(BaseEntity privilegeEntity, BasePlayer player);
 }

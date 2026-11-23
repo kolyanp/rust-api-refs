@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class PTBoatTurret : BaseMountedUseable
 {
-	[SerializeField]
 	[Header("Mounted Weapon")]
+	[SerializeField]
 	private ItemDefinition[] weapons;
 
 	[SerializeField]
@@ -22,8 +22,8 @@ public class PTBoatTurret : BaseMountedUseable
 
 	public bool useLegIK;
 
-	[Header("AI")]
 	[SerializeField]
+	[Header("AI")]
 	private float aiMaxAttackDistance = 75f;
 
 	[SerializeField]

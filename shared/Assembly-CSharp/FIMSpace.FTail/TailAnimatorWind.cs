@@ -24,19 +24,19 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 	[Header("Overriding wind if value below different than 0,0,0")]
 	public Vector3 overrideWind = Vector3.zero;
 
-	[FPD_Header("Procedural Wind Settings (if not syncing and not overriding)", 6f, 4f, 2)]
 	[Range(0.1f, 1f)]
+	[FPD_Header("Procedural Wind Settings (if not syncing and not overriding)", 6f, 4f, 2)]
 	public float rapidness = 0.95f;
 
 	[FPD_Suffix(0f, 360f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	public float changesPower = 90f;
 
-	[Range(0f, 10f)]
 	[Header("Extra")]
+	[Range(0f, 10f)]
 	public float turbulenceSpeed = 1f;
 
-	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
 	[FPD_Header("World Position Turbulence", 6f, 4f, 2)]
+	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
 	public float worldTurb = 1f;
 
 	[Tooltip("If higher no performance cost, it is just a number")]
@@ -44,8 +44,8 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 
 	public float worldTurbSpeed = 5f;
 
-	[Tooltip("When tail is longer then power of wind should be higher")]
 	[FPD_Header("Tail Compoenents Related", 6f, 4f, 2)]
+	[Tooltip("When tail is longer then power of wind should be higher")]
 	public bool powerDependOnTailLength = true;
 
 	[Tooltip("Don't destroy on load")]

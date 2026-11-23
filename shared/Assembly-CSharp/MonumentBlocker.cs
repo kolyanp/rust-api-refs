@@ -21,14 +21,20 @@ public class MonumentBlocker : StagedResourceEntity, LookatHealth.IHealthBarDisp
 
 		[Tooltip("Local path of the Gibbable component to spawn.")]
 		public string gibbablePath;
+
+		[HideInInspector]
+		public int gibbableID;
 	}
 
-	[Header("Monument Blocker")]
 	[Tooltip("Gibs spawned on the client when we move into a destruction stage.")]
+	[Header("Monument Blocker")]
 	public GibbableStageData[] gibbableStages = Array.Empty<GibbableStageData>();
 
 	[Tooltip("Gibs spawned on the client when the blocker is fully destroyed. Falls back to the default gibbing if empty.")]
 	public string gibbableOnKilledPath;
+
+	[HideInInspector]
+	public int gibbableOnKilledID;
 
 	public bool CanDecay = true;
 

@@ -441,9 +441,9 @@ public class ChickenCoop : StorageContainer
 		flagsUpdateScope.Set(Flags.Reserved3, b: true);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)

@@ -183,6 +183,8 @@ public class Connection
 
 	public bool skipQueue;
 
+	public int kickPending;
+
 	private string _ipaddress;
 
 	private string ipaddresswithoutport = "";

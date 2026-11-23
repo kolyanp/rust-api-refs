@@ -11,8 +11,8 @@ public class SiegeWeaponVehicleAudio : GroundVehicleAudio
 
 	public SoundDefinition reloadCompleteDef;
 
-	[SerializeField]
 	[Header("Rattles")]
+	[SerializeField]
 	private SoundDefinition movementRattleLoop;
 
 	[SerializeField]

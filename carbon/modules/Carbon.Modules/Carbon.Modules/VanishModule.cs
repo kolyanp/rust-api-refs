@@ -441,16 +441,23 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)player == (Object)null))
+		if ((Object)(object)player == (Object)null)
 		{
-			Effect reusableInstance = Effect.reusableInstance;
-			reusableInstance.Init((Type)0, (BaseEntity)(object)player, 0u, Vector3.up, Vector3.zero, (Connection)null);
-			((EffectData)reusableInstance).pooledstringid = StringPool.Get(effect);
-			NetWrite val = ((BaseNetwork)Net.sv).StartWrite();
-			val.PacketID((Type)13);
-			ProtoStreamExtensions.WriteToStream((IProto)(object)reusableInstance, (Stream)(object)val, false, 2097152);
-			val.Send(new SendInfo(((BaseNetworkable)player).net.connection));
-			reusableInstance.Clear();
+			return;
+		}
+		Effect val = Pool.Get<Effect>();
+		try
+		{
+			val.Init((Type)0, (BaseEntity)(object)player, 0u, Vector3.up, Vector3.zero, (Connection)null);
+			((EffectData)val).pooledstringid = StringPool.Get(effect);
+			NetWrite val2 = ((BaseNetwork)Net.sv).StartWrite();
+			val2.PacketID((Type)13);
+			ProtoStreamExtensions.WriteToStream((IProto)(object)val, (Stream)(object)val2, false, 2097152);
+			val2.Send(new SendInfo(((BaseNetworkable)player).net.connection));
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 

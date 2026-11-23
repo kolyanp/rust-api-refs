@@ -14,13 +14,13 @@ public class Category_Turret
 	public class Turret_AutoTurret
 	{
 		[Patch("OnTurretTarget", "OnTurretTarget", "AutoTurret", "SetTarget", new string[] { "BaseCombatEntity" })]
-		[Identifier("2e5805a80bb6441b83a6bea7d70f805e")]
+		[Identifier("d397a4a5b99a47dc913c15f7c4e56367")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_2e5805a80bb6441b83a6bea7d70f805e : Patch
+		public class Turret_AutoTurret_d397a4a5b99a47dc913c15f7c4e56367 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -52,13 +52,13 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretStartup", "OnTurretStartup", "AutoTurret", "InitiateStartup", new string[] { })]
-		[Identifier("d231553346c1467282f594fee975b33c")]
+		[Identifier("6a41c1da61f846429b99677b48cf4222")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_d231553346c1467282f594fee975b33c : Patch
+		public class Turret_AutoTurret_6a41c1da61f846429b99677b48cf4222 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -88,13 +88,13 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretShutdown", "OnTurretShutdown", "AutoTurret", "InitiateShutdown", new string[] { })]
-		[Identifier("62cdf31208a64225ad67bc6a6ba9eb49")]
+		[Identifier("c52e6b5a197048e396917630fa4ce778")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_62cdf31208a64225ad67bc6a6ba9eb49 : Patch
+		public class Turret_AutoTurret_c52e6b5a197048e396917630fa4ce778 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -124,13 +124,13 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretToggle", "OnTurretToggle", "AutoTurret", "SetIsOnline", new string[] { "System.Boolean" })]
-		[Identifier("f8bae27d55014cd884ab89a9acb864fb")]
+		[Identifier("efe4c5b61e1347a89430b73ee056f7ac")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_f8bae27d55014cd884ab89a9acb864fb : Patch
+		public class Turret_AutoTurret_efe4c5b61e1347a89430b73ee056f7ac : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -162,14 +162,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretDeauthorize", "OnTurretDeauthorize", "AutoTurret", "RemoveSelfAuthorize", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("dcd1dd6b6c42454db2af5dcaa87589a9")]
+		[Identifier("2eabe26fccfc4939bd4fd60a5e6cd789")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_dcd1dd6b6c42454db2af5dcaa87589a9 : Patch
+		public class Turret_AutoTurret_2eabe26fccfc4939bd4fd60a5e6cd789 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -202,14 +202,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretClearList", "OnTurretClearList", "AutoTurret", "ClearList", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("7dbb1789192949878d6ea2585c86ef17")]
+		[Identifier("94c8e38acb60485e8fae36dadf23c181")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_7dbb1789192949878d6ea2585c86ef17 : Patch
+		public class Turret_AutoTurret_94c8e38acb60485e8fae36dadf23c181 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -242,14 +242,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretModeToggle", "OnTurretModeToggle [Peacekeeper]", "AutoTurret", "SERVER_Peacekeeper", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("67c853bbca034cd9beb83a62010a79f1")]
+		[Identifier("bd70c89247d949eeb176cdf7cc3ff12b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_67c853bbca034cd9beb83a62010a79f1 : Patch
+		public class Turret_AutoTurret_bd70c89247d949eeb176cdf7cc3ff12b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -282,14 +282,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretRotate", "OnTurretRotate", "AutoTurret", "FlipAim", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("f618bd5c8ffe4ff98c2f36870695bce8")]
+		[Identifier("bcf2e4c95bd54d5a8952075778c77ff5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_f618bd5c8ffe4ff98c2f36870695bce8 : Patch
+		public class Turret_AutoTurret_bcf2e4c95bd54d5a8952075778c77ff5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -322,14 +322,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretAuthorize", "OnTurretAuthorize", "AutoTurret", "AddSelfAuthorize", new string[] { "BasePlayer" })]
-		[Identifier("495252af46b441c5a79855b5ea34fef9")]
+		[Identifier("2d60882d0da942faa89cfce604219332")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_495252af46b441c5a79855b5ea34fef9 : Patch
+		public class Turret_AutoTurret_2d60882d0da942faa89cfce604219332 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -361,7 +361,7 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretAssign", "OnTurretAssign", "AutoTurret", "AssignToFriend", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e94abe37e31d42ca9538a8bf18af56fa")]
+		[Identifier("0981cae507a3499aaccd8e03ba7cd4eb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("local0", "System.UInt64", false)]
@@ -369,7 +369,7 @@ public class Category_Turret
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_e94abe37e31d42ca9538a8bf18af56fa : Patch
+		public class Turret_AutoTurret_0981cae507a3499aaccd8e03ba7cd4eb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -405,7 +405,7 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretAssigned", "OnTurretAssigned", "AutoTurret", "AssignToFriend", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("21a67ae7c62f4516b11d2f6af76c529a")]
+		[Identifier("72646a44874240c286f64009a59bb1d3")]
 		[Dependencies(new string[] { "OnTurretAssign" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
@@ -414,7 +414,7 @@ public class Category_Turret
 		[Return(typeof(void), Discarded = true)]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_21a67ae7c62f4516b11d2f6af76c529a : Patch
+		public class Turret_AutoTurret_72646a44874240c286f64009a59bb1d3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -446,13 +446,13 @@ public class Category_Turret
 		}
 
 		[Patch("OnInterferenceUpdate", "OnInterferenceUpdate", "AutoTurret", "RecalculateInterference", new string[] { })]
-		[Identifier("1bffb6ed572e423897e2c5ad62ac8efa")]
+		[Identifier("ca26085c835c4bd6aadfd8c48ff1c4fd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(bool))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_1bffb6ed572e423897e2c5ad62ac8efa : Patch
+		public class Turret_AutoTurret_ca26085c835c4bd6aadfd8c48ff1c4fd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -488,14 +488,14 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretModeToggle", "OnTurretModeToggle [AttackAll]", "AutoTurret", "SERVER_AttackAll", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("738f1b68939c420c9b4f7d2295ba4243")]
+		[Identifier("1549f1821e4b4d09bd7601af701a6832")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_738f1b68939c420c9b4f7d2295ba4243 : Patch
+		public class Turret_AutoTurret_1549f1821e4b4d09bd7601af701a6832 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -528,7 +528,7 @@ public class Category_Turret
 		}
 
 		[Patch("OnTurretIdentifierSet", "OnTurretIdentifierSet", "AutoTurret", "SetID", new string[] { "BasePlayer", "System.String", "System.String", "System.Boolean" })]
-		[Identifier("981106aed05a419d831027aae752d551")]
+		[Identifier("d9251490ddab40d88e34f5c08f4713e8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -536,7 +536,7 @@ public class Category_Turret
 		[Return(typeof(void))]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_981106aed05a419d831027aae752d551 : Patch
+		public class Turret_AutoTurret_d9251490ddab40d88e34f5c08f4713e8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -570,11 +570,11 @@ public class Category_Turret
 		}
 
 		[Patch("OnNearbyTurretsScan", "OnNearbyTurretsScan", "AutoTurret", "AddNearbyTurrets", new string[] { })]
-		[Identifier("640b6140ac0d487a96e739330d6bf9ba")]
+		[Identifier("de413624efd64d908d53366f5fc4dfa1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Turret")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Turret_AutoTurret_640b6140ac0d487a96e739330d6bf9ba : Patch
+		public class Turret_AutoTurret_de413624efd64d908d53366f5fc4dfa1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -21,8 +21,9 @@ using Rust.Registry;
 using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
-public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, IEntity, NetworkHandler
+public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, IEntity, NetworkHandler, ISerializationCallbackReceiver
 {
 	public struct NetworkGroupSubscribers
 	{
@@ -311,9 +312,14 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
+	[FormerlySerializedAs("prefabID")]
+	[SerializeField]
 	[Header("BaseNetworkable")]
 	[ReadOnly]
-	public uint prefabID;
+	private uint serializedPrefabID;
+
+	[NonSerialized]
+	private EncryptedValue<uint> prefabIDValue = 0u;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
 	public bool globalBroadcast;
@@ -332,13 +338,6 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	[NonSerialized]
 	public Networkable net;
-
-	[NonSerialized]
-	private BaseEntity _prefab;
-
-	private string _prefabName;
-
-	private string _prefabNameWithoutExtension;
 
 	private TransformHandle _transformHandle;
 
@@ -412,31 +411,23 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public ListHashSet<BaseNetworkable> OcclusionGroupRefs => occlusionGroupRefs;
 
+	public uint prefabID
+	{
+		get
+		{
+			return prefabIDValue.Get();
+		}
+		set
+		{
+			prefabIDValue.Set(value);
+		}
+	}
+
 	public bool IsDestroyed { get; private set; }
 
-	public string PrefabName
-	{
-		get
-		{
-			if (_prefabName == null)
-			{
-				_prefabName = StringPool.Get(prefabID);
-			}
-			return _prefabName;
-		}
-	}
+	public string PrefabName => StringPool.Get(prefabID);
 
-	public string ShortPrefabName
-	{
-		get
-		{
-			if (_prefabNameWithoutExtension == null)
-			{
-				_prefabNameWithoutExtension = Path.GetFileNameWithoutExtension(PrefabName);
-			}
-			return _prefabNameWithoutExtension;
-		}
-	}
+	public string ShortPrefabName => StringPool.GetShortName(prefabID);
 
 	public TransformHandle TransformHandle
 	{
@@ -1617,11 +1608,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public BaseEntity LookupPrefab()
 	{
-		if ((Object)(object)_prefab == (Object)null)
-		{
-			_prefab = GameObjectEx.ToBaseEntity(gameManager.FindPrefab(PrefabName));
-		}
-		return _prefab;
+		return GameObjectEx.ToBaseEntity(gameManager.FindPrefab(prefabID));
 	}
 
 	public T LookupPrefab<T>() where T : BaseEntity
@@ -1661,6 +1648,17 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		{
 			lootableEntity.LastLootedBy = 0uL;
 		}
+	}
+
+	void ISerializationCallbackReceiver.OnBeforeSerialize()
+	{
+		serializedPrefabID = prefabID;
+	}
+
+	void ISerializationCallbackReceiver.OnAfterDeserialize()
+	{
+		prefabID = serializedPrefabID;
+		serializedPrefabID = 0u;
 	}
 
 	public virtual void InitShared()

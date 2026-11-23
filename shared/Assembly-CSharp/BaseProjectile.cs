@@ -23,8 +23,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[InspectorFlags]
 			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
+			[InspectorFlags]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -137,8 +137,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride = -1f;
 
-	[Header("Effects")]
 	[Tooltip("How far away this attack effect can be heard")]
+	[Header("Effects")]
 	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
@@ -762,23 +762,23 @@ public class BaseProjectile : AttackEntity
 		SetAmmoCount(primaryMagazine.contents + amount);
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	private void StartReloadMounted(RPCMessage msg)
 	{
 		ProcessStartReload(msg, VerifyMountedClientRPC(msg.player));
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	private void ReloadMounted(RPCMessage msg)
 	{
 		ProcessReload(msg, VerifyMountedClientRPC(msg.player), Mathf.Max(1.5f, 1f + GetReloadDuration() * 0.1f));
 	}
 
+	[RPC_Server]
 	[RPC_Server.FromMounted]
 	[RPC_Server.MaxRepeatedElements(64)]
-	[RPC_Server]
 	private void CLProjectMounted(RPCMessage msg)
 	{
 		ProcessCLProject(msg, VerifyMountedClientAttack(msg.player), GetParentEntity() as BaseMountable);
@@ -1708,8 +1708,8 @@ public class BaseProjectile : AttackEntity
 		return true;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -1791,8 +1791,8 @@ public class BaseProjectile : AttackEntity
 		UpdateShieldState(bHeld: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ServerFractionalReloadInsert(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1911,10 +1911,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
 	[RPC_Server.MaxRepeatedElements(64)]
+	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
 		ProcessCLProject(msg, VerifyClientAttack(msg.player), null);

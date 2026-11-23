@@ -8,6 +8,7 @@ using AsmResolver;
 using AsmResolver.DotNet;
 using AsmResolver.DotNet.Serialized;
 using Carbon.Compat.Converters;
+using Carbon.Compat.Patches;
 using Facepunch;
 
 namespace Carbon.Compat;
@@ -71,9 +72,18 @@ public class CompatManager : CarbonBehaviour, ICompatManager
 
 	ConversionResult ICompatManager.AttemptOxideConvert(ref byte[] data)
 	{
+		return ConvertExtension(ref data, patchNative: false);
+	}
+
+	internal ConversionResult ConvertExtension(ref byte[] data, bool patchNative = true)
+	{
 		ModuleDefinition val = ModuleDefinition.FromBytes(data, readerArgs);
 		if (!val.AssemblyReferences.Any(Helpers.IsOxideASM))
 		{
+			if (patchNative)
+			{
+				data = PrefabIdPatch.Rewrite(data, val);
+			}
 			return ConversionResult.Skip;
 		}
 		if (!ConvertAssembly(val, oxideConverter, ref data))

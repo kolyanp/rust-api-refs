@@ -943,15 +943,15 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[SerializeField]
 	[Header("Boat AI - Collision Avoidance")]
+	[SerializeField]
 	private float _awarenessAngle;
 
 	[SerializeField]
 	private float _awarenessDistance;
 
-	[Header("Boat AI - Debug")]
 	[SerializeField]
+	[Header("Boat AI - Debug")]
 	private Transform _debugMoveTo;
 
 	[ServerVar(Help = "(Generated) When enabled, draws DDraw visualisations of boat AI steering, avoidance, and pathfinding state")]

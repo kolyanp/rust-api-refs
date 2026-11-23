@@ -80,8 +80,6 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	private bool dirtyCache = true;
 
-	private List<ulong> cachedAuthPlayers = new List<ulong>();
-
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("DisplayingBoxStorage.OnRpcMessage"))
@@ -314,70 +312,35 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 		}
 	}
 
-	public void OnPrivilegeUpdated(BaseEntity privilegeEntity, HashSet<ulong> authorizedPlayers)
+	public void OnPrivilegeUpdated(BaseEntity privilegeEntity, BasePlayer player)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		if (!cachedPrivilege.IsSet && GetBuilding() != null)
 		{
 			FindPrivilege();
 		}
-		if (cachedPrivilege.IsSet && (Object)(object)privilegeEntity != (Object)null && privilegeEntity.net.ID != cachedPrivilege.uid)
+		if ((cachedPrivilege.IsSet && (Object)(object)privilegeEntity != (Object)null && privilegeEntity.net.ID != cachedPrivilege.uid) || !ShouldNetworkTo(player))
 		{
 			return;
 		}
 		using (TimeWarning.New("DisplayingBoxStorage.OnPrivilegeUpdated"))
 		{
-			HashSet<ulong> hashSet = Pool.Get<HashSet<ulong>>();
-			foreach (ulong authorizedPlayer in authorizedPlayers)
+			DisplayingBoxStorage val = Pool.Get<DisplayingBoxStorage>();
+			if (privilegeEntity is IPrivilege privilege && privilege.IsAuthed(player))
 			{
-				if (!cachedAuthPlayers.Contains(authorizedPlayer))
+				List<float> list = Pool.Get<List<float>>();
+				GetResourceProportions(list);
+				val.resources = list;
+				if (cachedPrivilege.IsSet)
 				{
-					hashSet.Add(authorizedPlayer);
+					val.privelegeEntityId = cachedPrivilege.uid;
 				}
 			}
-			HashSet<ulong> hashSet2 = Pool.Get<HashSet<ulong>>();
-			foreach (ulong cachedAuthPlayer in cachedAuthPlayers)
-			{
-				if (!authorizedPlayers.Contains(cachedAuthPlayer))
-				{
-					hashSet2.Add(cachedAuthPlayer);
-				}
-			}
-			DisplayingBoxStorage val = null;
-			foreach (ulong item in hashSet2)
-			{
-				if (val == null)
-				{
-					val = Pool.Get<DisplayingBoxStorage>();
-				}
-				ClientRPC(RpcTarget.Player("UpdateAuthState", BasePlayer.FindByID(item)), val);
-			}
-			Pool.FreeUnmanaged<ulong>(ref hashSet2);
-			foreach (ulong item2 in hashSet)
-			{
-				if (val == null)
-				{
-					val = Pool.Get<DisplayingBoxStorage>();
-					List<float> list = Pool.Get<List<float>>();
-					GetResourceProportions(list);
-					val.resources = list;
-					if (cachedPrivilege.IsSet)
-					{
-						val.privelegeEntityId = cachedPrivilege.uid;
-					}
-				}
-				ClientRPC(RpcTarget.Player("UpdateAuthState", BasePlayer.FindByID(item2)), val);
-			}
-			Pool.FreeUnmanaged<ulong>(ref hashSet);
-			if (val != null)
-			{
-				val.Dispose();
-			}
-			cachedAuthPlayers.Clear();
-			cachedAuthPlayers.AddRange(authorizedPlayers);
+			ClientRPC(RpcTarget.Player("UpdateAuthState", player), val);
+			val.Dispose();
 		}
 	}
 

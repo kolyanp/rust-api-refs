@@ -34,8 +34,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 
 	public List<SkinViewerRenderSettings> renderSettings;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SkinViewerRenderSettings charmTemplateSettings;
 
 	[SerializeField]

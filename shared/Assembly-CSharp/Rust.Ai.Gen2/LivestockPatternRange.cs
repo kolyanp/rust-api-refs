@@ -47,15 +47,15 @@ public class LivestockPatternRange : LivestockGeneRange
 	[Tooltip("Hair length at Hardiness Bad (x) and Good (y), in UV units.")]
 	public Vector2 HairLength = new Vector2(0f, 0.002f);
 
-	[Min(0.01f)]
 	[Tooltip("Blotch size relative to the texture, the same on every animal. 1 is one repeat over the UV range.")]
+	[Min(0.01f)]
 	public float BlotchSize = 1.15f;
 
 	[Tooltip("Bias strength at Inbred 0 (x) and Inbred 1 (y), the only two a shipped animal lands on. 1 holds the patches to the bias map and 0 ignores the map.")]
 	public Vector2 BiasStrength = new Vector2(1f, 0f);
 
-	[Min(0.01f)]
 	[Tooltip("Size of the warp features relative to the texture. Smaller crinkles the edges, larger bends whole blobs.")]
+	[Min(0.01f)]
 	public float EdgeWarpSize = 0.33f;
 
 	private const int WarpSeedMix = 1540483477;

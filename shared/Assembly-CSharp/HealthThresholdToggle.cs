@@ -15,8 +15,8 @@ public class HealthThresholdToggle : FacepunchBehaviour, IPrefabPreProcess
 	[Serializable]
 	public struct ThresholdEntry
 	{
-		[Tooltip("A panel detaches while health fraction is at or below this. Which panel it is depends on damage direction, not on this entry.")]
 		[Range(0f, 1f)]
+		[Tooltip("A panel detaches while health fraction is at or below this. Which panel it is depends on damage direction, not on this entry.")]
 		public float disableAtHealthFraction;
 
 		[Tooltip("The side of the vehicle these objects cover, matched against incoming damage direction.")]

@@ -3,11 +3,13 @@ using UnityEngine;
 
 public class PrefabPool
 {
+	private EncryptedValue<uint> prefabID = 0u;
+
 	public Stack<Poolable> stack = new Stack<Poolable>();
 
-	public string PrefabName { get; private set; }
+	public uint PrefabID => prefabID.Get();
 
-	public GameObject PrefabTemplate { get; private set; }
+	public string PrefabName => StringPool.Get(PrefabID);
 
 	public int Missed { get; private set; }
 
@@ -19,24 +21,17 @@ public class PrefabPool
 
 	public int TargetCapacity { get; private set; }
 
-	public PrefabPool(uint prefabId, int targetCapacity, GameObject prefabTemplate)
+	public PrefabPool(uint prefabId, int targetCapacity)
 	{
-		PrefabName = StringPool.Get(prefabId);
+		prefabID = prefabId;
 		TargetCapacity = targetCapacity;
-		PrefabTemplate = prefabTemplate;
 	}
 
-	public void Push(Poolable info)
+	public void Push(Poolable info, GameObject prefab)
 	{
 		Pushed++;
 		stack.Push(info);
-		info.EnterPool(PrefabTemplate);
-	}
-
-	public void Push(GameObject instance)
-	{
-		Poolable component = instance.GetComponent<Poolable>();
-		Push(component);
+		info.EnterPool(prefab);
 	}
 
 	public GameObject Pop(Vector3 pos = default(Vector3), Quaternion rot = default(Quaternion))

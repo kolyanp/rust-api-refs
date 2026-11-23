@@ -10,8 +10,6 @@ public class ItemCraftTask : IPooled
 
 	public int taskUID;
 
-	public bool cancelled;
-
 	public InstanceData instanceData;
 
 	public int amount = 1;
@@ -33,7 +31,6 @@ public class ItemCraftTask : IPooled
 		blueprint = null;
 		endTime = 0f;
 		taskUID = 0;
-		cancelled = false;
 		instanceData = null;
 		amount = 1;
 		skinID = 0;

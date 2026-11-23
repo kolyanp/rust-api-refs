@@ -39,6 +39,9 @@ public class Socket_Base : PrefabAttribute, IFlattenKeepsDescendants
 	public string socketName;
 
 	[NonSerialized]
+	public EncryptedValue<uint> socketID = 0u;
+
+	[NonSerialized]
 	public SocketMod[] socketMods;
 
 	public OccupiedSocketCheck[] checkOccupiedSockets;
@@ -89,11 +92,12 @@ public class Socket_Base : PrefabAttribute, IFlattenKeepsDescendants
 
 	protected override void AttributeSetup(GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		base.AttributeSetup(rootObj, name, serverside, clientside, bundling);
+		socketID = StringPool.Get(socketName);
 		position = ((Component)this).transform.position;
 		rotation = ((Component)this).transform.rotation;
 		socketMods = ((Component)this).GetComponentsInChildren<SocketMod>(true);

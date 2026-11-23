@@ -13,13 +13,13 @@ public class Category_Fuel
 	public class Fuel_BaseOven
 	{
 		[Patch("OnFuelConsume", "OnFuelConsume", "BaseOven", "ConsumeFuel", new string[] { "Item", "ItemModBurnable" })]
-		[Identifier("2b86644ea80840e898e195032d670585")]
+		[Identifier("abae28e09d744e71b9cd5dd45b2193a6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseOven", false)]
 		[Return(typeof(void))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_BaseOven_2b86644ea80840e898e195032d670585 : Patch
+		public class Fuel_BaseOven_abae28e09d744e71b9cd5dd45b2193a6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -55,14 +55,14 @@ public class Category_Fuel
 		}
 
 		[Patch("OnFuelConsumed", "OnFuelConsumed", "BaseOven", "ConsumeFuel", new string[] { "Item", "ItemModBurnable" })]
-		[Identifier("a4604964094746af8e41d66f14febde7")]
+		[Identifier("3f805f116dc54914b3e0f7f8c488444e")]
 		[Dependencies(new string[] { "OnFuelConsume" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseOven", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_BaseOven_a4604964094746af8e41d66f14febde7 : Patch
+		public class Fuel_BaseOven_3f805f116dc54914b3e0f7f8c488444e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -95,14 +95,14 @@ public class Category_Fuel
 	public class Fuel_EntityFuelSystem
 	{
 		[Patch("OnFuelAmountCheck", "OnFuelAmountCheck", "EntityFuelSystem", "GetFuelAmount", new string[] { })]
-		[Identifier("9e3da80a7da24319a53208e53974d4e5")]
+		[Identifier("509ae929e7d84f7b802b000b0879cda8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EntityFuelSystem", false)]
 		[Parameter("local0", "Item", false)]
 		[Return(typeof(int))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_EntityFuelSystem_9e3da80a7da24319a53208e53974d4e5 : Patch
+		public class Fuel_EntityFuelSystem_509ae929e7d84f7b802b000b0879cda8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -140,14 +140,14 @@ public class Category_Fuel
 		}
 
 		[Patch("OnFuelItemCheck", "OnFuelItemCheck", "EntityFuelSystem", "GetFuelItem", new string[] { })]
-		[Identifier("3c5c678f0b6541d594c0595da101ac53")]
+		[Identifier("bcbc30f947e749cc965e280c5d41973e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EntityFuelSystem", false)]
 		[Parameter("local0", "StorageContainer", false)]
 		[Return(typeof(Item))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_EntityFuelSystem_3c5c678f0b6541d594c0595da101ac53 : Patch
+		public class Fuel_EntityFuelSystem_bcbc30f947e749cc965e280c5d41973e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -185,13 +185,13 @@ public class Category_Fuel
 		}
 
 		[Patch("OnFuelCheck", "OnFuelCheck", "EntityFuelSystem", "HasFuel", new string[] { "System.Boolean" })]
-		[Identifier("738769e5992d418d91194b7421cccd55")]
+		[Identifier("7cb15604198f4537805b842a88c5257a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EntityFuelSystem", false)]
 		[Return(typeof(bool))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_EntityFuelSystem_738769e5992d418d91194b7421cccd55 : Patch
+		public class Fuel_EntityFuelSystem_7cb15604198f4537805b842a88c5257a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -227,7 +227,7 @@ public class Category_Fuel
 		}
 
 		[Patch("CanCheckFuel", "CanCheckFuel", "EntityFuelSystem", "IsInFuelInteractionRange", new string[] { "BasePlayer" })]
-		[Identifier("b4f411d9e5864705aa307cf13dbcb504")]
+		[Identifier("f627fb67488e44d0aef2f3ea83b2be16")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EntityFuelSystem", false)]
 		[Parameter("local0", "StorageContainer", false)]
@@ -235,7 +235,7 @@ public class Category_Fuel
 		[Return(typeof(bool))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_EntityFuelSystem_b4f411d9e5864705aa307cf13dbcb504 : Patch
+		public class Fuel_EntityFuelSystem_f627fb67488e44d0aef2f3ea83b2be16 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -275,7 +275,7 @@ public class Category_Fuel
 		}
 
 		[Patch("CanUseFuel", "CanUseFuel", "EntityFuelSystem", "TryUseFuel", new string[] { "System.Single", "System.Single" })]
-		[Identifier("dae8ccd5c5594359b0ae85a475f5d162")]
+		[Identifier("8788f791bd6347e8894f10535434e7ba")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EntityFuelSystem", false)]
 		[Parameter("local0", "StorageContainer", false)]
@@ -284,7 +284,7 @@ public class Category_Fuel
 		[Return(typeof(int))]
 		[Category("Fuel")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fuel_EntityFuelSystem_dae8ccd5c5594359b0ae85a475f5d162 : Patch
+		public class Fuel_EntityFuelSystem_8788f791bd6347e8894f10535434e7ba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

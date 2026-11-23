@@ -53,8 +53,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RectTransform convarInfoParent;
 
-	[Header("UGC")]
 	[SerializeField]
+	[Header("UGC")]
 	private FlexVirtualScroll ugcVirtualScroll;
 
 	[SerializeField]

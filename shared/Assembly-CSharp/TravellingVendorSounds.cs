@@ -66,8 +66,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve movementLoopGainCurve;
 
-	[Header("Brakes")]
 	[SerializeField]
+	[Header("Brakes")]
 	private SoundDefinition brakeLoopDef;
 
 	[SerializeField]

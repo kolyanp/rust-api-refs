@@ -175,8 +175,8 @@ public class RecorderTool : ThrownWeapon, ICassettePlayer
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void OnCassetteRecordingEnded(RPCMessage rpc)
 	{
 		if (GetItem() != null)

@@ -90,8 +90,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	public TerrainSource Source;
 
-	[Tooltip("World seed fed to the real generator, and to the pre-cliff T0 bake. Uploaded maps have the seed stripped from their name, so run `seed` on the server and paste it here; a map from the server's root folder carries it in the name and overwrites this on load. 0 = auto.")]
 	[Header("Procedural (real Rust base heightmap)")]
+	[Tooltip("World seed fed to the real generator, and to the pre-cliff T0 bake. Uploaded maps have the seed stripped from their name, so run `seed` on the server and paste it here; a map from the server's root folder carries it in the name and overwrites this on load. 0 = auto.")]
 	public uint Seed = 54321u;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle = 65;
 
-	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	[Header("Terrain")]
+	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	public int HeightmapResolution = 513;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -118,8 +118,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch = TerrainPatch.SlopeX;
 
-	[Header("Map file region (real .map crop)")]
 	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
+	[Header("Map file region (real .map crop)")]
 	public string MapFilePath = string.Empty;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -149,8 +149,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Scene the 'Bake pre-cliff T0' button drives. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene.")]
 	public string GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
 
-	[Header("Placement")]
 	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
+	[Header("Placement")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
@@ -208,8 +208,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]
 	public float PlayerReferenceHeight = 1.8f;
 
-	[Header("Camera (play-mode freecam)")]
 	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
+	[Header("Camera (play-mode freecam)")]
 	public bool EnableFreecam = true;
 
 	[Tooltip("Base freecam move speed in metres/second (adjust live with the scroll wheel while flying).")]

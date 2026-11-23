@@ -134,8 +134,8 @@ public class PagerEntity : BaseEntity, IRFObject
 		frequency = newFreq;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerSetFrequency(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanBuild() && !(Time.time < nextChangeTime))

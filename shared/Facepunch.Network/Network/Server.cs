@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Facepunch;
@@ -64,6 +65,8 @@ public abstract class Server : BaseNetwork
 	public static readonly DefaultSubscriberStrategy DefaultSubscriberStrategy = new DefaultSubscriberStrategy();
 
 	public bool debug;
+
+	private readonly ConcurrentQueue<(Connection connection, string reason)> pendingKicks = new ConcurrentQueue<(Connection, string)>();
 
 	internal ulong lastValueGiven = 1024uL;
 
@@ -255,6 +258,26 @@ public abstract class Server : BaseNetwork
 	public abstract void Disconnect(Connection cn);
 
 	public abstract void Kick(Connection cn, string message, bool logfile = false);
+
+	public void RequestKick(Connection connection, string reason)
+	{
+		if (Interlocked.CompareExchange(ref connection.kickPending, 1, 0) == 0)
+		{
+			pendingKicks.Enqueue((connection, reason));
+		}
+	}
+
+	public void ProcessPendingKicks()
+	{
+		(Connection, string) result;
+		while (pendingKicks.TryDequeue(out result))
+		{
+			if (result.Item1.active || result.Item1.connected)
+			{
+				Kick(result.Item1, result.Item2, result.Item1.connected);
+			}
+		}
+	}
 
 	public ulong GetLastUIDGiven()
 	{

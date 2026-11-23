@@ -25,24 +25,24 @@ public class ThrownWeapon : AttackEntity
 	[Header("Throw Prediction")]
 	public bool predictThrow = true;
 
-	[Tooltip("What makes the throwable leave the hand and become visible.")]
 	[ShowIf("predictThrow", true)]
+	[Tooltip("What makes the throwable leave the hand and become visible.")]
 	public PredictRelease predictRelease;
 
-	[Tooltip("Delay mode: seconds after the throw starts. 0 lets go at once.")]
-	[ShowIf("predictThrow", true)]
 	[ShowIf("predictRelease", PredictRelease.Delay)]
+	[ShowIf("predictThrow", true)]
+	[Tooltip("Delay mode: seconds after the throw starts. 0 lets go at once.")]
 	public float predictReleaseDelay;
 
-	[Tooltip("Hand Slows mode: lets go once the hand has dropped to this share of its fastest speed.")]
-	[ShowIf("predictThrow", true)]
-	[ShowIf("predictRelease", PredictRelease.HandSlows)]
 	[Range(0.05f, 0.95f)]
+	[ShowIf("predictRelease", PredictRelease.HandSlows)]
+	[ShowIf("predictThrow", true)]
+	[Tooltip("Hand Slows mode: lets go once the hand has dropped to this share of its fastest speed.")]
 	public float predictReleaseSpeed = 0.5f;
 
 	[Tooltip("Viewmodel Event mode: the animation event that lets it go.")]
-	[ShowIf("predictRelease", PredictRelease.ViewmodelEvent)]
 	[ShowIf("predictThrow", true)]
+	[ShowIf("predictRelease", PredictRelease.ViewmodelEvent)]
 	public string predictReleaseEvent;
 
 	[ShowIf("predictThrow", true)]
@@ -53,18 +53,18 @@ public class ThrownWeapon : AttackEntity
 	[ShowIf("predictThrow", true)]
 	public PredictOrigin predictOrigin;
 
-	[Tooltip("Viewmodel Bone mode: the viewmodel bone to follow.")]
-	[ShowIf("predictThrow", true)]
 	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
+	[ShowIf("predictThrow", true)]
+	[Tooltip("Viewmodel Bone mode: the viewmodel bone to follow.")]
 	public string predictOriginBone = "r_hand";
 
-	[Tooltip("Viewmodel Bone mode: start in the bone's pose and blend to the throw's own over the blend distance.")]
 	[ShowIf("predictThrow", true)]
 	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
+	[Tooltip("Viewmodel Bone mode: start in the bone's pose and blend to the throw's own over the blend distance.")]
 	public bool predictOriginRotation;
 
-	[Tooltip("Shifts where it appears, along the origin's own axes.")]
 	[ShowIf("predictThrow", true)]
+	[Tooltip("Shifts where it appears, along the origin's own axes.")]
 	public Vector3 predictOriginOffset;
 
 	[ShowIf("predictThrow", true)]
@@ -440,8 +440,8 @@ public class ThrownWeapon : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void DoDrop(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

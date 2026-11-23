@@ -52,8 +52,13 @@ public class DartsGameMountable : BaseMountable
 	public override void OnPlayerDismounted(BasePlayer player)
 	{
 		base.OnPlayerDismounted(player);
-		Invoke(TimeoutGame, DartsGame.idleKickSeconds);
+		StartIdleTimeout();
 		Board.SendNetworkUpdate();
+	}
+
+	public void StartIdleTimeout()
+	{
+		Invoke(TimeoutGame, DartsGame.idleKickSeconds);
 	}
 
 	private void TimeoutGame()

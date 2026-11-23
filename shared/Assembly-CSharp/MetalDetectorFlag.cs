@@ -46,8 +46,8 @@ public class MetalDetectorFlag : BaseDiggableEntity
 			BaseEntity baseEntity = SpawnLootListItem(player);
 			BaseMission.MissionEventPayload payload = new BaseMission.MissionEventPayload
 			{
-				NetworkIdentifier = (((Object)(object)baseEntity == (Object)null) ? baseEntity.net.ID : default(NetworkableId)),
-				UintIdentifier = (((Object)(object)baseEntity == (Object)null) ? baseEntity.prefabID : 0u),
+				NetworkIdentifier = (((Object)(object)baseEntity != (Object)null) ? baseEntity.net.ID : default(NetworkableId)),
+				UintIdentifier = (((Object)(object)baseEntity != (Object)null) ? baseEntity.prefabID : 0u),
 				WorldPosition = ((Component)this).transform.position
 			};
 			player.ProcessMissionEvent(BaseMission.MissionEventType.METAL_DETECTOR_FIND, payload, 1f);

@@ -53,8 +53,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio = 3f;
 
-	[Header("                ")]
 	[Header("Focus")]
+	[Header("                ")]
 	public bool depthOfField;
 
 	public float focalLength = 3f;
@@ -67,14 +67,14 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Range(0f, 360f)]
-	[Header("                ")]
 	[Header("Motion Blur")]
+	[Header("                ")]
+	[Range(0f, 360f)]
 	public float shutterAngle;
 
+	[Range(-100f, 100f)]
 	[Header("                ")]
 	[Header("Distortion")]
-	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
@@ -92,8 +92,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(-100f, 100f)]
 	public float Saturation;
 
-	[Header("Sharpen")]
 	[Header("                ")]
+	[Header("Sharpen")]
 	public float Strength;
 
 	public float limit;
@@ -102,8 +102,8 @@ public class ModelViewer_MainCameraParameters
 	[Header("God Rays")]
 	public bool GodRays = true;
 
-	[Header("                ")]
 	[Header("Bloom")]
+	[Header("                ")]
 	public float Brightness = 0.15f;
 
 	public float Threshold = 1f;
@@ -121,14 +121,14 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color = Color.white;
 
-	[Header("                ")]
 	[Header("Vignette")]
+	[Header("                ")]
 	public float Darkness;
 
 	public float Sharpness;
 
-	[Header("                ")]
 	[Header("Grain")]
+	[Header("                ")]
 	public bool Coloured = true;
 
 	[Range(0f, 1f)]

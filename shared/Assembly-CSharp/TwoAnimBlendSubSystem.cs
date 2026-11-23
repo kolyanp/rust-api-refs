@@ -8,8 +8,8 @@ public class TwoAnimBlendSubSystem : AnimationSubSystem
 	[SerializeField]
 	private AnimationClip ClipB;
 
-	[Range(0f, 1f)]
 	[SubSystemVariable]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float Blend;
 }

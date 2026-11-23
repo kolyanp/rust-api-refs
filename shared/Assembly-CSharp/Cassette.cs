@@ -15,6 +15,9 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 	[ReplicatedVar]
 	public static float MaxCassetteFileSizeMB = 5f;
 
+	[ReplicatedVar(Help = "How much decoded recording audio (tapes, answering machines, voicemails) each client can hold in MB, recordings over this aren't played (clients cap it at 1024)")]
+	public static float MaxDecodedAudioMB = 256f;
+
 	public ulong CreatorSteamId;
 
 	public PreloadedCassetteContent.PreloadType PreloadType;
@@ -245,8 +248,8 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_MakeNewFile(RPCMessage msg)
 	{
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
@@ -292,11 +295,13 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 
 	public static bool IsOggValid(byte[] data, Cassette c)
 	{
-		return IsOggValid(data, c.MaxCassetteLength);
+		long decodedBytes;
+		return IsOggValid(data, c.MaxCassetteLength, out decodedBytes);
 	}
 
-	public static bool IsOggValid(byte[] data, float maxLength)
+	private static bool IsOggValid(byte[] data, float maxLength, out long decodedBytes)
 	{
+		decodedBytes = 0L;
 		if (data == null)
 		{
 			return false;
@@ -306,61 +311,23 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 			Debug.Log((object)"Audio file is too large! Aborting");
 			return false;
 		}
-		double oggLength = GetOggLength(data);
-		if (oggLength > (double)(maxLength * 1.2f))
+		if (!OggVorbisLength.TryGetSampleCount(data, out var channels, out var sampleRate, out var samples) || channels != 1 || sampleRate < 8000 || sampleRate > 192000)
 		{
-			Debug.Log((object)$"Audio duration is longer than cassette limit! {oggLength} > {maxLength * 1.2f}");
+			Debug.Log((object)"Audio file isn't a valid recording! Aborting");
 			return false;
 		}
+		double num = (double)samples / (double)sampleRate;
+		if (num > (double)(maxLength * 1.2f))
+		{
+			Debug.Log((object)$"Audio duration is longer than cassette limit! {num} > {maxLength * 1.2f}");
+			return false;
+		}
+		decodedBytes = samples * 4;
 		return true;
 	}
 
 	public static float ByteToMegabyte(int byteSize)
 	{
 		return (float)byteSize / 1024f / 1024f;
-	}
-
-	public static double GetOggLength(byte[] t)
-	{
-		int num = t.Length;
-		long num2 = -1L;
-		int num3 = -1;
-		for (int num4 = num - 1 - 8 - 2 - 4; num4 >= 0; num4--)
-		{
-			if (t[num4] == 79 && t[num4 + 1] == 103 && t[num4 + 2] == 103 && t[num4 + 3] == 83)
-			{
-				num2 = BitConverter.ToInt64(new byte[8]
-				{
-					t[num4 + 6],
-					t[num4 + 7],
-					t[num4 + 8],
-					t[num4 + 9],
-					t[num4 + 10],
-					t[num4 + 11],
-					t[num4 + 12],
-					t[num4 + 13]
-				}, 0);
-				break;
-			}
-		}
-		for (int i = 0; i < num - 8 - 2 - 4; i++)
-		{
-			if (t[i] == 118 && t[i + 1] == 111 && t[i + 2] == 114 && t[i + 3] == 98 && t[i + 4] == 105 && t[i + 5] == 115)
-			{
-				num3 = BitConverter.ToInt32(new byte[4]
-				{
-					t[i + 11],
-					t[i + 12],
-					t[i + 13],
-					t[i + 14]
-				}, 0);
-				break;
-			}
-		}
-		if (RecorderTool.debugRecording)
-		{
-			Debug.Log((object)$"{num2} / {num3}");
-		}
-		return (double)num2 / (double)num3;
 	}
 }

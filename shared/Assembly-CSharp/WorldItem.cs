@@ -404,14 +404,11 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		if (_name == null)
 		{
-			if (isServer)
+			if (!isServer)
 			{
-				_name = string.Format("{1}[{0}] {2}", net?.ID ?? default(NetworkableId), ShortPrefabName, ObjectEx.IsUnityNull(this) ? "NULL" : ((Object)this).name);
+				return ShortPrefabName;
 			}
-			else
-			{
-				_name = ShortPrefabName;
-			}
+			_name = string.Format("{1}[{0}] {2}", net?.ID ?? default(NetworkableId), ShortPrefabName, ObjectEx.IsUnityNull(this) ? "NULL" : ((Object)this).name);
 		}
 		return _name;
 	}

@@ -248,8 +248,8 @@ public class FimpIK_Limb : FIK_ProcessorBase
 
 	private bool hasRoot;
 
-	[Range(0f, 1f)]
 	[HideInInspector]
+	[Range(0f, 1f)]
 	public float ManualHintPositionWeight;
 
 	[HideInInspector]

@@ -6,8 +6,8 @@ public class TransformLineRenderer : MonoBehaviour, IClientComponent
 {
 	internal struct LineRendererUpdateJob : IJobParallelForTransform
 	{
-		[NativeMatchesParallelForLength]
 		[WriteOnly]
+		[NativeMatchesParallelForLength]
 		public NativeArray<Vector3> ResultWorldPositions;
 
 		public void Execute(int index, [ReadOnly] TransformAccess transform)

@@ -2051,7 +2051,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		List<EntityLink> entityLinks = GetEntityLinks();
 		for (int i = 0; i < entityLinks.Count; i++)
 		{
-			if (entityLinks[i].socket.socketName == socketName)
+			if (entityLinks[i].name == socketName)
 			{
 				return entityLinks[i];
 			}
@@ -2064,9 +2064,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		List<EntityLink> entityLinks = GetEntityLinks();
 		for (int i = 0; i < entityLinks.Count; i++)
 		{
+			string name = entityLinks[i].name;
 			for (int j = 0; j < socketNames.Length; j++)
 			{
-				if (entityLinks[i].socket.socketName == socketNames[j])
+				if (name == socketNames[j])
 				{
 					return entityLinks[i];
 				}
@@ -4628,23 +4629,30 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public void ForceUpdateTriggers(bool enter = true, bool exit = true, bool invoke = true)
 	{
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		if (this is BasePlayer { isInvisible: not false })
 		{
 			return;
@@ -4659,19 +4667,23 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		if (componentInChildren is CapsuleCollider)
 		{
 			CapsuleCollider val = (CapsuleCollider)(object)((componentInChildren is CapsuleCollider) ? componentInChildren : null);
-			Vector3 point = ((Component)this).transform.position + new Vector3(0f, val.radius, 0f);
-			Vector3 point2 = ((Component)this).transform.position + new Vector3(0f, val.height - val.radius, 0f);
-			GamePhysics.OverlapCapsule<TriggerBase>(point, point2, val.radius, list2, 262144, (QueryTriggerInteraction)2);
+			Transform transform = ((Component)val).transform;
+			Vector3 val2 = transform.TransformPoint(val.center);
+			Vector3 zero = Vector3.zero;
+			zero[val.direction] = 1f;
+			float num = Mathf.Max(0f, val.height * 0.5f - val.radius);
+			Vector3 val3 = transform.TransformDirection(zero) * num;
+			GamePhysics.OverlapCapsule<TriggerBase>(val2 - val3, val2 + val3, val.radius, list2, 262144, (QueryTriggerInteraction)2);
 		}
 		else if (componentInChildren is BoxCollider)
 		{
-			BoxCollider val2 = (BoxCollider)(object)((componentInChildren is BoxCollider) ? componentInChildren : null);
-			GamePhysics.OverlapOBB<TriggerBase>(new OBB(((Component)this).transform.position, ((Component)this).transform.lossyScale, ((Component)this).transform.rotation, new Bounds(val2.center, val2.size)), list2, 262144, (QueryTriggerInteraction)2);
+			BoxCollider val4 = (BoxCollider)(object)((componentInChildren is BoxCollider) ? componentInChildren : null);
+			GamePhysics.OverlapOBB<TriggerBase>(new OBB(((Component)this).transform.position, ((Component)this).transform.lossyScale, ((Component)this).transform.rotation, new Bounds(val4.center, val4.size)), list2, 262144, (QueryTriggerInteraction)2);
 		}
 		else if (componentInChildren is SphereCollider)
 		{
-			SphereCollider val3 = (SphereCollider)(object)((componentInChildren is SphereCollider) ? componentInChildren : null);
-			GamePhysics.OverlapSphere<TriggerBase>(((Component)this).transform.TransformPoint(val3.center), val3.radius, list2, 262144, (QueryTriggerInteraction)2);
+			SphereCollider val5 = (SphereCollider)(object)((componentInChildren is SphereCollider) ? componentInChildren : null);
+			GamePhysics.OverlapSphere<TriggerBase>(((Component)this).transform.TransformPoint(val5.center), val5.radius, list2, 262144, (QueryTriggerInteraction)2);
 		}
 		else
 		{
@@ -5588,18 +5600,15 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		if (_name == null)
 		{
-			if (isServer)
+			if (!isServer)
 			{
-				if (net == null)
-				{
-					return ShortPrefabName;
-				}
-				_name = $"{ShortPrefabName}[{net.ID}]";
+				return ShortPrefabName;
 			}
-			else
+			if (net == null)
 			{
-				_name = ShortPrefabName;
+				return ShortPrefabName;
 			}
+			_name = $"{ShortPrefabName}[{net.ID}]";
 		}
 		return _name;
 	}

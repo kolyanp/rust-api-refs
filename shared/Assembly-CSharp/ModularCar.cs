@@ -142,8 +142,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	public SpawnSettings spawnSettings;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	public MeshRenderer[] damageShowingRenderers;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
@@ -269,6 +269,13 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 				}
 				using (TimeWarning.New("RPC_OpenFuelWithKeycode"))
 				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.MaxDistance.Test(1382140449u, "RPC_OpenFuelWithKeycode", this, player, 3f))
+						{
+							return true;
+						}
+					}
 					try
 					{
 						using (TimeWarning.New("Call"))
@@ -985,6 +992,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	public void RPC_OpenFuelWithKeycode(RPCMessage msg)
 	{
@@ -1007,8 +1015,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

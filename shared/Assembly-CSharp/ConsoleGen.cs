@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2468]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2470]
 	{
 		new ConsoleSystem.Command
 		{
@@ -2128,6 +2128,24 @@ public class ConsoleGen
 				Cassette.MaxCassetteFileSizeMB = StringExtensions.ToFloat(str, 0f);
 			},
 			Default = "5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxdecodedaudiomb",
+			Parent = "cassette",
+			FullName = "cassette.maxdecodedaudiomb",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Description = "How much decoded recording audio (tapes, answering machines, voicemails) each client can hold in MB, recordings over this aren't played (clients cap it at 1024)",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Cassette.MaxDecodedAudioMB.ToString(),
+			SetOveride = (string str) =>
+			{
+				Cassette.MaxDecodedAudioMB = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "256"
 		},
 		new ConsoleSystem.Command
 		{
@@ -22763,6 +22781,24 @@ public class ConsoleGen
 				ConVar.Server.max_explosive_protection = StringExtensions.ToFloat(str, 0f);
 			},
 			Default = "0.75"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "max_privilege_auths",
+			Parent = "server",
+			FullName = "server.max_privilege_auths",
+			ServerAdmin = true,
+			Description = "Maximum number of players that can be authorized on a single tool cupboard or vehicle. Lowering it doesn't remove players who are already authorized",
+			Variable = true,
+			GetOveride = () =>
+			{
+				int max_privilege_auths = ConVar.Server.max_privilege_auths;
+				return (max_privilege_auths < -1 || max_privilege_auths > 127) ? max_privilege_auths.ToString() : Memoized.IntToString.Get(max_privilege_auths);
+			},
+			SetOveride = (string str) =>
+			{
+				ConVar.Server.max_privilege_auths = StringExtensions.ToInt(str, 0);
+			}
 		},
 		new ConsoleSystem.Command
 		{

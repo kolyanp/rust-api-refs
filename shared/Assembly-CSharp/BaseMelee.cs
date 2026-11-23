@@ -73,8 +73,8 @@ public class BaseMelee : AttackEntity
 
 	public List<MaterialFX> materialStrikeFX = new List<MaterialFX>();
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float heartStress = 0.5f;
 
 	public ResourceDispenser.GatherProperties gathering;
@@ -228,9 +228,9 @@ public class BaseMelee : AttackEntity
 		return player.GetInheritedThrowVelocity(direction);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void CLEntityThrow(RPCMessage msg)
 	{
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
@@ -329,8 +329,8 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
 	private void CLProject(RPCMessage msg)

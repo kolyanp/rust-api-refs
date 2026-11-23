@@ -33,19 +33,19 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private RustButton animatorToggleButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SkinInfoPanel skinInfoPanel;
 
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject navButtonsGroup;
 
-	[Header("Drag")]
 	[SerializeField]
+	[Header("Drag")]
 	private float inertiaDecay = 5f;
 
 	[Header("Pan")]
@@ -58,15 +58,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed = 0.0001f;
 
-	[SerializeField]
 	[Header("Zoom")]
+	[SerializeField]
 	private float zoomSpeed = 0.1f;
 
 	[SerializeField]
 	private Vector2 minMaxFov = new Vector2(20f, 8f);
 
-	[SerializeField]
 	[Header("Idle")]
+	[SerializeField]
 	private float idleSwaySpeed = 0.1f;
 
 	[SerializeField]

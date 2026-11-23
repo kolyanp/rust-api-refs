@@ -51,8 +51,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public abstract class State_SeagullFly : BirdFlockFSM.State_Fly
 	{
-		[Tooltip("Height above the ground or water the group flies at, in metres.")]
 		[SerializeField]
+		[Tooltip("Height above the ground or water the group flies at, in metres.")]
 		protected float altitude = 25f;
 
 		protected Vector3 Home
@@ -95,16 +95,16 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_FlyAway : State_SeagullFly
 	{
-		[SerializeField]
 		[Tooltip("How long the group flies straight away from the scare before it turns back to circle home, in seconds.")]
+		[SerializeField]
 		private Vector2 durationRange = new Vector2(3f, 6f);
 
 		[Tooltip("Played for every player in range as the group is startled into the air, attached to the group so it follows the flock away.")]
 		[SerializeField]
 		private GameObjectRef startleEffect;
 
-		[SerializeField]
 		[Tooltip("How long the group takes to build up to full speed, in seconds. Keeps it over the birds while they run and take off, so they stay inside its bounds and shootable.")]
+		[SerializeField]
 		private float speedRampTime = 3f;
 
 		[SerializeField]
@@ -286,8 +286,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private Vector2 radiusRange = new Vector2(25f, 50f);
 
-		[Tooltip("How far ahead round the circle the group aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
 		[SerializeField]
+		[Tooltip("How far ahead round the circle the group aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
 		private float leadAngle = 0.6f;
 
 		private TimeUntil circleEnd;
@@ -339,8 +339,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float homeRadius = 150f;
 
-		[SerializeField]
 		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
+		[SerializeField]
 		private Vector2 searchDistance = new Vector2(30f, 500f);
 
 		[Tooltip("Radius the group circles home at while it waits for a land point to come free, in metres.")]
@@ -439,8 +439,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float approachSpeed = 8f;
 
-		[SerializeField]
 		[Tooltip("How fast the group comes down onto the land point, in metres per second.")]
+		[SerializeField]
 		private float descentSpeed = 5f;
 
 		[SerializeField]

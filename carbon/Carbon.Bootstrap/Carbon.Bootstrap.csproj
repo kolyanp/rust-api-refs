@@ -29,12 +29,13 @@
     <Reference Include="Facepunch.Console" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="Facepunch.System" />
-    <Reference Include="Carbon.Profiler">
-      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json" />
     <Reference Include="Carbon.Compat">
       <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Compat.dll</HintPath>
     </Reference>
+    <Reference Include="Carbon.Profiler">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>
+    </Reference>
+    <Reference Include="AsmResolver.DotNet" />
+    <Reference Include="Newtonsoft.Json" />
   </ItemGroup>
 </Project>

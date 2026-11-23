@@ -113,8 +113,8 @@ public class Projectile : ListComponent<Projectile>
 
 	public bool createDecals = true;
 
-	[FormerlySerializedAs("doDefaultHitEffects")]
 	[Header("Effects")]
+	[FormerlySerializedAs("doDefaultHitEffects")]
 	public bool doHitEffects = true;
 
 	[Header("Audio")]

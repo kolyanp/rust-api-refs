@@ -94,6 +94,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public const Flags Flag_BlockAllFromBuilding = Flags.Reserved6;
 
+	public static Phrase authLimitReachedPhrase = new Phrase("auth_limit_reached", "You can't authorize any more players here");
+
 	public List<ItemDefinition> allowedConstructionItems = new List<ItemDefinition>();
 
 	public bool IsInvisibleAuth;
@@ -106,6 +108,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public Dictionary<ulong, uint> recentGroupMembers = new Dictionary<ulong, uint>();
 
 	private Action delayedUpdateCB;
+
+	private HashSet<ulong> pendingPrivilegeReceiverUpdates = new HashSet<ulong>();
 
 	private bool IsTutorialCupboard
 	{
@@ -136,6 +140,10 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(82205621u, "AddAuthorize", this, player, 10uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(82205621u, "AddAuthorize", this, player, 3f))
 						{
 							return true;
@@ -173,6 +181,10 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(253307592u, "ClearList", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(253307592u, "ClearList", this, player, 3f))
 						{
 							return true;
@@ -210,6 +222,10 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(3617985969u, "RemoveSelfAuthorize", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(3617985969u, "RemoveSelfAuthorize", this, player, 3f))
 						{
 							return true;
@@ -1266,6 +1282,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		foreach (ulong authorizedPlayer in source.authorizedPlayers)
 		{
 			authorizedPlayers.Add(authorizedPlayer);
+			QueuePrivilegeReceiverUpdate(authorizedPlayer);
 		}
 		recentGroupMembers.Clear();
 		foreach (KeyValuePair<ulong, uint> recentGroupMember in source.recentGroupMembers)
@@ -1273,7 +1290,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			recentGroupMembers.Add(recentGroupMember.Key, recentGroupMember.Value);
 		}
 		RecalculateGroupUpkeep();
-		UpdatePrivilegeReceivers();
+		UpdateMaxAuthCapacity();
 	}
 
 	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
@@ -1418,13 +1435,9 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public void UpdateMaxAuthCapacity()
 	{
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
-		if (Object.op_Implicit((Object)(object)activeGameMode) && activeGameMode.limitTeamAuths)
-		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
-			{
-				flagsUpdateScope.Set(Flags.Reserved5, authorizedPlayers.Count >= activeGameMode.GetMaxRelationshipTeamSize());
-			}
-		}
+		bool flag = Object.op_Implicit((Object)(object)activeGameMode) && activeGameMode.limitTeamAuths && authorizedPlayers.Count >= activeGameMode.GetMaxRelationshipTeamSize();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved5, flag || authorizedPlayers.Count >= ConVar.Server.max_privilege_auths);
 	}
 
 	protected override void OnInventoryDirty()
@@ -1470,29 +1483,37 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(10uL)]
 	private void AddAuthorize(RPCMessage rpc)
 	{
-		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))
+		if (!rpc.player.CanInteract() || !CanAdministrate(rpc.player))
 		{
-			ulong num = rpc.read.UInt64();
-			if (Interface.CallHook("IOnCupboardAuthorize", num, rpc.player, this) == null)
+			return;
+		}
+		ulong num = rpc.read.UInt64();
+		if (Interface.CallHook("IOnCupboardAuthorize", num, rpc.player, this) == null)
+		{
+			if (AtMaxAuthCapacity())
+			{
+				rpc.player.ShowToast(GameTip.Styles.Red_Normal, authLimitReachedPhrase, false);
+			}
+			else
 			{
 				AddPlayer(rpc.player, num);
-				SendNetworkUpdate();
 			}
+			SendNetworkUpdate();
 		}
 	}
 
 	public void AddPlayer(BasePlayer granter, ulong targetPlayerId)
 	{
-		if (!AtMaxAuthCapacity())
+		if (!AtMaxAuthCapacity() && authorizedPlayers.Add(targetPlayerId))
 		{
-			authorizedPlayers.Add(targetPlayerId);
 			recentGroupMembers.Remove(targetPlayerId);
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, granter, authorizedPlayers, "added", targetPlayerId);
 			RecalculateGroupUpkeep();
 			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			QueuePrivilegeReceiverUpdate(targetPlayerId);
 		}
 	}
 
@@ -1504,10 +1525,11 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, fromPly, authorizedPlayers, "removed", targetPlayerId);
 			RecalculateGroupUpkeep();
 			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			QueuePrivilegeReceiverUpdate(targetPlayerId);
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void RemoveSelfAuthorize(RPCMessage rpc)
@@ -1519,6 +1541,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void ClearList(RPCMessage rpc)
@@ -1536,15 +1559,15 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		foreach (ulong authorizedPlayer in authorizedPlayers)
 		{
 			recentGroupMembers[authorizedPlayer] = current;
+			QueuePrivilegeReceiverUpdate(authorizedPlayer);
 		}
 		authorizedPlayers.Clear();
 		RecalculateGroupUpkeep();
 		UpdateMaxAuthCapacity();
-		UpdatePrivilegeReceivers();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Rotate(RPCMessage msg)
 	{
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -1623,30 +1646,49 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
+	private void QueuePrivilegeReceiverUpdate(ulong userId)
+	{
+		pendingPrivilegeReceiverUpdates.Add(userId);
+		if (!IsInvoking(UpdatePrivilegeReceivers))
+		{
+			Invoke(UpdatePrivilegeReceivers, 1f);
+		}
+	}
+
 	private void UpdatePrivilegeReceivers()
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		BuildingManager.Building building = GetBuilding();
 		if (building == null)
 		{
+			pendingPrivilegeReceiverUpdates.Clear();
 			return;
 		}
-		Enumerator<DecayEntity> enumerator = building.decayEntities.GetEnumerator();
-		try
+		foreach (ulong pendingPrivilegeReceiverUpdate in pendingPrivilegeReceiverUpdates)
 		{
-			while (enumerator.MoveNext())
+			BasePlayer basePlayer = BasePlayer.FindByID(pendingPrivilegeReceiverUpdate);
+			if ((Object)(object)basePlayer == (Object)null)
 			{
-				if (enumerator.Current is IPrivilegeUpdateReceiver privilegeUpdateReceiver)
+				continue;
+			}
+			Enumerator<DecayEntity> enumerator2 = building.decayEntities.GetEnumerator();
+			try
+			{
+				while (enumerator2.MoveNext())
 				{
-					privilegeUpdateReceiver.OnPrivilegeUpdated(this, authorizedPlayers);
+					if (enumerator2.Current is IPrivilegeUpdateReceiver privilegeUpdateReceiver)
+					{
+						privilegeUpdateReceiver.OnPrivilegeUpdated(this, basePlayer);
+					}
 				}
 			}
+			finally
+			{
+				((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
-		}
+		pendingPrivilegeReceiverUpdates.Clear();
 	}
 
 	public override bool SupportsRoomOcclusion()
@@ -1685,6 +1727,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 		Pool.FreeUnmanaged<ulong, uint>(ref buildingPrivilegePreserve.recentGroupMembers);
 		RecalculateGroupUpkeep();
+		UpdateMaxAuthCapacity();
 		RegisterForToolCupboardLimit();
 	}
 
@@ -1708,5 +1751,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		//IL_001e: Expected Obj, but got Unknown
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Expected Obj, but got Unknown
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Expected Obj, but got Unknown
 	}
 }

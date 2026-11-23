@@ -114,8 +114,8 @@ public class MapEntity : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.FromOwner]
 	public void ImageUpdate(RPCMessage msg)
 	{

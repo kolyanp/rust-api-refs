@@ -45,8 +45,8 @@ public class UIChat : PriorityListComponent<UIChat>
 
 	public UI_FriendsList friendsList;
 
-	[Header("Disable Settings")]
 	[Tooltip("Disable the text input field rather than hiding it.")]
+	[Header("Disable Settings")]
 	public bool useDisable;
 
 	public RustInput rustInput;

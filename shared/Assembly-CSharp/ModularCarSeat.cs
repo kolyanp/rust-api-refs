@@ -39,6 +39,14 @@ public class ModularCarSeat : MouseSteerableSeat
 		return true;
 	}
 
+	public override void AttemptMount(BasePlayer player, bool doMountChecks = true)
+	{
+		if (!((Object)(object)associatedSeatingModule == (Object)null) && CanSwapToThis(player))
+		{
+			base.AttemptMount(player, doMountChecks);
+		}
+	}
+
 	public override float GetComfort()
 	{
 		return providesComfort;

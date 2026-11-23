@@ -214,6 +214,10 @@ public class ModularCarCodeLock
 		{
 			return (bool)obj;
 		}
+		if (!player.CanInteract())
+		{
+			return false;
+		}
 		if (CodeEntryBlocked(player))
 		{
 			return false;

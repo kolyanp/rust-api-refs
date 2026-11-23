@@ -52,8 +52,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 
 	private static readonly Action<TrainEngine> _decreaseThrottleCallback = DecreaseThrottle;
 
-	[Header("Train Engine")]
 	[SerializeField]
+	[Header("Train Engine")]
 	public Transform leftHandLever;
 
 	[SerializeField]
@@ -116,8 +116,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private VehicleLight[] movingForwardLights;
 
-	[SerializeField]
 	[FormerlySerializedAs("movingBackwardsLights")]
+	[SerializeField]
 	private VehicleLight[] movingBackwardLights;
 
 	[SerializeField]

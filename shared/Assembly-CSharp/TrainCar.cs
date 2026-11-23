@@ -131,8 +131,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
-	[SerializeField]
 	[FormerlySerializedAs("rearCoupleFx")]
+	[SerializeField]
 	public ParticleSystem rearCouplingChangedFx;
 
 	[SerializeField]

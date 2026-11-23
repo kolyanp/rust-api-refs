@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class SubmarineAudio : MonoBehaviour
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -18,8 +18,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve engineLoopPitchCurve;
 
-	[Header("Water")]
 	[SerializeField]
+	[Header("Water")]
 	private SoundDefinition underwaterLoopDef;
 
 	[SerializeField]
@@ -37,8 +37,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition waterSubmergeSoundDef;
 
-	[SerializeField]
 	[Header("Interior")]
+	[SerializeField]
 	private SoundDefinition activeLoopDef;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private GameObject dashboardAudioPoint;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private SoundDefinition climbOrDiveLoopSound;
 
 	[SerializeField]

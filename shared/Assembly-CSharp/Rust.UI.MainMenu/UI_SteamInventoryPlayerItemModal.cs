@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_SteamInventoryPlayerItemModal : UI_SteamInventoryItemBaseModal
 {
-	[SerializeField]
 	[Header("Breakdown")]
+	[SerializeField]
 	private GameObject breakdownGroup;
 
 	[SerializeField]
@@ -20,8 +20,8 @@ public class UI_SteamInventoryPlayerItemModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	protected UI_SteamInventoryCraftingModal.MaterialGroup clothGroup;
 
-	[Header("Breakdown Controls")]
 	[SerializeField]
+	[Header("Breakdown Controls")]
 	private GameObject breakdownButtonGroup;
 
 	[SerializeField]

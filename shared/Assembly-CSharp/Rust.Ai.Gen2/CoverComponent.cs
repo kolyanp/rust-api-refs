@@ -5,8 +5,8 @@ namespace Rust.Ai.Gen2;
 
 public class CoverComponent : MonoBehaviour, IServerComponent
 {
-	[SerializeReference]
 	[Polymorphic]
+	[SerializeReference]
 	public CoverGroup coverGroup;
 
 	private void OnEnable()

@@ -52,11 +52,13 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 	public class Library
 	{
+		private PrefabKey prefabKey = new PrefabKey();
+
+		public Dictionary<ulong, AttributeCollection> prefabs = new Dictionary<ulong, AttributeCollection>();
+
 		public bool clientside;
 
 		public bool serverside;
-
-		public Dictionary<uint, AttributeCollection> prefabs = new Dictionary<uint, AttributeCollection>();
 
 		public Library(bool clientside, bool serverside)
 		{
@@ -66,12 +68,13 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 		public AttributeCollection Find(uint prefabID, bool warmup = true)
 		{
-			if (prefabs.TryGetValue(prefabID, out var value))
+			ulong key = prefabKey.Get(prefabID);
+			if (prefabs.TryGetValue(key, out var value))
 			{
 				return value;
 			}
 			value = new AttributeCollection();
-			prefabs.Add(prefabID, value);
+			prefabs.Add(key, value);
 			if (warmup && (!clientside || serverside))
 			{
 				if (!clientside && serverside)
@@ -120,7 +123,7 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 		public void Invalidate(uint prefabID)
 		{
-			prefabs.Remove(prefabID);
+			prefabs.Remove(prefabKey.Get(prefabID));
 		}
 
 		public void InvalidateAll()
@@ -157,7 +160,7 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	public string localName;
 
 	[NonSerialized]
-	public uint prefabID;
+	private EncryptedValue<uint> prefabIDValue = 0u;
 
 	[NonSerialized]
 	public int instanceID;
@@ -171,8 +174,8 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public bool isServer;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 authoredLocalPosition;
 
 	[HideInInspector]
@@ -183,9 +186,9 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[SerializeField]
 	private Vector3 authoredLocalScale;
 
-	[HideInInspector]
 	[FlattenIgnoreReference]
 	[SerializeField]
+	[HideInInspector]
 	private Transform flattenedParent;
 
 	[HideInInspector]
@@ -196,11 +199,23 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[SerializeField]
 	private Quaternion flattenedLocalRotation;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 flattenedLocalScale;
 
 	public static Library server = new Library(clientside: false, serverside: true);
+
+	public uint prefabID
+	{
+		get
+		{
+			return prefabIDValue.Get();
+		}
+		set
+		{
+			prefabIDValue.Set(value);
+		}
+	}
 
 	public bool isClient => !isServer;
 
@@ -303,11 +318,7 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 	public override int GetHashCode()
 	{
-		if (hierachyName == null)
-		{
-			return ((Object)this).GetHashCode();
-		}
-		return hierachyName.GetHashCode();
+		return instanceID;
 	}
 
 	public static implicit operator bool(PrefabAttribute exists)

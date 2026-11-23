@@ -25,8 +25,8 @@ public class UI_SteamInventoryCraftingModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	private MaterialGroup clothGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject craftOK;
 
 	[SerializeField]

@@ -30,7 +30,7 @@ public abstract class SocketMod : PrefabAttribute
 
 	public virtual string GetDebugErrorMessage()
 	{
-		return hierachyName ?? "";
+		return ((object)this).ToString();
 	}
 
 	public virtual bool DoCheck(ref Construction.Placement place)

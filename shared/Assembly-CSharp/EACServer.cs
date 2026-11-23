@@ -161,6 +161,10 @@ public static class EACServer
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Invalid comparison between Unknown and I4
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		if (!ConVar.Server.anticheattoken)
 		{
 			Debug.LogWarning((object)"[EAC] Verify ID token skipped: server.anticheattoken == false");
@@ -186,14 +190,22 @@ public static class EACServer
 			Net.sv.Kick(connection, "EAC: " + text);
 			return;
 		}
-		string text2 = ((object)data.AccountId).ToString();
-		string text3 = connection.userid.ToString();
-		if (text2 != text3)
+		if (!data.IsAccountInfoPresent || (int)data.AccountIdType != 1 || data.AccountId == (Utf8String)null)
 		{
-			string text4 = "Verify ID token account mismatch with " + text2 + " != " + text3;
-			Debug.Log((object)$"[EAC] Kicking {connection.userid} / {connection.username} ({text4})");
+			string text2 = "Verify ID token missing Steam account (" + (data.IsAccountInfoPresent ? ((object)data.AccountIdType/*cast due to constrained. prefix*/).ToString() : "none") + ")";
+			Debug.Log((object)$"[EAC] Kicking {connection.userid} / {connection.username} ({text2})");
 			connection.authStatusEAC = "eactoken";
-			Net.sv.Kick(connection, "EAC: " + text4);
+			Net.sv.Kick(connection, "EAC: " + text2);
+			return;
+		}
+		string text3 = ((object)data.AccountId).ToString();
+		string text4 = connection.userid.ToString();
+		if (text3 != text4)
+		{
+			string text5 = "Verify ID token account mismatch with " + text3 + " != " + text4;
+			Debug.Log((object)$"[EAC] Kicking {connection.userid} / {connection.username} ({text5})");
+			connection.authStatusEAC = "eactoken";
+			Net.sv.Kick(connection, "EAC: " + text5);
 		}
 	}
 

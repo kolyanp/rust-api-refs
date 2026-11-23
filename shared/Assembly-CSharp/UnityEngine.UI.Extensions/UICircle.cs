@@ -9,8 +9,8 @@ public class UICircle : UIPrimitiveBase
 	[Tooltip("The Arc Invert property will invert the construction of the Arc.")]
 	public bool ArcInvert = true;
 
-	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
 	[Range(0f, 1f)]
+	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
 	public float Arc = 1f;
 
 	[Range(0f, 1000f)]
@@ -21,8 +21,8 @@ public class UICircle : UIPrimitiveBase
 	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	public int ArcRotation;
 
-	[Tooltip("The Progress property allows the primitive to be used as a progression indicator.")]
 	[Range(0f, 1f)]
+	[Tooltip("The Progress property allows the primitive to be used as a progression indicator.")]
 	public float Progress;
 
 	private float _progress;

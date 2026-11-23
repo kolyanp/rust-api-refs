@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class StringPool
@@ -7,6 +8,8 @@ public class StringPool
 	public static Dictionary<uint, string> toString;
 
 	public static Dictionary<string, uint> toNumber;
+
+	private static Dictionary<uint, string> toShortName;
 
 	public static bool initialized;
 
@@ -20,6 +23,7 @@ public class StringPool
 		}
 		toString = new Dictionary<uint, string>();
 		toNumber = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);
+		toShortName = new Dictionary<uint, string>();
 		GameManifest gameManifest = FileSystem.Load<GameManifest>("Assets/manifest.asset", true);
 		for (uint num = 0u; num < gameManifest.pooledStrings.Length; num++)
 		{
@@ -34,8 +38,7 @@ public class StringPool
 			}
 			else
 			{
-				toString.Add(hash, str);
-				toNumber.Add(str, hash);
+				Add(hash, str);
 			}
 		}
 		initialized = true;
@@ -68,6 +71,21 @@ public class StringPool
 		return toString.TryGetValue(i, out str);
 	}
 
+	public static string GetShortName(uint i)
+	{
+		if (i == 0)
+		{
+			return string.Empty;
+		}
+		Init();
+		if (toShortName.TryGetValue(i, out var value))
+		{
+			return value;
+		}
+		Debug.LogWarning((object)("StringPool.GetShortName - no short name for ID" + i));
+		return "";
+	}
+
 	public static uint Get(string str)
 	{
 		if (string.IsNullOrEmpty(str))
@@ -89,9 +107,15 @@ public class StringPool
 		if (!toNumber.TryGetValue(str, out value))
 		{
 			value = StringEx.ManifestHash(str);
-			toString.Add(value, str);
-			toNumber.Add(str, value);
+			Add(value, str);
 		}
 		return value;
+	}
+
+	private static void Add(uint hash, string str)
+	{
+		toString.Add(hash, str);
+		toNumber.Add(str, hash);
+		toShortName.Add(hash, Path.GetFileNameWithoutExtension(str));
 	}
 }

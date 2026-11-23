@@ -14,7 +14,7 @@ public class EntityLink : IPooled
 
 	public List<EdgeLink> edges = new List<EdgeLink>();
 
-	public string name => socket.socketName;
+	public string name => StringPool.Get(socket.socketID);
 
 	public void Setup(BaseEntity owner, Socket_Base socket)
 	{

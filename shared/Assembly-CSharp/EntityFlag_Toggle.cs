@@ -58,8 +58,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public BaseEntity.Flags flag;
 
-	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	[SerializeField]
+	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	private FlagCheck flagCheck;
 
 	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
@@ -72,12 +72,12 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	[SerializeField]
 	private UnityEvent onFlagDisabled = new UnityEvent();
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private BakedListener[] onFlagEnabledListeners;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private BakedListener[] onFlagDisabledListeners;
 
 	internal bool hasRunOnce;

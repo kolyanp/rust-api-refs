@@ -128,8 +128,8 @@ public class PaintballGun : BaseProjectile
 		ClientRPC(RpcTarget.NetworkGroup("ClientRPC_ReceivePaintballColorChanged"), currentPaintballColor);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_PaintballColorChanged(RPCMessage msg)
 	{
 		if (PaintballColorLookup.instance == null)

@@ -22,8 +22,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far from the entity the crabs spread out. They turn back when they reach the edge rather than despawning.")]
 		public float swarmRadius;
 
-		[Tooltip("Speed while wandering around.")]
 		[Header("Movement")]
+		[Tooltip("Speed while wandering around.")]
 		public float minSpeed;
 
 		[Tooltip("Speed while startled, ie when the player gets close.")]
@@ -83,8 +83,8 @@ public class CrabGrouping : IDisposable
 
 		public float maxScale;
 
-		[Tooltip("Each crab picks a random point along this, applied where the material's colour mask is white.")]
 		[Header("Tint")]
+		[Tooltip("Each crab picks a random point along this, applied where the material's colour mask is white.")]
 		public Gradient tintRange;
 
 		[Tooltip("Replaces the gradient for the odd crab, eg a rare blue one.")]

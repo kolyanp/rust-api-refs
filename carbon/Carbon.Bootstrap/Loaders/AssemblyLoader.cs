@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using API.Assembly;
 using Carbon;
+using Carbon.Compat;
 using Carbon.Components;
 using Carbon.Profiler;
 using Utility;
@@ -61,12 +62,12 @@ internal sealed class AssemblyLoader : IDisposable
 		{
 			return null;
 		}
-		byte[] asm = File.ReadAllBytes(text);
+		byte[] data = File.ReadAllBytes(text);
 		switch (extensionType)
 		{
 		case IExtensionManager.ExtensionTypes.Extension:
 		{
-			ConversionResult conversionResult = Community.Runtime.Compat.AttemptOxideConvert(ref asm);
+			ConversionResult conversionResult = ((CompatManager)Community.Runtime.Compat).ConvertExtension(ref data);
 			if (conversionResult == ConversionResult.Fail)
 			{
 				Utility.Logger.Warn(" >> Failed Oxide extension conversion for '" + file + "'");
@@ -75,29 +76,29 @@ internal sealed class AssemblyLoader : IDisposable
 			break;
 		}
 		case IExtensionManager.ExtensionTypes.HarmonyMod:
-			Community.Runtime.Compat.ConvertHarmonyMod(ref asm);
-			if (asm == null)
+			Community.Runtime.Compat.ConvertHarmonyMod(ref data);
+			if (data == null)
 			{
 				Utility.Logger.Warn(" >> Failed HarmonyMod conversion for '" + file + "'");
 				return null;
 			}
 			break;
 		}
-		string key = Util.sha1(asm);
+		string key = Util.sha1(data);
 		if (_cache.TryGetValue(key, out var value))
 		{
 			return value;
 		}
 		Assembly assembly;
-		if (IndexOf(asm, _needleBuffer) == 0)
+		if (IndexOf(data, _needleBuffer) == 0)
 		{
 			ResetChechsum();
-			Buffer.BlockCopy(asm, 4, _checksumBuffer, 0, 20);
-			assembly = Assembly.Load(Package(_checksumBuffer, asm, 24));
+			Buffer.BlockCopy(data, 4, _checksumBuffer, 0, 20);
+			assembly = Assembly.Load(Package(_checksumBuffer, data, 24));
 		}
 		else
 		{
-			assembly = Assembly.Load(asm);
+			assembly = Assembly.Load(data);
 		}
 		if (extensionType == IExtensionManager.ExtensionTypes.Extension)
 		{
@@ -107,7 +108,7 @@ internal sealed class AssemblyLoader : IDisposable
 		value = new Item
 		{
 			Name = file,
-			Raw = asm,
+			Raw = data,
 			Assembly = assembly
 		};
 		_cache.Add(key, value);

@@ -33,53 +33,54 @@ public class OxideILSwitch : BaseOxidePatch
 
 	public override void Apply(ModuleDefinition assembly, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_054c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0551: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0553: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0558: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017a: Expected Obj, but got Unknown
-		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0226: Invalid comparison between Unknown and I4
-		//IL_0458: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0480: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0486: Expected Obj, but got Unknown
-		//IL_0488: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0493: Expected Obj, but got Unknown
-		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034b: Invalid comparison between Unknown and I4
-		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0795: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0627: Unknown result type (might be due to invalid IL or missing references)
-		//IL_064f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0654: Unknown result type (might be due to invalid IL or missing references)
-		//IL_065a: Expected Obj, but got Unknown
-		//IL_065c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0661: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0667: Expected Obj, but got Unknown
-		//IL_0669: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0679: Unknown result type (might be due to invalid IL or missing references)
-		//IL_067f: Expected Obj, but got Unknown
-		//IL_0681: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0691: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0697: Expected Obj, but got Unknown
+		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Expected Obj, but got Unknown
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022d: Invalid comparison between Unknown and I4
+		//IL_045f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0482: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0487: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048d: Expected Obj, but got Unknown
+		//IL_048f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0494: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049a: Expected Obj, but got Unknown
+		//IL_034b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0352: Invalid comparison between Unknown and I4
+		//IL_0529: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_079c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_062e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0656: Unknown result type (might be due to invalid IL or missing references)
+		//IL_065b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0661: Expected Obj, but got Unknown
+		//IL_0663: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0668: Unknown result type (might be due to invalid IL or missing references)
+		//IL_066e: Expected Obj, but got Unknown
+		//IL_0670: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0680: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0686: Expected Obj, but got Unknown
+		//IL_0688: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0698: Unknown result type (might be due to invalid IL or missing references)
+		//IL_069e: Expected Obj, but got Unknown
+		PrefabIdPatch.Apply(assembly);
 		foreach (TypeDefinition allType in assembly.GetAllTypes())
 		{
 			bool flag = allType.IsBaseType((ITypeDefOrRef x) => x.Name == "RustPlugin" && ((AssemblyDescriptor)((ITypeDescriptor)(object)x).DefinitionAssembly()).Name == "Carbon.Common");

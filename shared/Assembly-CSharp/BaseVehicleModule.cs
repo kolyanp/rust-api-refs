@@ -44,8 +44,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	[SerializeField]
 	private VehicleLight[] lights;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private NPCMountable npcMountable;
 
 	public LODLevel[] lodRenderers;
@@ -54,12 +54,12 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	[HideInInspector]
 	private List<ConditionalObject> conditionals;
 
-	[SerializeField]
 	[Header("Trigger Parent")]
+	[SerializeField]
 	private TriggerParent[] triggerParents;
 
-	[SerializeField]
 	[Header("Sliding Components")]
+	[SerializeField]
 	private VehicleModuleSlidingComponent[] slidingComponents;
 
 	[SerializeField]
@@ -247,8 +247,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Use(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

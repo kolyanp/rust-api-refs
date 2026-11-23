@@ -334,9 +334,9 @@ public class BuildingBlock : StabilityEntity
 		return DeployVolume.CheckInPlaceOf(this, ((Component)this).transform.rotation, volumes);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SERVER_DoFlip(RPCMessage msg)
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
@@ -471,7 +471,7 @@ public class BuildingBlock : StabilityEntity
 	{
 		if (blockDefinition.grades == null || iGrade <= BuildingGrade.Enum.None || iGrade >= BuildingGrade.Enum.Count)
 		{
-			Debug.LogError((object)("Tried to set to undefined grade! " + blockDefinition.fullName), (Object)(object)((Component)this).gameObject);
+			Debug.LogError((object)("Tried to set to undefined grade! " + (object)blockDefinition), (Object)(object)((Component)this).gameObject);
 			return;
 		}
 		grade = iGrade;
@@ -509,8 +509,8 @@ public class BuildingBlock : StabilityEntity
 		health = MaxHealth();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoUpgradeToGrade(RPCMessage msg)
 	{
 		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
@@ -1149,7 +1149,7 @@ public class BuildingBlock : StabilityEntity
 
 	public override void ServerInit()
 	{
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		blockDefinition = PrefabAttribute.server.Find<Construction>(prefabID);
 		if (blockDefinition == null)
 		{
@@ -1340,8 +1340,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))
@@ -1512,7 +1512,11 @@ public class BuildingBlock : StabilityEntity
 		{
 			return false;
 		}
-		Socket_Base socket_Base = PrefabAttribute.server.FindAll<Socket_Base>(prefabID).FirstOrDefault((Socket_Base s) => s.socketName.Contains("wallpaper") && s.socketName.EndsWith((side == 0) ? "1" : "2"));
+		Socket_Base socket_Base = PrefabAttribute.server.FindAll<Socket_Base>(prefabID).FirstOrDefault((Socket_Base s) =>
+		{
+			string text = StringPool.Get(s.socketID);
+			return text.Contains("wallpaper") && text.EndsWith((side == 0) ? "1" : "2");
+		});
 		if (socket_Base == null)
 		{
 			return false;

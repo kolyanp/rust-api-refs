@@ -31,12 +31,12 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	public Material pixelNormalMaterial;
 
-	[SerializeField]
 	[Range(1f, 8f)]
+	[SerializeField]
 	public int minVertLOD = 3;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected int lodGlobalScale = 2;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[Range(0f, 4f)]
 	protected int vertexDensity;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int vertexDensityReduction;
 
 	public bool debugCullingOn = true;
@@ -90,8 +90,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 
 	private const string OUTPUT_DEPTH_PREPASS_KEYWORD = "OUTPUT_DEPTH_PREPASS";
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private int[] lodCellExtents = new int[8] { 1, 1, 1, 1, 1, 1, 1, 1 };
 
 	public GeometryClipmapTerrain()

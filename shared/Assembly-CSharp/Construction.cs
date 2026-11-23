@@ -283,7 +283,6 @@ public class Construction : PrefabAttribute
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f5: Unknown result type (might be due to invalid IL or missing references)
@@ -355,7 +354,7 @@ public class Construction : PrefabAttribute
 			lastPlacementError = ConstructionErrors.NoPermission;
 			return false;
 		}
-		if (!canBeDeployedInDeepSeaWater && DeepSea.block_building && DeepSeaManager.IsInsideDeepSea(transform.position))
+		if (!canBeDeployedInDeepSeaWater && DeepSea.block_building && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)target.player))
 		{
 			if ((Object)(object)target.entity == (Object)null && !canPlaceAtMaxDistance)
 			{

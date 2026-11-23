@@ -15,8 +15,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[Header("Train Car Unloadable")]
 	[SerializeField]
+	[Header("Train Car Unloadable")]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]

@@ -6,8 +6,8 @@ public class DistanceFlareLOD : FacepunchBehaviour, IClientComponent, IPrefabPre
 {
 	public const float DefaultMaxDistance = 2000f;
 
-	[FormerlySerializedAs("minEnabledDistance")]
 	[Min(0f)]
+	[FormerlySerializedAs("minEnabledDistance")]
 	public float minDistance = 40f;
 
 	public float maxDistance = 2000f;

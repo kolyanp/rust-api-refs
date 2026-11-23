@@ -15,8 +15,8 @@ public class World : ConsoleSystem
 	[ClientVar(Help = "(Generated) When enabled, world assets are streamed in and out based on proximity; disable to force all world data to stay loaded at once")]
 	public static bool streaming = true;
 
-	[ServerVar]
 	[ClientVar(Help = "Cross-checks every topology radius query against a flat scan and logs mismatches; slow, for validating the topology hierarchy")]
+	[ServerVar]
 	public static bool topology_hierarchy_validate = false;
 
 	[ServerVar(Help = "(Generated) World generation config string passed directly to the procedural map generator; overrides the config file if set")]

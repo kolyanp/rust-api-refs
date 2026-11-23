@@ -6,22 +6,22 @@ namespace Rust.Ai.Gen2;
 [CreateAssetMenu(menuName = "Rust/AI/Livestock Species")]
 public class LivestockSpecies : ScriptableObject
 {
-	[Header("Adult")]
 	[Tooltip("The adult female. Set to the same prefab as Adult Male when one prefab covers both sexes.")]
+	[Header("Adult")]
 	public GameObjectRef AdultFemale;
 
 	[Tooltip("The adult male. Set to the same prefab as Adult Female when one prefab covers both sexes.")]
 	public GameObjectRef AdultMale;
 
-	[Header("Child")]
 	[Tooltip("The newborn female. Set to the same prefab as Child Male unless the sexes need different models this young.")]
+	[Header("Child")]
 	public GameObjectRef ChildFemale;
 
 	[Tooltip("The newborn male. Set to the same prefab as Child Female unless the sexes need different models this young.")]
 	public GameObjectRef ChildMale;
 
-	[Min(0f)]
 	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
+	[Min(0f)]
 	[Header("Value")]
 	public float SaleValueScale = 1f;
 

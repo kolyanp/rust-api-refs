@@ -83,11 +83,31 @@ public class UI_LoadingScreen : SingletonComponent<UI_LoadingScreen>
 	{
 		get
 		{
-			if ((Object)(object)SingletonComponent<UI_LoadingScreen>.Instance != (Object)null)
+			UI_LoadingScreen instance = SingletonComponent<UI_LoadingScreen>.Instance;
+			if ((Object)(object)instance == (Object)null)
 			{
-				return SingletonComponent<UI_LoadingScreen>.Instance._isOpen;
+				return false;
 			}
-			return false;
+			if (!instance._isOpen)
+			{
+				return false;
+			}
+			Canvas val = instance.canvas;
+			if (!((Behaviour)val).enabled)
+			{
+				return false;
+			}
+			GameObject gameObject = ((Component)instance).gameObject;
+			CanvasGroup val2 = instance.panel;
+			if ((Object)(object)((Component)val).gameObject != (Object)(object)gameObject)
+			{
+				return false;
+			}
+			if ((Object)(object)((Component)val2).gameObject != (Object)(object)gameObject)
+			{
+				return false;
+			}
+			return val2.alpha > 0f;
 		}
 	}
 

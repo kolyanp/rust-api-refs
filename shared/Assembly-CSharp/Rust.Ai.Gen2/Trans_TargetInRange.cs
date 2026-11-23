@@ -12,8 +12,8 @@ public class Trans_TargetInRange : FSMTransitionBase
 	[SerializeField]
 	public float TimeToPredict;
 
-	[SerializeField]
 	[Tooltip("Point on the NPC to measure from, in its local space, or zero for its origin. A long animal measures its attack range from out in front of itself rather than from its middle.")]
+	[SerializeField]
 	public Vector3 Offset = Vector3.zero;
 
 	[Tooltip("How far above or below us the target may be, or zero for no bound. A range measured in three dimensions counts a storey of height as ordinary reach, so an attack that cannot swing upwards needs this as well as a range.")]

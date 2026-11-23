@@ -21,14 +21,14 @@ using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
+	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	public static bool checktriggers = false;
 
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
@@ -65,8 +65,8 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When true, nav mesh obstacle components on loot containers are disabled in the deep sea zone to improve performance in underwater areas")]
 	public static bool disableLootNavObstaclesInDeepSea = true;
 
-	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
+	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
 	[ServerVar(Help = "Max KB per second of debug overlay drawings, such as livestock.drawpens, streamed to each viewer. Changed groups past it wait for the next refresh, nearest first")]
@@ -141,8 +141,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
@@ -1510,8 +1510,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	[ServerVar]
+	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -2104,8 +2104,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
 	public static void printqueues(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using ConVar;
+using Facepunch;
 using Network;
 using Oxide.Core;
 using Rust;
@@ -200,53 +202,87 @@ public class Effect : EffectData
 	{
 		public static void Run(Type fxtype, BaseEntity ent, uint boneID = 0u, Vector3 posLocal = default(Vector3), Vector3 normLocal = default(Vector3), Connection sourceConnection = null, bool broadcast = false, List<Connection> targets = null, int number = 0)
 		{
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			reusableInstance.Init(fxtype, ent, boneID, posLocal, normLocal, sourceConnection);
-			reusableInstance.broadcast = broadcast;
-			reusableInstance.targets = targets;
-			((EffectData)reusableInstance).number = number;
-			EffectNetwork.Send(reusableInstance);
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			Effect effect = Pool.Get<Effect>();
+			try
+			{
+				effect.Init(fxtype, ent, boneID, posLocal, normLocal, sourceConnection);
+				effect.broadcast = broadcast;
+				effect.targets = targets;
+				((EffectData)effect).number = number;
+				EffectNetwork.Send(effect);
+			}
+			finally
+			{
+				((IDisposable)effect)?.Dispose();
+			}
 		}
 
 		public static void Run(string strName, BaseEntity ent, uint boneID = 0u, Vector3 posLocal = default(Vector3), Vector3 normLocal = default(Vector3), Connection sourceConnection = null, bool broadcast = false, List<Connection> targets = null, int number = 0, Type type = Type.Generic)
 		{
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			if (!string.IsNullOrEmpty(strName))
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			if (string.IsNullOrEmpty(strName))
 			{
-				reusableInstance.Init(type, ent, boneID, posLocal, normLocal, sourceConnection);
-				reusableInstance.pooledString = strName;
-				reusableInstance.broadcast = broadcast;
-				reusableInstance.targets = targets;
-				((EffectData)reusableInstance).number = number;
-				EffectNetwork.Send(reusableInstance);
+				return;
+			}
+			Effect effect = Pool.Get<Effect>();
+			try
+			{
+				effect.Init(type, ent, boneID, posLocal, normLocal, sourceConnection);
+				effect.pooledString = strName;
+				effect.broadcast = broadcast;
+				effect.targets = targets;
+				((EffectData)effect).number = number;
+				EffectNetwork.Send(effect);
+			}
+			finally
+			{
+				((IDisposable)effect)?.Dispose();
 			}
 		}
 
 		public static void Run(Type fxtype, Vector3 posWorld = default(Vector3), Vector3 normWorld = default(Vector3), Connection sourceConnection = null, bool broadcast = false, List<Connection> targets = null, int number = 0)
 		{
-			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			reusableInstance.Init(fxtype, posWorld, normWorld, sourceConnection);
-			reusableInstance.broadcast = broadcast;
-			reusableInstance.targets = targets;
-			((EffectData)reusableInstance).number = number;
-			EffectNetwork.Send(reusableInstance);
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			Effect effect = Pool.Get<Effect>();
+			try
+			{
+				effect.Init(fxtype, posWorld, normWorld, sourceConnection);
+				effect.broadcast = broadcast;
+				effect.targets = targets;
+				((EffectData)effect).number = number;
+				EffectNetwork.Send(effect);
+			}
+			finally
+			{
+				((IDisposable)effect)?.Dispose();
+			}
 		}
 
 		public static void Run(string strName, Vector3 posWorld = default(Vector3), Vector3 normWorld = default(Vector3), Connection sourceConnection = null, bool broadcast = false, List<Connection> targets = null, int number = 0, Type type = Type.Generic)
 		{
-			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-			if (!string.IsNullOrEmpty(strName))
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			if (string.IsNullOrEmpty(strName))
 			{
-				reusableInstance.Init(type, posWorld, normWorld, sourceConnection);
-				reusableInstance.pooledString = strName;
-				reusableInstance.broadcast = broadcast;
-				reusableInstance.targets = targets;
-				((EffectData)reusableInstance).number = number;
-				EffectNetwork.Send(reusableInstance);
+				return;
+			}
+			Effect effect = Pool.Get<Effect>();
+			try
+			{
+				effect.Init(type, posWorld, normWorld, sourceConnection);
+				effect.pooledString = strName;
+				effect.broadcast = broadcast;
+				effect.targets = targets;
+				((EffectData)effect).number = number;
+				EffectNetwork.Send(effect);
+			}
+			finally
+			{
+				((IDisposable)effect)?.Dispose();
 			}
 		}
 
@@ -423,8 +459,6 @@ public class Effect : EffectData
 
 	public BasePlayer invisibleInstigator;
 
-	private static Effect reusableInstance = new Effect();
-
 	public Effect()
 	{
 	}
@@ -528,28 +562,13 @@ public class Effect : EffectData
 
 	public void Clear()
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		base.type = 0u;
-		base.pooledstringid = 0u;
-		base.number = 0;
-		base.origin = default;
-		base.normal = default;
-		base.scale = 0f;
-		base.entity = default;
-		base.bone = 0u;
-		base.source = 0uL;
-		base.distanceOverride = 0f;
-		base.ignoreMaxSpawnDistance = false;
-		base.sourceEntity = default;
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		EffectData.ResetFields((EffectData)(object)this);
 		if (base.invisiblePlayerData != null)
 		{
 			base.invisiblePlayerData.ResetToPool();
@@ -565,5 +584,16 @@ public class Effect : EffectData
 		broadcast = false;
 		targets = null;
 		invisibleInstigator = null;
+	}
+
+	public override void EnterPool()
+	{
+		Clear();
+		((EffectData)this).EnterPool();
+	}
+
+	protected override void FreeToPool()
+	{
+		EffectData.Free<Effect>(this);
 	}
 }

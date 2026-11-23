@@ -4,13 +4,19 @@ using System.Linq;
 using ConVar;
 using Facepunch;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
+public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess, ISerializationCallbackReceiver
 {
 	public bool restoreHierarchy;
 
+	[SerializeField]
+	[FormerlySerializedAs("prefabID")]
 	[HideInInspector]
-	public uint prefabID;
+	private uint serializedPrefabID;
+
+	[NonSerialized]
+	private EncryptedValue<uint> prefabIDValue = 0u;
 
 	[HideInInspector]
 	public Behaviour[] behaviours;
@@ -49,6 +55,18 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 	public bool[] childActiveStates;
 
 	private static HashSet<uint> thrownProjectilePrefabIds;
+
+	public uint prefabID
+	{
+		get
+		{
+			return prefabIDValue.Get();
+		}
+		set
+		{
+			prefabIDValue.Set(value);
+		}
+	}
 
 	public int ClientCount
 	{
@@ -166,6 +184,17 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 		{
 			Initialize(StringPool.Get(name));
 		}
+	}
+
+	void ISerializationCallbackReceiver.OnBeforeSerialize()
+	{
+		serializedPrefabID = prefabID;
+	}
+
+	void ISerializationCallbackReceiver.OnAfterDeserialize()
+	{
+		prefabID = serializedPrefabID;
+		serializedPrefabID = 0u;
 	}
 
 	public void Initialize(uint id)

@@ -85,8 +85,8 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		ShellFuseLength = FuseLength.Medium;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void StartOpenDesigner(RPCMessage rpc)
 	{
@@ -96,10 +96,10 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxRepeatedElements(35)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerSetFireworkDesign(RPCMessage rpc)
 	{
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
@@ -141,9 +141,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SetShellFuseLength(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ConVar;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -69,12 +70,8 @@ public class SimplePrivilege : BaseEntity, IPrivilege
 	public void UpdateMaxAuthCapacity()
 	{
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
-		if (Object.op_Implicit((Object)(object)activeGameMode) && activeGameMode.limitTeamAuths)
-		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
-			{
-				flagsUpdateScope.Set(Flags.Reserved5, authorizedPlayers.Count >= activeGameMode.GetMaxRelationshipTeamSize());
-			}
-		}
+		bool flag = Object.op_Implicit((Object)(object)activeGameMode) && activeGameMode.limitTeamAuths && authorizedPlayers.Count >= activeGameMode.GetMaxRelationshipTeamSize();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved5, flag || authorizedPlayers.Count >= Server.max_privilege_auths);
 	}
 }

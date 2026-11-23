@@ -273,9 +273,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
+	[Range(0f, 1f)]
 	[Header("Day activity")]
 	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
-	[Range(0f, 1f)]
 	public float StarvingThreshold = 0.2f;
 
 	[Tooltip("How many seconds of waking time the day activity read out is measured over. It only reports how the day split up, nothing reads it to decide what to do.")]
@@ -283,15 +283,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Header("Dung")]
 	[Tooltip("Leave empty for an age stage that shouldn't dung, like a calf.")]
+	[Header("Dung")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("Seconds between drops. Zero disables it.")]
 	public float DungInterval;
 
-	[Range(0f, 1f)]
 	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
+	[Range(0f, 1f)]
 	public float DungIntervalVariance = 0.2f;
 
 	[Tooltip("Falls back to the animal's origin when unset.")]
@@ -327,8 +327,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
 	[Header("Feeding slots")]
+	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
 	public float TroughReachScale = 0.9f;
 
 	public const float SlotSearchRadius = 30f;
@@ -582,12 +582,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public LivestockSize MountType = LivestockSize.Small;
 
-	[Tooltip("How long (in seconds) an infant takes to grow into the adult named by its Species asset. Infants only: an adult never ages out of its stage, so its own is zero.")]
 	[Header("Aging")]
+	[Tooltip("How long (in seconds) an infant takes to grow into the adult named by its Species asset. Infants only: an adult never ages out of its stage, so its own is zero.")]
 	public float TimeToGrow;
 
-	[Range(0f, 1f)]
 	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
+	[Range(0f, 1f)]
 	public float GrowTimeVariance = 0.1f;
 
 	public GameObjectRef GrowEffect;
@@ -635,8 +635,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
 	public float TroughFullnessPerCalorie = 0.0021f;
 
-	[Range(0f, 1f)]
 	[Tooltip("The share of its food an animal whose grass need reads full takes off the grass. Its meals alternate between the grass and a stocked trough in reach to match, and the grass alone fills its bar no higher than this, so at 0.5 a herd on full grass with no trough sits half full.")]
+	[Range(0f, 1f)]
 	public float GrassFoodShare = 0.5f;
 
 	[Tooltip("How long (in seconds) the animal takes to raise its head once it stops grazing or drinking. Clearing the flag only STARTS the head coming up, so for this long it is still visibly head down. The cow's cow_eat_out is 1.7s and the sheep's sheep_eat_exit 1.5s.")]
@@ -3837,8 +3837,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !TryRename(msg.player, msg.read.String(12)))

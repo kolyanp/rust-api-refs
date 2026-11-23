@@ -16,6 +16,18 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 
 	private BasePlayer playerCallingNpc;
 
+	private TimeSince lastVoicemailPlay;
+
+	private uint pendingVoicemail;
+
+	private BasePlayer pendingVoicemailPlayer;
+
+	private BasePlayer voicemailCaller;
+
+	private int voicemailNumber;
+
+	private TimeUntil voicemailTimeLeft;
+
 	public int PhoneNumber;
 
 	public string PhoneName;
@@ -29,6 +41,8 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 	public bool RequireParent;
 
 	public const float CallWaitingTime = 24f;
+
+	public const float VoicemailLength = 10f;
 
 	public bool AppendGridToName;
 
@@ -424,9 +438,11 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 	public void ServerPlayAnsweringMessage(PhoneController fromPhone)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId arg = default;
 		uint num = 0u;
 		uint arg2 = 0u;
@@ -442,6 +458,12 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 		if (arg.IsValid)
 		{
 			baseEntity.ClientRPC(RpcTarget.NetworkGroup("ClientPlayAnsweringMessage"), arg, num, arg2, fromPhone.HasVoicemailSlot() ? 1 : 0, activeOtherPhoneController.PhoneNumber);
+			if (fromPhone.HasVoicemailSlot())
+			{
+				voicemailCaller = currentPlayer;
+				voicemailNumber = activeOtherPhoneController.PhoneNumber;
+				voicemailTimeLeft = TimeUntil.op_Implicit(activeOtherPhoneController.cachedCassette.MaxCassetteLength + 10f + 10f);
+			}
 			Invoke(TriggerTimeOut, activeOtherPhoneController.cachedCassette.MaxCassetteLength);
 		}
 		else
@@ -712,11 +734,13 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 
 	public void ServerSendVoicemail(BaseEntity.RPCMessage msg)
 	{
-		if (!((Object)(object)msg.player == (Object)null))
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)voicemailCaller) && !(TimeUntil.op_Implicit(voicemailTimeLeft) <= 0f))
 		{
+			voicemailCaller = null;
 			byte[] array = msg.read.BytesWithSize();
 			PhoneController telephone = TelephoneManager.GetTelephone(msg.read.Int32());
-			if (!((Object)(object)telephone == (Object)null) && !((Object)(object)telephone.cachedCassette == (Object)null) && Cassette.IsOggValid(array, telephone.cachedCassette))
+			if (!((Object)(object)telephone == (Object)null) && telephone.PhoneNumber == voicemailNumber && !((Object)(object)telephone.cachedCassette == (Object)null) && Cassette.IsOggValid(array, telephone.cachedCassette))
 			{
 				telephone.SaveVoicemail(array, msg.player.displayName);
 				Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, telephone.baseEntity, "voicemail", array.Length);
@@ -749,19 +773,41 @@ public class PhoneController : EntityComponent<BaseEntity>, IServerFileReceiver
 
 	public void ServerPlayVoicemail(BaseEntity.RPCMessage msg)
 	{
-		if (!((Object)(object)cachedCassette == (Object)null))
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)cachedCassette == (Object)null) && !((Object)(object)msg.player != (Object)(object)currentPlayer))
 		{
-			baseEntity.ClientRPC(RpcTarget.NetworkGroup("ClientToggleVoicemail"), 1, msg.read.UInt32());
+			pendingVoicemail = msg.read.UInt32();
+			pendingVoicemailPlayer = msg.player;
+			Invoke(PlayPendingVoicemail, Mathf.Max(1f - TimeSince.op_Implicit(lastVoicemailPlay), 0f));
+		}
+	}
+
+	private void PlayPendingVoicemail()
+	{
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)currentPlayer != (Object)(object)pendingVoicemailPlayer) && savedVoicemail != null && savedVoicemail.Exists((VoicemailEntry v) => v.audioId == pendingVoicemail))
+		{
+			lastVoicemailPlay = TimeSince.op_Implicit(0f);
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("ClientToggleVoicemail"), 1, pendingVoicemail);
 		}
 	}
 
 	public void ServerStopVoicemail(BaseEntity.RPCMessage msg)
 	{
-		baseEntity.ClientRPC(RpcTarget.NetworkGroup("ClientToggleVoicemail"), 0, 0);
+		if (!((Object)(object)msg.player != (Object)(object)currentPlayer))
+		{
+			CancelInvoke(PlayPendingVoicemail);
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("ClientToggleVoicemail"), 0, 0);
+		}
 	}
 
 	public void ServerDeleteVoicemail(BaseEntity.RPCMessage msg)
 	{
+		if ((Object)(object)msg.player != (Object)(object)currentPlayer || savedVoicemail == null)
+		{
+			return;
+		}
 		uint num = msg.read.UInt32();
 		for (int i = 0; i < savedVoicemail.Count; i++)
 		{

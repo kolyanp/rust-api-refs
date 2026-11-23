@@ -309,8 +309,8 @@ public class SiegeTower : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_RequestRaise(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved16) && !IsInvoking(AlignRotationToZero))

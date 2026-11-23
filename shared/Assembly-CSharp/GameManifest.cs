@@ -190,7 +190,7 @@ public class GameManifest : ScriptableObject
 				return null;
 			}
 		}
-		guidToObject.Add(guid, val);
+		guidToObject[guid] = val;
 		return val;
 	}
 

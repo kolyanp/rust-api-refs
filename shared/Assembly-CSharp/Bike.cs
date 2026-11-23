@@ -52,8 +52,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public static Phrase boostPhrase = new Phrase("boost", "Boost");
 
-	[SerializeField]
 	[Header("Bike")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -84,8 +84,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float pitchStabP = 0.01f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float pitchStabD = 0.005f;
 
 	[SerializeField]
@@ -96,12 +96,12 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float twoWheelRollStabD = 10f;
 
-	[SerializeField]
 	[Range(1f, 500f)]
+	[SerializeField]
 	private float manyWheelStabP = 40f;
 
-	[SerializeField]
 	[Range(1f, 100f)]
+	[SerializeField]
 	private float manyWheelStabD = 10f;
 
 	[SerializeField]

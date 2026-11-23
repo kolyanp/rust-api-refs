@@ -15,12 +15,12 @@ public class Category_Server
 	public class Server_Bootstrap
 	{
 		[Patch("InitLogging", "InitLogging", "Bootstrap", "StartupShared", new string[] { })]
-		[Identifier("d72c5d966586453f9f38c080bc1c15ba")]
+		[Identifier("c120e627da9c4e4694be1468b1c70974")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_Bootstrap_d72c5d966586453f9f38c080bc1c15ba : Patch
+		public class Server_Bootstrap_c120e627da9c4e4694be1468b1c70974 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -44,12 +44,12 @@ public class Category_Server
 	public class Server_ServerMgr
 	{
 		[Patch("OnTick", "OnTick", "ServerMgr", "DoTick", new string[] { })]
-		[Identifier("4f832e22d4b647b88b066bbe9654906d")]
+		[Identifier("537118a871c94a999cc1dd4ac9c85dc2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_4f832e22d4b647b88b066bbe9654906d : Patch
+		public class Server_ServerMgr_537118a871c94a999cc1dd4ac9c85dc2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -70,12 +70,12 @@ public class Category_Server
 		}
 
 		[Patch("IOnServerShutdown", "IOnServerShutdown", "ServerMgr", "Shutdown", new string[] { })]
-		[Identifier("d06b0efb1d7141bda519e99b642ff29f")]
+		[Identifier("c62d3ab9e6e24f6280e347ceb6c5621b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_d06b0efb1d7141bda519e99b642ff29f : Patch
+		public class Server_ServerMgr_c62d3ab9e6e24f6280e347ceb6c5621b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -95,12 +95,12 @@ public class Category_Server
 		}
 
 		[Patch("OnServerInitialize", "OnServerInitialize", "ServerMgr", "Initialize", new string[] { "System.Boolean", "System.String", "System.Boolean", "System.Boolean" })]
-		[Identifier("f350dd64b1f0414997a168c8b0627d39")]
+		[Identifier("6a7c03a860bd458d8349a6c37138c914")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_f350dd64b1f0414997a168c8b0627d39 : Patch
+		public class Server_ServerMgr_6a7c03a860bd458d8349a6c37138c914 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -121,12 +121,12 @@ public class Category_Server
 		}
 
 		[Patch("IOnServerInitialized", "IOnServerInitialized", "ServerMgr", "OpenConnection", new string[] { "System.Boolean" })]
-		[Identifier("6e8fb51f527d41459663ad6a15ba7848")]
+		[Identifier("06934c6b66fe4ef1b13c43d3a80217b7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_6e8fb51f527d41459663ad6a15ba7848 : Patch
+		public class Server_ServerMgr_06934c6b66fe4ef1b13c43d3a80217b7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -146,12 +146,12 @@ public class Category_Server
 		}
 
 		[Patch("OnServerRestartInterrupt", "OnServerRestartInterrupt", "ServerMgr", "RestartServer", new string[] { "System.String", "System.Int32" })]
-		[Identifier("33b77164b2a14b90904e1f3a28d41750")]
+		[Identifier("82dccf6d5a264a01af81c5518cb78e46")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_33b77164b2a14b90904e1f3a28d41750 : Patch
+		public class Server_ServerMgr_82dccf6d5a264a01af81c5518cb78e46 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -176,7 +176,7 @@ public class Category_Server
 		}
 
 		[Patch("OnServerRestart", "OnServerRestart", "ServerMgr", "RestartServer", new string[] { "System.String", "System.Int32" })]
-		[Identifier("15bcdb3e08eb4172b9d17dbdd685e221")]
+		[Identifier("a3f1105a236648d0b756495becc6f392")]
 		[Dependencies(new string[] { "OnServerRestartInterrupt" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("strNotice", "System.String", false)]
@@ -184,7 +184,7 @@ public class Category_Server
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_15bcdb3e08eb4172b9d17dbdd685e221 : Patch
+		public class Server_ServerMgr_a3f1105a236648d0b756495becc6f392 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -217,12 +217,12 @@ public class Category_Server
 		}
 
 		[Patch("OnServerInformationUpdated", "OnServerInformationUpdated", "ServerMgr", "UpdateServerInformation", new string[] { })]
-		[Identifier("97c5d3fd9b594bd7ace1af063181f4a0")]
+		[Identifier("6aacaf27a30e4be08dc0ff30615fcb9e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerMgr_97c5d3fd9b594bd7ace1af063181f4a0 : Patch
+		public class Server_ServerMgr_6aacaf27a30e4be08dc0ff30615fcb9e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -246,14 +246,14 @@ public class Category_Server
 	public class Server_BasePlayer
 	{
 		[Patch("OnMessagePlayer", "OnMessagePlayer", "BasePlayer", "ChatMessage", new string[] { "System.String" })]
-		[Identifier("901cb00559a443a18927e428747f12df")]
+		[Identifier("da048a6d06f5408fb12972f17504368e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("msg", "System.String", false)]
 		[Parameter("self", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_BasePlayer_901cb00559a443a18927e428747f12df : Patch
+		public class Server_BasePlayer_da048a6d06f5408fb12972f17504368e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -288,12 +288,12 @@ public class Category_Server
 	public class Server_ConVarChat
 	{
 		[Patch("OnServerMessage", "OnServerMessage", "ConVar.Chat", "Broadcast", new string[] { "System.String", "System.String", "System.String", "System.UInt64" })]
-		[Identifier("4871eba0c27b4c808ff3144ca8a8501e")]
+		[Identifier("e72fad307ca34eeca29385ebb716a804")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConVarChat_4871eba0c27b4c808ff3144ca8a8501e : Patch
+		public class Server_ConVarChat_e72fad307ca34eeca29385ebb716a804 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -330,12 +330,12 @@ public class Category_Server
 		}
 
 		[Patch("OnPlayerActionBroadcast", "OnPlayerActionBroadcast", "ConVar.Chat", "BroadcastPlayerAction", new string[] { "BasePlayer", "System.String" })]
-		[Identifier("8f877fb0c9c94d8b9e6aad8c52f1515d")]
+		[Identifier("33d2c53bf28f49aeae8baa479361a0e1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConVarChat_8f877fb0c9c94d8b9e6aad8c52f1515d : Patch
+		public class Server_ConVarChat_33d2c53bf28f49aeae8baa479361a0e1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -369,12 +369,12 @@ public class Category_Server
 		}
 
 		[Patch("OnPlayerActionBroadcast", "OnPlayerActionBroadcast [2]", "ConVar.Chat", "BroadcastPlayerAction", new string[] { "BasePlayer", "System.String", "BasePlayer", "System.String" })]
-		[Identifier("3bbaf3236c644cd38890c84c304c7dfb")]
+		[Identifier("2bafb69a158c4cfe8cac6f70b2b39b65")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConVarChat_3bbaf3236c644cd38890c84c304c7dfb : Patch
+		public class Server_ConVarChat_2bafb69a158c4cfe8cac6f70b2b39b65 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -415,13 +415,13 @@ public class Category_Server
 	public class Server_FacepunchRConRConListener
 	{
 		[Patch("OnRconConnection", "OnRconConnection [exp]", "Facepunch.RCon/RConListener", "ProcessConnections", new string[] { })]
-		[Identifier("90443beec55847f8aefdc4f54f361103")]
+		[Identifier("a40c50a396a8429d89a1bb5fba61439e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("address", "System.Net.IPAddress", false)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_FacepunchRConRConListener_90443beec55847f8aefdc4f54f361103 : Patch
+		public class Server_FacepunchRConRConListener_a40c50a396a8429d89a1bb5fba61439e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -455,13 +455,13 @@ public class Category_Server
 	public class Server_SaveRestore
 	{
 		[Patch("OnNewSave", "OnNewSave", "SaveRestore", "Load", new string[] { "System.String", "System.Boolean" })]
-		[Identifier("a636356151b64a61ab81aa4cf77fd9b3")]
+		[Identifier("a580a2108fbd407aafc1a55ee937e2e7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("strFilename", "System.String", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_SaveRestore_a636356151b64a61ab81aa4cf77fd9b3 : Patch
+		public class Server_SaveRestore_a580a2108fbd407aafc1a55ee937e2e7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -487,14 +487,14 @@ public class Category_Server
 		}
 
 		[Patch("OnSaveLoad", "OnSaveLoad", "SaveRestore", "Load", new string[] { "System.String", "System.Boolean" })]
-		[Identifier("0bfc995239644f4a9a4ccd05e644ba45")]
+		[Identifier("3af663bfd51b41669de21a82f7f6e2da")]
 		[Dependencies(new string[] { "OnNewSave" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "System.Collections.Generic.Dictionary`2[BaseEntity,ProtoBuf.Entity]", false)]
 		[Return(typeof(bool))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_SaveRestore_0bfc995239644f4a9a4ccd05e644ba45 : Patch
+		public class Server_SaveRestore_3af663bfd51b41669de21a82f7f6e2da : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -530,12 +530,12 @@ public class Category_Server
 		}
 
 		[Patch("OnServerSave", "OnServerSave", "SaveRestore", "DoAutomatedSave", new string[] { "System.Boolean" })]
-		[Identifier("8ab584608b6c4948aa70bab77835a73f")]
+		[Identifier("04cdfb6fddfa4642883ebc392ff65cc6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_SaveRestore_8ab584608b6c4948aa70bab77835a73f : Patch
+		public class Server_SaveRestore_04cdfb6fddfa4642883ebc392ff65cc6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -559,12 +559,12 @@ public class Category_Server
 	public class Server_ServerUsers
 	{
 		[Patch("OnServerUserSet", "OnServerUserSet", "ServerUsers", "Set", new string[] { "System.UInt64", "ServerUsers/UserGroup", "System.String", "System.String", "System.Int64" })]
-		[Identifier("6109f1bd2d714f009c8c1e87399eac8b")]
+		[Identifier("38d08d5f09a841c397cb5e818d7527b8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerUsers_6109f1bd2d714f009c8c1e87399eac8b : Patch
+		public class Server_ServerUsers_38d08d5f09a841c397cb5e818d7527b8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -601,12 +601,12 @@ public class Category_Server
 		}
 
 		[Patch("OnServerUserRemove", "OnServerUserRemove", "ServerUsers", "Remove", new string[] { "System.UInt64" })]
-		[Identifier("9a3b58b6bb9d4755a94665f9b823430f")]
+		[Identifier("a2776dcdff9d4920b686c9d56cb84db7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ServerUsers_9a3b58b6bb9d4755a94665f9b823430f : Patch
+		public class Server_ServerUsers_a2776dcdff9d4920b686c9d56cb84db7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -636,12 +636,12 @@ public class Category_Server
 	public class Server_FacepunchRCon
 	{
 		[Patch("IOnRconInitialize", "IOnRconInitialize", "Facepunch.RCon", "Initialize", new string[] { })]
-		[Identifier("fc53746185b8446fad01ad4d05934843")]
+		[Identifier("80ec655e1eb542fcb42bdc3d3e024473")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_FacepunchRCon_fc53746185b8446fad01ad4d05934843 : Patch
+		public class Server_FacepunchRCon_80ec655e1eb542fcb42bdc3d3e024473 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -668,7 +668,7 @@ public class Category_Server
 	public class Server_ConsoleNetwork
 	{
 		[Patch("OnSendCommand", "OnSendCommand", "ConsoleNetwork", "SendClientCommand", new string[] { "Network.Connection", "System.String", "System.Object[]" })]
-		[Identifier("6cd5a5faf58c42be8cac53730609cee6")]
+		[Identifier("62ec17682e064eefada574511bed63d4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("cn", "Network.Connection", false)]
 		[Parameter("strCommand", "System.String", false)]
@@ -676,7 +676,7 @@ public class Category_Server
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConsoleNetwork_6cd5a5faf58c42be8cac53730609cee6 : Patch
+		public class Server_ConsoleNetwork_62ec17682e064eefada574511bed63d4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -710,7 +710,7 @@ public class Category_Server
 		}
 
 		[Patch("OnSendCommand", "OnSendCommand [list]", "ConsoleNetwork", "SendClientCommand", new string[] { "System.Collections.Generic.List`1<Network.Connection>", "System.String", "System.Object[]" })]
-		[Identifier("c3cc3fe79125468ebd33af54f2e035e3")]
+		[Identifier("aa5b571ba7f545518edb5ea925bd60e5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("cn", "Network.Connection", false)]
 		[Parameter("strCommand", "System.String", false)]
@@ -718,7 +718,7 @@ public class Category_Server
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConsoleNetwork_c3cc3fe79125468ebd33af54f2e035e3 : Patch
+		public class Server_ConsoleNetwork_aa5b571ba7f545518edb5ea925bd60e5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -752,14 +752,14 @@ public class Category_Server
 		}
 
 		[Patch("OnBroadcastCommand", "OnBroadcastCommand", "ConsoleNetwork", "BroadcastToAllClients", new string[] { "System.String", "System.Object[]" })]
-		[Identifier("a5f44213755d4b25878763a152dca70c")]
+		[Identifier("ed7bc8119aaf4b2687a7fb6e703f8f48")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("strCommand", "System.String", false)]
 		[Parameter("args", "System.Object[]", false)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Server_ConsoleNetwork_a5f44213755d4b25878763a152dca70c : Patch
+		public class Server_ConsoleNetwork_ed7bc8119aaf4b2687a7fb6e703f8f48 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -796,13 +796,13 @@ public class Category_Server
 	public class Server_ConsoleSystem
 	{
 		[Patch("IOnServerCommand", "IOnServerCommand", "ConsoleSystem", "Internal", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("f9503bccc26349e69504e221f47e632d")]
+		[Identifier("cbf0717dbd094ea5855254fc65e5c898")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("arg", "ConsoleSystem+Arg", false)]
 		[Return(typeof(bool))]
 		[Category("Server")]
 		[Assembly("Facepunch.Console.dll")]
-		public class Server_ConsoleSystem_f9503bccc26349e69504e221f47e632d : Patch
+		public class Server_ConsoleSystem_cbf0717dbd094ea5855254fc65e5c898 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -833,12 +833,12 @@ public class Category_Server
 		}
 
 		[Patch("IOnRunCommandLine", "IOnRunCommandLine", "ConsoleSystem", "UpdateValuesFromCommandLine", new string[] { })]
-		[Identifier("2e5ceddc3ebe41abb560a3db939c2103")]
+		[Identifier("a5557256b8504877bf803c380b747895")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Facepunch.Console.dll")]
-		public class Server_ConsoleSystem_2e5ceddc3ebe41abb560a3db939c2103 : Patch
+		public class Server_ConsoleSystem_a5557256b8504877bf803c380b747895 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -867,13 +867,13 @@ public class Category_Server
 	public class Server_FacepunchRconListener
 	{
 		[Patch("OnRconConnection", "OnRconConnection [web]", "Facepunch.Rcon.Listener", "OnConnection", new string[] { "Fleck.IWebSocketConnection" })]
-		[Identifier("831f09833dad489c8abb689936da6a64")]
+		[Identifier("1c268fb5124a4ec6bb58210f705a92c2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("clientIpAddress", "System.Net.IPAddress", false)]
 		[Return(typeof(void))]
 		[Category("Server")]
 		[Assembly("Facepunch.Rcon.dll")]
-		public class Server_FacepunchRconListener_831f09833dad489c8abb689936da6a64 : Patch
+		public class Server_FacepunchRconListener_1c268fb5124a4ec6bb58210f705a92c2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -9,16 +9,16 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 	[HideInInspector]
 	public bool HandleRootMotion;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected Transform parentTransform;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected CharacterController optionalCharContr;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool rootMotionRotation = true;
 
 	protected Animator rootMAnimator;

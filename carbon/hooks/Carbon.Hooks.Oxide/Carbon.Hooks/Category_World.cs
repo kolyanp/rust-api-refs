@@ -12,12 +12,12 @@ public class Category_World
 	public class World_TerrainMeta
 	{
 		[Patch("OnTerrainInitialized", "OnTerrainInitialized", "TerrainMeta", "PostSetupComponents", new string[] { })]
-		[Identifier("076e6fc4ca0146c89a5de0d7cd5cffc0")]
+		[Identifier("648ba0e45ead4b0da6458560f5fb790f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("World")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class World_TerrainMeta_076e6fc4ca0146c89a5de0d7cd5cffc0 : Patch
+		public class World_TerrainMeta_648ba0e45ead4b0da6458560f5fb790f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -41,14 +41,14 @@ public class Category_World
 	public class World_World
 	{
 		[Patch("OnWorldPrefabSpawned", "OnWorldPrefabSpawned", "World", "SpawnPrefab", new string[] { "System.String", "Prefab", "UnityEngine.Vector3", "UnityEngine.Quaternion", "UnityEngine.Vector3" })]
-		[Identifier("821f69a65ec44a8b9f73f5f26c149d9e")]
+		[Identifier("8439e2e1f0c843968584ac1c79e7e08d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "UnityEngine.GameObject", false)]
 		[Parameter("category", "System.String", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("World")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class World_World_821f69a65ec44a8b9f73f5f26c149d9e : Patch
+		public class World_World_8439e2e1f0c843968584ac1c79e7e08d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -79,13 +79,13 @@ public class Category_World
 	public class World_TerrainGenerator
 	{
 		[Patch("OnTerrainCreate", "OnTerrainCreate", "TerrainGenerator", "CreateTerrain", new string[] { "System.Int32", "System.Int32" })]
-		[Identifier("9572ea0133314312800e70cd4697b7e0")]
+		[Identifier("98ec64b861b0448caaca196476eb67b1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "TerrainGenerator", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("World")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class World_TerrainGenerator_9572ea0133314312800e70cd4697b7e0 : Patch
+		public class World_TerrainGenerator_98ec64b861b0448caaca196476eb67b1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

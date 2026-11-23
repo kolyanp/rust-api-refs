@@ -402,6 +402,12 @@ public class DartsGameBoard : BaseCombatEntity
 						{
 							return true;
 						}
+						long position = msg.read.Position;
+						if (!RPC_Server.InputValidation.Test(msg.read.Read<float>()))
+						{
+							return true;
+						}
+						msg.read.Position = position;
 					}
 					try
 					{
@@ -472,6 +478,19 @@ public class DartsGameBoard : BaseCombatEntity
 			_multiplayerDartsGameController = null;
 			SendNetworkUpdate();
 		}
+	}
+
+	public bool CanEndGame(BasePlayer player)
+	{
+		if (GameController != null)
+		{
+			if (!GameController.IsInGame(player))
+			{
+				return GameController.IsGameEnding;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	protected override void OnChildAdded(BaseEntity child)
@@ -550,8 +569,8 @@ public class DartsGameBoard : BaseCombatEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -562,12 +581,16 @@ public class DartsGameBoard : BaseCombatEntity
 			GameController.JoinGame(msg.player);
 			GameController.StartPreGame();
 			SendNetworkUpdate();
+			if ((Object)(object)mountable != (Object)null && !mountable.AnyMounted())
+			{
+				mountable.StartIdleTimeout();
+			}
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -577,15 +600,22 @@ public class DartsGameBoard : BaseCombatEntity
 			GameController = _multiplayerDartsGameController;
 			GameController.StartPreGame();
 			SendNetworkUpdate();
+			if ((Object)(object)mountable != (Object)null && !mountable.AnyMounted())
+			{
+				mountable.StartIdleTimeout();
+			}
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_EndGame(RPCMessage msg)
 	{
-		EndGame();
+		if (CanEndGame(msg.player))
+		{
+			EndGame();
+		}
 	}
 
 	public void NewTurn(bool switchedPlayers = false)
@@ -646,11 +676,12 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(float) })]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_UpdateThrowTimer(RPCMessage msg)
 	{
-		float timeTaken = msg.read.Float();
+		float timeTaken = Mathf.Clamp(msg.read.Float(), 0f, DartsGame.maxThrowTimer);
 		if (GameController != null)
 		{
 			GameController.ServerReceivedUpdatedTimer(msg.player, timeTaken);
@@ -663,7 +694,10 @@ public class DartsGameBoard : BaseCombatEntity
 	{
 		int points = msg.read.Int32();
 		int pointsModifier = msg.read.Int32();
-		GameController.ServerReceivedPlayerDartThrow(msg.player, points, pointsModifier);
+		if (GameController != null)
+		{
+			GameController.ServerReceivedPlayerDartThrow(msg.player, points, pointsModifier);
+		}
 	}
 
 	public void SendBullseye()

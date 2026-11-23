@@ -16,13 +16,13 @@ public class Category_NPC
 	public class NPC_BaseNpc
 	{
 		[Patch("CanNpcEat", "CanNpcEat [BaseNpc]", "BaseNpc", "WantsToEat", new string[] { "BaseEntity" })]
-		[Identifier("e95bf1cc83e547b8938ce59e4a2f4266")]
+		[Identifier("33377ebb801548ceb82168db0a79e5b9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNpc", false)]
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BaseNpc_e95bf1cc83e547b8938ce59e4a2f4266 : Patch
+		public class NPC_BaseNpc_33377ebb801548ceb82168db0a79e5b9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -60,14 +60,14 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcAttack", "OnNpcAttack [BaseNpc]", "BaseNpc", "StartAttack", new string[] { })]
-		[Identifier("b80a6b4fb9db43199eb9211960ef5403")]
+		[Identifier("dce407c370bf49b0ba06214dae2a9699")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNpc", false)]
 		[Parameter("attackTarget", "BaseEntity", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BaseNpc_b80a6b4fb9db43199eb9211960ef5403 : Patch
+		public class NPC_BaseNpc_dce407c370bf49b0ba06214dae2a9699 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -100,13 +100,13 @@ public class Category_NPC
 		}
 
 		[Patch("IOnNpcTarget", "IOnNpcTarget [BaseNpc]", "BaseNpc", "GetWantsToAttack", new string[] { "BaseEntity" })]
-		[Identifier("f87411bdff41402d8f427a6799f70d5d")]
+		[Identifier("16c3a8bb1bf94295afe6d533dc89e670")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNpc", false)]
 		[Return(typeof(float))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BaseNpc_f87411bdff41402d8f427a6799f70d5d : Patch
+		public class NPC_BaseNpc_16c3a8bb1bf94295afe6d533dc89e670 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -141,7 +141,7 @@ public class Category_NPC
 	public class NPC_NPCVendingMachine
 	{
 		[Patch("OnNpcGiveSoldItem", "OnNpcGiveSoldItem", "NPCVendingMachine", "GiveSoldItem", new string[] { "Item", "BasePlayer" })]
-		[Identifier("2042573ff2774ee0b92ab05ce09853b6")]
+		[Identifier("fae22269af214103af678bf6ffbaaec8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCVendingMachine", false)]
 		[Parameter("soldItem", "Item", false)]
@@ -149,7 +149,7 @@ public class Category_NPC
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCVendingMachine_2042573ff2774ee0b92ab05ce09853b6 : Patch
+		public class NPC_NPCVendingMachine_fae22269af214103af678bf6ffbaaec8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -186,13 +186,13 @@ public class Category_NPC
 	public class NPC_ScientistNPC
 	{
 		[Patch("OnNpcRadioChatter", "OnNpcRadioChatter [ScientistNPC]", "ScientistNPC", "PlayRadioChatter", new string[] { })]
-		[Identifier("43d3021c17ec4df4aecc32835e28c0a8")]
+		[Identifier("e0f109a390194a01b82d1337c9fb5d68")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ScientistNPC", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_ScientistNPC_43d3021c17ec4df4aecc32835e28c0a8 : Patch
+		public class NPC_ScientistNPC_e0f109a390194a01b82d1337c9fb5d68 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -222,13 +222,13 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcAlert", "OnNpcAlert [ScientistNPC]", "ScientistNPC", "Alert", new string[] { })]
-		[Identifier("9578cce905f44de6bcefb3b5c2550916")]
+		[Identifier("65e738c6aeb248588e53de8305da5784")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ScientistNPC", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_ScientistNPC_9578cce905f44de6bcefb3b5c2550916 : Patch
+		public class NPC_ScientistNPC_65e738c6aeb248588e53de8305da5784 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -258,14 +258,14 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcEquipWeapon", "OnNpcEquipWeapon [ScientistNPC]", "ScientistNPC", "EquipWeapon", new string[] { "System.Boolean" })]
-		[Identifier("40c0d8cf6fa44d2281f45c267ed9d129")]
+		[Identifier("f2fe66dbbffa4f45beb895d49fb8b95c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ScientistNPC", false)]
 		[Parameter("local1", "Item", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_ScientistNPC_40c0d8cf6fa44d2281f45c267ed9d129 : Patch
+		public class NPC_ScientistNPC_f2fe66dbbffa4f45beb895d49fb8b95c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -300,14 +300,14 @@ public class Category_NPC
 	public class NPC_NPCPlayer
 	{
 		[Patch("OnNpcEquipWeapon", "OnNpcEquipWeapon [NPCPlayer]", "NPCPlayer", "EquipWeapon", new string[] { "System.Boolean" })]
-		[Identifier("d22021a8dd354b03a542a1acadb1ceb9")]
+		[Identifier("078ba49cecff4879abde39c7d5bb46c1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCPlayer", false)]
 		[Parameter("local0", "Item", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCPlayer_d22021a8dd354b03a542a1acadb1ceb9 : Patch
+		public class NPC_NPCPlayer_078ba49cecff4879abde39c7d5bb46c1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -339,14 +339,14 @@ public class Category_NPC
 		}
 
 		[Patch("OnCorpsePopulate", "OnCorpsePopulate", "NPCPlayer", "CreateCorpse", new string[] { "BasePlayer/PlayerFlags", "UnityEngine.Vector3", "UnityEngine.Quaternion", "System.Collections.Generic.List`1<TriggerBase>", "System.Boolean" })]
-		[Identifier("73264158a0864349928f2b5a6e799bcf")]
+		[Identifier("17f6c3a3e10c40ce85702fc03da68dff")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCPlayer", false)]
 		[Parameter("local1", "NPCPlayerCorpse", false)]
 		[Return(typeof(BaseCorpse))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCPlayer_73264158a0864349928f2b5a6e799bcf : Patch
+		public class NPC_NPCPlayer_17f6c3a3e10c40ce85702fc03da68dff : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -387,13 +387,13 @@ public class Category_NPC
 	public class NPC_HumanNPC
 	{
 		[Patch("OnNpcDuck", "OnNpcDuck [HumanNPC]", "HumanNPC", "SetDucked", new string[] { "System.Boolean" })]
-		[Identifier("f93160996e4b44eabdc138f471bd8b66")]
+		[Identifier("946c59da9d6643d4aa37ec907842e6db")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "HumanNPC", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_HumanNPC_f93160996e4b44eabdc138f471bd8b66 : Patch
+		public class NPC_HumanNPC_946c59da9d6643d4aa37ec907842e6db : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -423,11 +423,11 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcTarget", "OnNpcTarget [HumanNPC]", "HumanNPC", "GetBestTarget", new string[] { })]
-		[Identifier("9e9b6c9468c1477a89f6d2d9d75f92a2")]
+		[Identifier("30c08b11e4bc493c9d73b4068cc0307b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_HumanNPC_9e9b6c9468c1477a89f6d2d9d75f92a2 : Patch
+		public class NPC_HumanNPC_30c08b11e4bc493c9d73b4068cc0307b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -467,7 +467,7 @@ public class Category_NPC
 	public class NPC_NPCTalking
 	{
 		[Patch("OnNpcConversationRespond", "OnNpcConversationRespond", "NPCTalking", "HandleResponse", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.UInt32", "System.UInt32", "NetworkableId" })]
-		[Identifier("9a0293590d4b4f12994f55fcc51f31ff")]
+		[Identifier("55b7a7fbd5374076b056d4d557d04151")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCTalking", false)]
 		[Parameter("ply", "BasePlayer", false)]
@@ -477,7 +477,7 @@ public class Category_NPC
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCTalking_9a0293590d4b4f12994f55fcc51f31ff : Patch
+		public class NPC_NPCTalking_55b7a7fbd5374076b056d4d557d04151 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -516,7 +516,7 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcConversationResponded", "OnNpcConversationResponded", "NPCTalking", "HandleResponse", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.UInt32", "System.UInt32", "NetworkableId" })]
-		[Identifier("907d47ab82564354844868ed60fcf5b0")]
+		[Identifier("51bc1eb9ef7c49c3871483c572db5837")]
 		[Dependencies(new string[] { "OnNpcConversationRespond" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCTalking", false)]
@@ -527,7 +527,7 @@ public class Category_NPC
 		[Return(typeof(void), Discarded = true)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCTalking_907d47ab82564354844868ed60fcf5b0 : Patch
+		public class NPC_NPCTalking_51bc1eb9ef7c49c3871483c572db5837 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -562,13 +562,13 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcConversationEnded", "OnNpcConversationEnded", "NPCTalking", "OnConversationEnded", new string[] { "BasePlayer" })]
-		[Identifier("b1a33defbd834bed80d06cc155ea9144")]
+		[Identifier("f5d5ac0f95b640a6a04e6b4b8ca676c4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCTalking", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCTalking_b1a33defbd834bed80d06cc155ea9144 : Patch
+		public class NPC_NPCTalking_f5d5ac0f95b640a6a04e6b4b8ca676c4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -596,7 +596,7 @@ public class Category_NPC
 		}
 
 		[Patch("OnNpcConversationStart", "OnNpcConversationStart", "NPCTalking", "Server_BeginTalking", new string[] { "BasePlayer" })]
-		[Identifier("26037800387d41b7adfd320abe2717ca")]
+		[Identifier("20b82b178bdf411ea3c0cd0d8c338f16")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCTalking", false)]
 		[Parameter("ply", "BasePlayer", false)]
@@ -604,7 +604,7 @@ public class Category_NPC
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_NPCTalking_26037800387d41b7adfd320abe2717ca : Patch
+		public class NPC_NPCTalking_20b82b178bdf411ea3c0cd0d8c338f16 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -643,7 +643,7 @@ public class Category_NPC
 	public class NPC_RustAiSimpleAIMemory
 	{
 		[Patch("OnNpcTargetSense", "OnNpcTargetSense", "Rust.Ai.SimpleAIMemory", "SetKnown", new string[] { "BaseEntity", "BaseEntity", "AIBrainSenses" })]
-		[Identifier("7d5a5fffb0da460686959573b8eee9cc")]
+		[Identifier("7af7a7e289ed43258cef9b5738c903a0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("owner", "BaseEntity", false)]
 		[Parameter("ent", "BaseEntity", false)]
@@ -651,7 +651,7 @@ public class Category_NPC
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_RustAiSimpleAIMemory_7d5a5fffb0da460686959573b8eee9cc : Patch
+		public class NPC_RustAiSimpleAIMemory_7af7a7e289ed43258cef9b5738c903a0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -688,7 +688,7 @@ public class Category_NPC
 	public class NPC_BaseAIBrain
 	{
 		[Patch("OnAIBrainStateSwitch", "OnAIBrainStateSwitch", "BaseAIBrain", "SwitchToState", new string[] { "BaseAIBrain/BasicAIState", "System.Int32" })]
-		[Identifier("2b56a1fd1fdd49af9529b701eef14354")]
+		[Identifier("a5d347dc287b48ba8f4595654383d3e3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseAIBrain", false)]
 		[Parameter("currentState", "BaseAIBrain+BasicAIState", false)]
@@ -696,7 +696,7 @@ public class Category_NPC
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BaseAIBrain_2b56a1fd1fdd49af9529b701eef14354 : Patch
+		public class NPC_BaseAIBrain_a5d347dc287b48ba8f4595654383d3e3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -741,7 +741,7 @@ public class Category_NPC
 		}
 
 		[Patch("OnAIBrainStateSwitched", "OnAIBrainStateSwitched", "BaseAIBrain", "SwitchToState", new string[] { "BaseAIBrain/BasicAIState", "System.Int32" })]
-		[Identifier("95d085259865401aa83c34a078b887b2")]
+		[Identifier("377c3376efd04443b46fa152a69e53db")]
 		[Dependencies(new string[] { "OnAIBrainStateSwitch" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseAIBrain", false)]
@@ -749,7 +749,7 @@ public class Category_NPC
 		[Return(typeof(void), Discarded = true)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BaseAIBrain_95d085259865401aa83c34a078b887b2 : Patch
+		public class NPC_BaseAIBrain_377c3376efd04443b46fa152a69e53db : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -781,13 +781,13 @@ public class Category_NPC
 	public class NPC_BradleyAPC
 	{
 		[Patch("CanDeployScientists", "CanDeployScientists [BradleyAPC]", "BradleyAPC", "CanDeployScientists", new string[] { "BaseEntity", "System.Collections.Generic.List`1<GameObjectRef>", "System.Collections.Generic.List`1<UnityEngine.Vector3>" })]
-		[Identifier("5f8b2d9ca882459f95529a32af74fee8")]
+		[Identifier("2d42371a55e44fdbb89d676e6b4cf76a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BradleyAPC_5f8b2d9ca882459f95529a32af74fee8 : Patch
+		public class NPC_BradleyAPC_2d42371a55e44fdbb89d676e6b4cf76a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -829,7 +829,7 @@ public class Category_NPC
 		}
 
 		[Patch("OnScientistInitialized", "OnScientistInitialized [BradleyAPC]", "BradleyAPC", "InitScientist", new string[] { "ScientistNPC", "UnityEngine.Vector3", "BasePlayer", "System.Boolean", "System.Boolean" })]
-		[Identifier("980e20954aa54fada3d1701e1946f679")]
+		[Identifier("48de0b8889fa452d9b79e02f52a23187")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Parameter("scientist", "ScientistNPC", false)]
@@ -837,7 +837,7 @@ public class Category_NPC
 		[Return(typeof(void), Discarded = true)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BradleyAPC_980e20954aa54fada3d1701e1946f679 : Patch
+		public class NPC_BradleyAPC_48de0b8889fa452d9b79e02f52a23187 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -868,13 +868,13 @@ public class Category_NPC
 		}
 
 		[Patch("OnScientistRecalled", "OnScientistRecalled [BradleyAPC]", "BradleyAPC", "OnScientistMounted", new string[] { "ScientistNPC" })]
-		[Identifier("d62fae9198ae4da39467bfae06f6050d")]
+		[Identifier("f867e98fb2ba4dbba8ee247dd5d21371")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BradleyAPC", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BradleyAPC_d62fae9198ae4da39467bfae06f6050d : Patch
+		public class NPC_BradleyAPC_f867e98fb2ba4dbba8ee247dd5d21371 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -905,13 +905,13 @@ public class Category_NPC
 	public class NPC_RustAiGen2SenseComponent
 	{
 		[Patch("IOnNpcTarget", "IOnNpcTarget [SenseComponent]", "Rust.Ai.Gen2.SenseComponent", "CanTarget", new string[] { "BaseEntity" })]
-		[Identifier("395344b957c4448c963f2d285ed7a974")]
+		[Identifier("fa4fbbaa6e4e44389e2a85eae65e6569")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Rust.Ai.Gen2.SenseComponent", false)]
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_RustAiGen2SenseComponent_395344b957c4448c963f2d285ed7a974 : Patch
+		public class NPC_RustAiGen2SenseComponent_fa4fbbaa6e4e44389e2a85eae65e6569 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -946,14 +946,14 @@ public class Category_NPC
 	public class NPC_WildlifeHazard
 	{
 		[Patch("IOnNpcTarget", "IOnNpcTarget [WildlifeHazard]", "WildlifeHazard", "ShouldStartHazard", new string[] { "BasePlayer" })]
-		[Identifier("dcc9fd6077784575978d2cd16e072042")]
+		[Identifier("37cd36a574984393a4d466fb295dc105")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "WildlifeHazard", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_WildlifeHazard_dcc9fd6077784575978d2cd16e072042 : Patch
+		public class NPC_WildlifeHazard_37cd36a574984393a4d466fb295dc105 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -988,14 +988,14 @@ public class Category_NPC
 	public class NPC_BoatAI
 	{
 		[Patch("IOnNpcTarget", "IOnNpcTarget [BoatAI]", "BoatAI", "IsPlayerTargetValid", new string[] { "BasePlayer" })]
-		[Identifier("95182b7503bc46e4aacbfe6705825c15")]
+		[Identifier("5986a65447ad4e8db22c91d90310668a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoatAI", false)]
 		[Parameter("ply", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_BoatAI_95182b7503bc46e4aacbfe6705825c15 : Patch
+		public class NPC_BoatAI_5986a65447ad4e8db22c91d90310668a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1030,14 +1030,14 @@ public class Category_NPC
 	public class NPC_RustAiGen2StateDead
 	{
 		[Patch("OnCorpsePopulate", "OnCorpsePopulate [Rust.Ai.Gen2.State_Dead]", "Rust.Ai.Gen2.State_Dead", "StartRagdoll", new string[] { })]
-		[Identifier("2ef65bab90094a8c97f6a46cc3e0bcf2")]
+		[Identifier("11db3f854d2c4840b4a32658e1e46cbd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("owner", "BaseEntity", false)]
 		[Parameter("local1", "LootableCorpse", false)]
 		[Return(typeof(void))]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_RustAiGen2StateDead_2ef65bab90094a8c97f6a46cc3e0bcf2 : Patch
+		public class NPC_RustAiGen2StateDead_11db3f854d2c4840b4a32658e1e46cbd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1070,12 +1070,12 @@ public class Category_NPC
 		}
 
 		[Patch("OnCorpsePopulate", "OnCorpsePopulate [Rust.Ai.Gen2.State_Dead] [Patch]", "Rust.Ai.Gen2.State_Dead", "StartRagdoll", new string[] { })]
-		[Identifier("4910bf76ef164c1aa49a6fe91593bfe2")]
+		[Identifier("8b0b22918c144d5fb1679bf570c6cc73")]
 		[Dependencies(new string[] { "OnCorpsePopulate [Rust.Ai.Gen2.State_Dead]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_RustAiGen2StateDead_4910bf76ef164c1aa49a6fe91593bfe2 : Patch
+		public class NPC_RustAiGen2StateDead_8b0b22918c144d5fb1679bf570c6cc73 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1114,11 +1114,11 @@ public class Category_NPC
 	public class NPC_AIBrainSenses
 	{
 		[Patch("OnNpcTarget", "OnNpcTarget [AIBrainSenses]", "AIBrainSenses", "GetNearest", new string[] { "System.Collections.Generic.List`1<BaseEntity>", "System.Single" })]
-		[Identifier("33e0b54eafd340e896eac1e9e22b1911")]
+		[Identifier("8c40ec139f964c5da985b620426350a1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("NPC")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class NPC_AIBrainSenses_33e0b54eafd340e896eac1e9e22b1911 : Patch
+		public class NPC_AIBrainSenses_8c40ec139f964c5da985b620426350a1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ConVar;
+using Facepunch;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
@@ -47,6 +49,10 @@ public class VehiclePrivilege : SimplePrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(82205621u, "AddAuthorize", this, player, 10uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(82205621u, "AddAuthorize", this, player, 3f))
 						{
 							return true;
@@ -84,6 +90,10 @@ public class VehiclePrivilege : SimplePrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1092560690u, "AddSelfAuthorize", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(1092560690u, "AddSelfAuthorize", this, player, 3f))
 						{
 							return true;
@@ -121,6 +131,10 @@ public class VehiclePrivilege : SimplePrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(253307592u, "ClearList", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(253307592u, "ClearList", this, player, 3f))
 						{
 							return true;
@@ -158,6 +172,10 @@ public class VehiclePrivilege : SimplePrivilege
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(3617985969u, "RemoveSelfAuthorize", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(3617985969u, "RemoveSelfAuthorize", this, player, 3f))
 						{
 							return true;
@@ -237,6 +255,7 @@ public class VehiclePrivilege : SimplePrivilege
 
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardAuthorize", this, rpc.player) == null)
@@ -246,64 +265,79 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(10uL)]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (SupportFriendListAdd && rpc.player.CanInteract() && IsAuthed(rpc.player) && CanModifyAuth(rpc.player))
 		{
 			ulong targetPlayerId = rpc.read.UInt64();
-			AddPlayer(rpc.player, targetPlayerId);
+			if (AtMaxAuthCapacity())
+			{
+				rpc.player.ShowToast(GameTip.Styles.Red_Normal, BuildingPrivlidge.authLimitReachedPhrase, false);
+			}
+			else
+			{
+				AddPlayer(rpc.player, targetPlayerId);
+			}
 			SendNetworkUpdate();
 		}
 	}
 
 	public void AddPlayer(BasePlayer granter, ulong targetPlayerId)
 	{
-		if (!AtMaxAuthCapacity())
+		if (!AtMaxAuthCapacity() && authorizedPlayers.Add(targetPlayerId))
 		{
-			authorizedPlayers.Add(targetPlayerId);
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, granter, authorizedPlayers, "added", targetPlayerId);
 			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			UpdatePrivilegeReceivers(targetPlayerId);
 		}
 	}
 
 	public void AddPlayer(BasePlayer player)
 	{
-		if (!AtMaxAuthCapacity())
-		{
-			authorizedPlayers.Add(player.userID);
-			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, player, authorizedPlayers, "added", player.userID);
-			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
-		}
+		AddPlayer(player, player.userID);
 	}
 
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
-		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null)
+		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null && authorizedPlayers.Remove(rpc.player.userID))
 		{
-			authorizedPlayers.Remove(rpc.player.userID);
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, rpc.player, authorizedPlayers, "removed", rpc.player.userID);
 			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			UpdatePrivilegeReceivers(rpc.player.userID);
 			SendNetworkUpdate();
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void ClearList(RPCMessage rpc)
 	{
-		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)
+		if (!rpc.player.CanInteract() || !CanModifyAuth(rpc.player) || Interface.CallHook("OnCupboardClearList", this, rpc.player) != null)
 		{
+			return;
+		}
+		PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
+		try
+		{
+			((List<ulong>)(object)val).AddRange((IEnumerable<ulong>)authorizedPlayers);
 			authorizedPlayers.Clear();
 			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			foreach (ulong item in (List<ulong>)(object)val)
+			{
+				UpdatePrivilegeReceivers(item);
+			}
 			SendNetworkUpdate();
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -316,9 +350,10 @@ public class VehiclePrivilege : SimplePrivilege
 		return IsDriver(player);
 	}
 
-	private void UpdatePrivilegeReceivers()
+	private void UpdatePrivilegeReceivers(ulong userId)
 	{
-		if ((Object)(object)ParentVehicle == (Object)null || !(ParentVehicle is PlayerBoat playerBoat))
+		BasePlayer basePlayer = BasePlayer.FindByID(userId);
+		if ((Object)(object)basePlayer == (Object)null || (Object)(object)ParentVehicle == (Object)null || !(ParentVehicle is PlayerBoat playerBoat))
 		{
 			return;
 		}
@@ -326,7 +361,7 @@ public class VehiclePrivilege : SimplePrivilege
 		{
 			if (item is IPrivilegeUpdateReceiver privilegeUpdateReceiver)
 			{
-				privilegeUpdateReceiver.OnPrivilegeUpdated(this, authorizedPlayers);
+				privilegeUpdateReceiver.OnPrivilegeUpdated(this, basePlayer);
 			}
 		}
 	}

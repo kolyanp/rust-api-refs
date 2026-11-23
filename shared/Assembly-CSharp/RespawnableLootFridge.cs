@@ -20,8 +20,8 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	[Tooltip("Maximum seconds between refreshes.")]
 	public float maxSecondsBetweenRefresh = 900f;
 
-	[Min(1f)]
 	[Tooltip("A full spawn replaces every Nth reduced refresh.")]
+	[Min(1f)]
 	public int refreshesForFullRefresh = 4;
 
 	[Tooltip("Do a full loot spawn as soon as the fridge spawns (ignored when restoring from a save).")]

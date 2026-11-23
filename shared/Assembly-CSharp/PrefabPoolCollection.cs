@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PrefabPoolCollection
 {
-	public Dictionary<uint, PrefabPool> storage = new Dictionary<uint, PrefabPool>();
+	public Dictionary<ulong, PrefabPool> storage = new Dictionary<ulong, PrefabPool>();
+
+	private PrefabKey prefabKey = new PrefabKey();
 
 	private GameManager gameManager;
 
@@ -19,22 +21,28 @@ public class PrefabPoolCollection
 	public void Push(GameObject instance)
 	{
 		Poolable component = instance.GetComponent<Poolable>();
-		if (!storage.TryGetValue(component.prefabID, out var value))
+		ulong key = prefabKey.Get(component.prefabID);
+		if (!storage.TryGetValue(key, out var value))
 		{
 			int targetCapacity = (isClient ? component.ClientCount : component.ServerCount);
-			value = new PrefabPool(component.prefabID, targetCapacity, gameManager.FindPrefab(component.prefabID));
-			storage.Add(component.prefabID, value);
+			value = new PrefabPool(component.prefabID, targetCapacity);
+			storage.Add(key, value);
 		}
-		value.Push(component);
+		value.Push(component, gameManager.FindPrefab(component.prefabID));
+	}
+
+	public bool TryGetPool(uint id, out PrefabPool pool)
+	{
+		return storage.TryGetValue(prefabKey.Get(id), out pool);
 	}
 
 	public GameObject Pop(uint id, Vector3 pos = default(Vector3), Quaternion rot = default(Quaternion))
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		if (storage.TryGetValue(id, out var value))
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		if (TryGetPool(id, out var pool))
 		{
-			return value.Pop(pos, rot);
+			return pool.Pop(pos, rot);
 		}
 		return null;
 	}
@@ -43,15 +51,15 @@ public class PrefabPoolCollection
 	{
 		if (string.IsNullOrEmpty(filter))
 		{
-			foreach (KeyValuePair<uint, PrefabPool> item in storage)
+			foreach (KeyValuePair<ulong, PrefabPool> item in storage)
 			{
 				item.Value.Clear();
 			}
 			return;
 		}
-		foreach (KeyValuePair<uint, PrefabPool> item2 in storage)
+		foreach (KeyValuePair<ulong, PrefabPool> item2 in storage)
 		{
-			if (StringEx.Contains(StringPool.Get(item2.Key), filter, CompareOptions.IgnoreCase))
+			if (StringEx.Contains(item2.Value.PrefabName, filter, CompareOptions.IgnoreCase))
 			{
 				item2.Value.Clear();
 			}

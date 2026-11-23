@@ -14,8 +14,8 @@ public class SSAOPreset : ScriptableObject
 	[Tooltip("Source used for per-pixel normals.")]
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final applied intensity of the occlusion effect.")]
 	public float Intensity = 1f;
 
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
@@ -25,16 +25,16 @@ public class SSAOPreset : ScriptableObject
 	[Range(0f, 32f)]
 	public float Radius = 2f;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
+	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent = 1.8f;
 
-	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls thickness-based occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
@@ -67,8 +67,8 @@ public class SSAOPreset : ScriptableObject
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	[Range(1f, 4f)]
+	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	public int BlurRadius = 3;
 
 	[Tooltip("Number of blur passes.")]
@@ -87,8 +87,8 @@ public class SSAOPreset : ScriptableObject
 	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
+	[Range(0f, 1f)]
 	public float FilterResponse = 0.5f;
 
 	public SSAOPreset()

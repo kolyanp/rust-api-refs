@@ -253,12 +253,12 @@ public class TerrainPath : TerrainExtension
 
 	public void AddWire(PowerlineNode node)
 	{
-		string name = ((Object)((Component)node).transform.root).name;
-		if (!wires.ContainsKey(name))
+		string key = StringPool.Get(node.prefabID);
+		if (!wires.ContainsKey(key))
 		{
-			wires.Add(name, new List<PowerlineNode>());
+			wires.Add(key, new List<PowerlineNode>());
 		}
-		wires[name].Add(node);
+		wires[key].Add(node);
 	}
 
 	public void CreateWires()

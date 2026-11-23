@@ -8,6 +8,7 @@ using API.Assembly;
 using API.Events;
 using API.Logger;
 using Carbon;
+using Carbon.Compat.Patches;
 using Carbon.Components;
 using Carbon.Extensions;
 using Carbon.Profiler;
@@ -153,7 +154,7 @@ internal sealed class ModuleManager : AddonManager
 			val.Write((Stream)memoryStream);
 			memoryStream.Position = 0L;
 			val.Dispose();
-			byte[] array = memoryStream.ToArray();
+			byte[] array = PrefabIdPatch.Rewrite(memoryStream.ToArray());
 			assembly = Assembly.Load(array);
 			ModuleAssemblyCache[assembly.FullName] = assembly;
 			bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Module, assembly, Path.GetFileNameWithoutExtension(file));

@@ -51,12 +51,6 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			return;
 		}
 		ItemCraftTask value = queue.First.Value;
-		if (value.cancelled)
-		{
-			owner.Command("note.craft_done", value.taskUID, 0);
-			RemoveFirstTask();
-			return;
-		}
 		float currentCraftLevel = owner.currentCraftLevel;
 		if (value.endTime > Time.realtimeSinceStartup)
 		{
@@ -185,10 +179,10 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public void FinishCrafting(ItemCraftTask task)
 	{
-		//IL_0389: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0390: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0397: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0391: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039e: Unknown result type (might be due to invalid IL or missing references)
 		task.amount--;
 		task.numCrafted++;
 		ulong skin = ItemDefinition.FindSkin(task.blueprint.targetItem.itemid, task.skinID);
@@ -218,7 +212,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			}
 			foreach (Item takenItem in task.takenItems)
 			{
-				if ((Object)(object)takenItem.info == (Object)(object)ingredient.itemDef)
+				if (takenItem.info.MatchesItemId(ingredient.itemid, redirectAllowed: true))
 				{
 					int num2 = Mathf.Min(takenItem.amount, num);
 					Facepunch.Rust.Analytics.Azure.OnCraftMaterialConsumed(takenItem.info.shortname, num, baseEntity, task.workbenchEntity, inSafezone, item.info.shortname);
@@ -257,33 +251,29 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public bool CancelTask(int iID)
 	{
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
 		if (queue.Count == 0)
 		{
 			return false;
 		}
-		if ((Object)(object)owner != (Object)null && owner.IsTransferring())
+		if ((Object)(object)owner == (Object)null || owner.IsTransferring())
 		{
 			return false;
 		}
-		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.taskUID == iID && !x.cancelled);
+		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.taskUID == iID);
 		if (itemCraftTask == null)
 		{
 			return false;
 		}
-		itemCraftTask.cancelled = true;
-		if ((Object)(object)owner == (Object)null)
-		{
-			return true;
-		}
+		queue.Remove(itemCraftTask);
 		Interface.CallHook("OnItemCraftCancelled", itemCraftTask, this);
 		owner.Command("note.craft_done", itemCraftTask.taskUID, 0);
 		if (itemCraftTask.takenItems != null && itemCraftTask.takenItems.Count > 0)
@@ -303,8 +293,8 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 					}
 				}
 			}
-			itemCraftTask.takenItems.Clear();
 		}
+		Pool.Free<ItemCraftTask>(ref itemCraftTask);
 		owner.InvalidateNetworkCache();
 		return true;
 	}
@@ -319,7 +309,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.blueprint.targetItem.itemid == itemid && !x.cancelled);
+		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.blueprint.targetItem.itemid == itemid);
 		if (itemCraftTask == null)
 		{
 			return false;
@@ -329,9 +319,8 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public void CancelAll()
 	{
-		foreach (ItemCraftTask item in queue)
+		while (queue.Count > 0 && CancelTask(queue.First.Value.taskUID))
 		{
-			CancelTask(item.taskUID);
 		}
 	}
 
@@ -372,10 +361,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		float num = (float)amount / (float)bp.targetItem.craftingStackable;
 		foreach (ItemCraftTask item in queue)
 		{
-			if (!item.cancelled)
-			{
-				num += (float)item.amount / (float)item.blueprint.targetItem.craftingStackable;
-			}
+			num += (float)item.amount / (float)item.blueprint.targetItem.craftingStackable;
 		}
 		if (num > 8f)
 		{
@@ -430,7 +416,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.taskUID == taskID2 && !x.cancelled);
+		ItemCraftTask itemCraftTask = queue.FirstOrDefault((ItemCraftTask x) => x.taskUID == taskID2);
 		if (itemCraftTask == null)
 		{
 			return false;
@@ -454,10 +440,10 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 	[PoolAnalyzerGetWrapper]
 	public ItemCrafter Save()
 	{
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 		ItemCrafter val = Pool.Get<ItemCrafter>();
 		val.queue = Pool.Get<List<Task>>();
 		foreach (ItemCraftTask item in queue)
@@ -466,7 +452,6 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			val2.itemID = item.blueprint.targetItem.itemid;
 			val2.remainingTime = ((item.endTime > 0f) ? (item.endTime - Time.realtimeSinceStartup) : 0f);
 			val2.taskUID = item.taskUID;
-			val2.cancelled = item.cancelled;
 			InstanceData instanceData = item.instanceData;
 			val2.instanceData = ((instanceData != null) ? instanceData.Copy() : null);
 			val2.amount = item.amount;
@@ -494,7 +479,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public void Load(ItemCrafter proto)
 	{
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 		if (proto?.queue == null)
 		{
 			return;
@@ -506,30 +491,32 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		ItemBlueprint blueprint = default;
 		foreach (Task item in proto.queue)
 		{
-			ItemDefinition itemDefinition = ItemManager.FindItemDefinition(item.itemID);
-			if ((Object)(object)itemDefinition == (Object)null || !((Component)itemDefinition).TryGetComponent<ItemBlueprint>(ref blueprint))
+			if (!item.cancelled)
 			{
-				Debug.LogWarning((object)$"ItemCrafter has queue task for item ID {item.itemID}, but it was not found or has no blueprint. Skipping it");
-				continue;
+				ItemDefinition itemDefinition = ItemManager.FindItemDefinition(item.itemID);
+				if ((Object)(object)itemDefinition == (Object)null || !((Component)itemDefinition).TryGetComponent<ItemBlueprint>(ref blueprint))
+				{
+					Debug.LogWarning((object)$"ItemCrafter has queue task for item ID {item.itemID}, but it was not found or has no blueprint. Skipping it");
+					continue;
+				}
+				ItemCraftTask itemCraftTask = Pool.Get<ItemCraftTask>();
+				itemCraftTask.blueprint = blueprint;
+				itemCraftTask.endTime = ((item.remainingTime > 0f) ? (Time.realtimeSinceStartup + item.remainingTime) : 0f);
+				itemCraftTask.taskUID = item.taskUID;
+				InstanceData instanceData = item.instanceData;
+				itemCraftTask.instanceData = ((instanceData != null) ? instanceData.Copy() : null);
+				itemCraftTask.amount = item.amount;
+				itemCraftTask.skinID = item.skinID;
+				itemCraftTask.takenItems = LoadItems(item.takenItems);
+				itemCraftTask.numCrafted = item.numCrafted;
+				itemCraftTask.conditionScale = item.conditionScale;
+				itemCraftTask.workbenchEntity = new EntityRef<BaseEntity>
+				{
+					uid = item.workbenchEntity
+				}.Get(serverside: true);
+				queue.AddLast(itemCraftTask);
+				taskUID = Mathf.Max(taskUID, itemCraftTask.taskUID);
 			}
-			ItemCraftTask itemCraftTask = Pool.Get<ItemCraftTask>();
-			itemCraftTask.blueprint = blueprint;
-			itemCraftTask.endTime = ((item.remainingTime > 0f) ? (Time.realtimeSinceStartup + item.remainingTime) : 0f);
-			itemCraftTask.taskUID = item.taskUID;
-			itemCraftTask.cancelled = item.cancelled;
-			InstanceData instanceData = item.instanceData;
-			itemCraftTask.instanceData = ((instanceData != null) ? instanceData.Copy() : null);
-			itemCraftTask.amount = item.amount;
-			itemCraftTask.skinID = item.skinID;
-			itemCraftTask.takenItems = LoadItems(item.takenItems);
-			itemCraftTask.numCrafted = item.numCrafted;
-			itemCraftTask.conditionScale = item.conditionScale;
-			itemCraftTask.workbenchEntity = new EntityRef<BaseEntity>
-			{
-				uid = item.workbenchEntity
-			}.Get(serverside: true);
-			queue.AddLast(itemCraftTask);
-			taskUID = Mathf.Max(taskUID, itemCraftTask.taskUID);
 		}
 		static List<Item> LoadItems(List<Item> itemProtos)
 		{

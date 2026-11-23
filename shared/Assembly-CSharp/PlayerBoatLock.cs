@@ -155,6 +155,10 @@ public class PlayerBoatLock
 
 	public bool TryOpenWithCode(BasePlayer player, string codeEntered)
 	{
+		if (!player.CanInteract())
+		{
+			return false;
+		}
 		if (CodeEntryBlocked(player))
 		{
 			return false;

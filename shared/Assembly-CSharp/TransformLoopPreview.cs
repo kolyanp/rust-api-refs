@@ -13,31 +13,31 @@ public class TransformLoopPreview : MonoBehaviour
 		NegativeZ
 	}
 
-	[SerializeField]
 	[Header("Preview")]
+	[SerializeField]
 	private bool previewMotion = true;
 
-	[SerializeField]
 	[Min(0.001f)]
+	[SerializeField]
 	private float movementDistance = 10f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float movementSpeed = 5f;
 
-	[SerializeField]
 	[Tooltip("Uses the object's rotated local axes instead of world axes.")]
+	[SerializeField]
 	private bool useLocalAxis = true;
 
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 originPosition;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private bool originCaptured;
 
 	[SerializeField]

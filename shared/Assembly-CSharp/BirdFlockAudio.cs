@@ -21,8 +21,8 @@ public class BirdFlockAudio : MonoBehaviour, IClientComponent
 	[Tooltip("A silent bird steals a voice when its squared distance is below this fraction of the farthest voiced bird's. 0.5 means it has to be about 30 percent closer, which stops two birds at similar range swapping back and forth.")]
 	public float stealDistanceRatio = 0.5f;
 
-	[Tooltip("One shot definition holding the close call clips.")]
 	[Header("Close Calls")]
+	[Tooltip("One shot definition holding the close call clips.")]
 	public SoundDefinition closeCallDef;
 
 	[Tooltip("How many birds can be calling at once. Each is on its own timer and picks a fresh random bird for every call.")]

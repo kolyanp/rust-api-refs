@@ -18,8 +18,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Bound through the draw's property block, since a procedural swarm has no Renderer for BindSubsurfaceProfile.")]
 		public SubsurfaceProfile subsurfaceProfile;
 
-		[Header("Population")]
 		[Tooltip("How many jellyfish have their local water column re-sampled each update. Sampled as one batch, so raising this is cheap.")]
+		[Header("Population")]
 		public int samplesPerFrame;
 
 		public int maxCount;
@@ -40,8 +40,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Random speed spread per jellyfish, on top of size. 0.25 means each is up to 25 percent faster or slower than its size alone suggests.")]
 		public float speedRandomness;
 
-		[Header("Tilt")]
 		[Tooltip("How far a jellyfish leans into a climb or dive, in degrees. This is the tilt at full tiltReferenceSpeed, reached only in a steep climb.")]
+		[Header("Tilt")]
 		public float maxTiltAngle;
 
 		[Tooltip("Climb rate that earns the full maxTiltAngle, in metres per second. Lower tilts the swarm harder on gentle drifts.")]
@@ -50,15 +50,15 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("How quickly the tilt follows a change in climb rate. Low is a languid lean, high snaps to it.")]
 		public float tiltEaseRate;
 
-		[Header("Pulse")]
 		[Tooltip("Pulse rate of a jellyfish sat completely still, as a fraction of its rate at full speed. 0 stops the animation dead when resting, which looks lifeless. Around 0.3 keeps it ticking over.")]
+		[Header("Pulse")]
 		public float pulseRateAtRest;
 
 		[Tooltip("Speed at which a jellyfish pulses at its full authored rate. Below this the pulse slows towards pulseRateAtRest, above it does not speed up further.")]
 		public float pulseReferenceSpeed;
 
-		[Header("Following")]
 		[Tooltip("How close to the entity each jellyfish wants to stay, as a fraction of the swarm radius. Rolled per jellyfish, so some shadow the entity closely while others hang back near the edge.")]
+		[Header("Following")]
 		public Vector2 followTightnessRange;
 
 		[Tooltip("Random variation in how long a jellyfish dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]

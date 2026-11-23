@@ -6,8 +6,8 @@ public class UIBackgroundBlur : ListComponent<UIBackgroundBlur>, IClientComponen
 	[SerializeField]
 	private float amount = 1f;
 
-	[SerializeField]
 	[Range(0f, 10f)]
+	[SerializeField]
 	private float blurSize;
 
 	public float Amount

@@ -37,8 +37,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 	{
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	[ClientVar(Name = "pulse", Help = "(Generated) Pulses all RGB lighting devices to a given colour over the specified duration in seconds; uses the RGB controller pulse animation")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static void ConVar_Pulse(ConsoleSystem.Arg args)
 	{
 	}

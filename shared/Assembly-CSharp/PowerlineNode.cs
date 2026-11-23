@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PowerlineNode : MonoBehaviour
+public class PowerlineNode : BasePrefab
 {
 	public GameObjectRef WirePrefab;
 

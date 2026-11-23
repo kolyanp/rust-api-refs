@@ -1093,6 +1093,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				using (TimeWarning.New("Net.sv.Cycle", 100))
 				{
 					methodTimer.Restart();
+					Net.sv.ProcessPendingKicks();
 					Net.sv.Cycle();
 					RuntimeProfiler.Net_Cycle = methodTimer.Elapsed;
 				}

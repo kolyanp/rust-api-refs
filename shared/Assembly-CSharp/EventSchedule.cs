@@ -13,8 +13,8 @@ public class EventSchedule : BaseMonoBehaviour
 	[Tooltip("The minimum amount of hours between events")]
 	public float minimumHoursBetween = 12f;
 
-	[Tooltip("The maximum amount of hours between events")]
 	[FormerlySerializedAs("maxmumHoursBetween")]
+	[Tooltip("The maximum amount of hours between events")]
 	public float maximumHoursBetween = 24f;
 
 	[Tooltip("ID to reference this event via convars")]

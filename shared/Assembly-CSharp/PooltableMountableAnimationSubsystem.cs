@@ -16,8 +16,8 @@ public class PooltableMountableAnimationSubsystem : ChildAnimatorSubSystem, INot
 	[SerializeField]
 	private float oneShotBlendTime = 0.1f;
 
-	[SerializeField]
 	[Tooltip("Lateral speed (m/s) at which the walk clips reach full weight")]
+	[SerializeField]
 	private float walkSpeedNormalization = 1f;
 
 	[SerializeField]

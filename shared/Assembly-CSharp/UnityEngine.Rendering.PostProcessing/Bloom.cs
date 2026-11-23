@@ -14,8 +14,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Min(0f)]
 	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
+	[Min(0f)]
 	public FloatParameter threshold = new FloatParameter
 	{
 		value = 1f
@@ -34,15 +34,15 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 65472f
 	};
 
-	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	[Range(1f, 10f)]
+	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	public FloatParameter diffusion = new FloatParameter
 	{
 		value = 7f
 	};
 
-	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	[Range(-1f, 1f)]
+	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	public FloatParameter anamorphicRatio = new FloatParameter
 	{
 		value = 0f

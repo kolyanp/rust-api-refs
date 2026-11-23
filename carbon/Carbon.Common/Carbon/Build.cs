@@ -10,15 +10,15 @@ public class Build
 
 		public static readonly string Comment = "Merged from main";
 
-		public static readonly string Date = "2026-11-18 20:19:07 +0100";
+		public static readonly string Date = "2026-11-23 16:06:29 +0100";
 
 		public static readonly string Tag = "production_build";
 
-		public static readonly string HashShort = "5a807c6";
+		public static readonly string HashShort = "d918fc8";
 
-		public static readonly string HashLong = "5a807c6a58e085e47370e38dd49b492e2aba57fa";
+		public static readonly string HashLong = "d918fc863d93d4caf92c8a2f94e942fcd1076a04";
 
-		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/5a807c6a58e085e47370e38dd49b492e2aba57fa";
+		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/d918fc863d93d4caf92c8a2f94e942fcd1076a04";
 	}
 
 	public static bool IsDebug => false;

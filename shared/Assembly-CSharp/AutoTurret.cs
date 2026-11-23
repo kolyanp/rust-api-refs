@@ -1211,8 +1211,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		SetID(msg.player, oldID, newID);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_AdminUpdateIdentifier(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && (msg.player.IsAdmin || msg.player.IsDeveloper))
@@ -1232,10 +1232,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1474,8 +1474,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		flagsUpdateScope.Set(Flags.Reserved4, b);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void FlipAim(RPCMessage rpc)
 	{
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
@@ -1489,8 +1489,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		AddSelfAuthorize(rpc.player);
@@ -1507,8 +1507,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (!booting && !IsOnline() && IsAuthed(rpc.player) && Interface.CallHook("OnTurretDeauthorize", this, rpc.player) == null)
@@ -1536,8 +1536,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void AssignToFriend(RPCMessage msg)
 	{
 		if (!AtMaxAuthCapacity() && !((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && CanChangeSettings(msg.player))
@@ -1554,8 +1554,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SERVER_Peacekeeper(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", this, rpc.player) == null)

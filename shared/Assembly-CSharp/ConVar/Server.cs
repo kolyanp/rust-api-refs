@@ -340,6 +340,9 @@ public class Server : ConsoleSystem
 	[ReplicatedVar(Help = "Maximum number of tool cupboards each player can place, 0 or less is unlimited. Lowering it doesn't remove cupboards that are already placed")]
 	public static int max_tool_cupboards = 0;
 
+	[ServerVar(Help = "Maximum number of players that can be authorized on a single tool cupboard or vehicle. Lowering it doesn't remove players who are already authorized")]
+	public static int max_privilege_auths = 200;
+
 	[ServerVar(Help = "When a deployable is upgraded in place (e.g. stacking sandbags) the new tier keeps the damaged health fraction of the one it replaced instead of spawning at full health")]
 	public static bool upgrade_keeps_health = true;
 
