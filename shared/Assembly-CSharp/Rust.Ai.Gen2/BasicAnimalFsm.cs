@@ -33,24 +33,24 @@ public class BasicAnimalFsm : FSMComponent
 	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
 	private Vector3 attackOffset = Vector3.zero;
 
-	[Tooltip("Minimum seconds between two bites.")]
 	[SerializeField]
+	[Tooltip("Minimum seconds between two bites.")]
 	private float attackIntervalSeconds = 1.5f;
 
-	[Tooltip("How long the animal commits to one chase before backing off.")]
 	[SerializeField]
+	[Tooltip("How long the animal commits to one chase before backing off.")]
 	private float chaseGiveUpSeconds = 20f;
 
-	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	[SerializeField]
+	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	private float cooldownSeconds = 5f;
 
-	[Tooltip("Health fraction below which the animal breaks off a fight.")]
 	[SerializeField]
+	[Tooltip("Health fraction below which the animal breaks off a fight.")]
 	private float fleeBelowHealthFraction = 0.3f;
 
-	[Tooltip("An animal that is not already fighting runs from a hit taken from further away than this, in metres. Zero turns it off.")]
 	[SerializeField]
+	[Tooltip("An animal that is not already fighting runs from a hit taken from further away than this, in metres. Zero turns it off.")]
 	private float fleeWhenShotBeyond = 20f;
 
 	public State_Roam roam = new State_Roam();

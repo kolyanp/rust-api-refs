@@ -5,8 +5,8 @@ public class Minicopter : PlayerHelicopterWithFlares
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
 	public static float population;
 
-	[Header(" Minicopter Specific ")]
 	[SerializeField]
+	[Header(" Minicopter Specific ")]
 	private ParticleSystemContainer fxMediumDamage;
 
 	[SerializeField]

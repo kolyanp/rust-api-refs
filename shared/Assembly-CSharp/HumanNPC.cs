@@ -306,21 +306,21 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0255: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
 		if (newAim == Vector3.zero || ObjectEx.IsUnityNull(eyes) || ObjectEx.IsUnityNull<Transform>(((Component)this).transform))
 		{
 			return;
@@ -356,14 +356,17 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 				eyes.rotation = Quaternion.Lerp(eyes.rotation, Quaternion.LookRotation(val7, ((Component)baseEntity).transform.up), num * 25f);
 				val = eyes.bodyRotation;
 				viewAngles = val.eulerAngles;
-				ServerRotation = eyes.bodyRotation;
+				ServerRotation = Quaternion.Euler(0f, viewAngles.y, 0f);
 				return;
 			}
 		}
 		eyes.rotation = (isMounted ? Quaternion.Slerp(eyes.rotation, Quaternion.Euler(newAim), num * 70f) : Quaternion.Lerp(eyes.rotation, Quaternion.LookRotation(newAim, ((Component)this).transform.up), num * 25f));
 		val = eyes.rotation;
 		viewAngles = val.eulerAngles;
-		ServerRotation = eyes.rotation;
+		if (!isMounted)
+		{
+			ServerRotation = Quaternion.Euler(0f, viewAngles.y, 0f);
+		}
 	}
 
 	public void SetStationaryAimPoint(Vector3 aimAt)

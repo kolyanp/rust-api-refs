@@ -58,8 +58,8 @@ public class Render : ConsoleSystem
 
 	public static bool IsMultidrawEnabled => multidraw;
 
-	[ClientVar(Name = "print_tree_counts", ClientAdmin = true, Help = "Print off count of trees to ensure server sent them all")]
 	[ServerVar(Help = "Print off count of trees to ensure server sent them all")]
+	[ClientVar(Name = "print_tree_counts", ClientAdmin = true, Help = "Print off count of trees to ensure server sent them all")]
 	public static void tree_entities(Arg arg)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

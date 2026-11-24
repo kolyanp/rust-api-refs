@@ -178,29 +178,29 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[HideInInspector]
 	private Vector3 authoredLocalPosition;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Quaternion authoredLocalRotation;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 authoredLocalScale;
 
-	[FlattenIgnoreReference]
 	[SerializeField]
 	[HideInInspector]
+	[FlattenIgnoreReference]
 	private Transform flattenedParent;
 
 	[HideInInspector]
 	[SerializeField]
 	private Vector3 flattenedLocalPosition;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Quaternion flattenedLocalRotation;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 flattenedLocalScale;
 
 	public static Library server = new Library(clientside: false, serverside: true);

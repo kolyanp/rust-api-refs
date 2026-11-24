@@ -42,8 +42,8 @@ public class UI_DeveloperTools : UI_Window
 	[SerializeField]
 	private NeedsKeyboard needsKeyboard;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private List<Tab> tabs;
 
 	[SerializeField]

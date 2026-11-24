@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LandmarkInfo : MonoBehaviour
@@ -37,15 +36,11 @@ public class LandmarkInfo : MonoBehaviour
 		string GetFallbackNameImpl()
 		{
 			Transform root = ((Component)this).transform.root;
-			GameObject gameObject = ((Component)root).gameObject;
-			foreach (var (result, hashSet2) in World.SpawnedPrefabs)
+			if (!World.TryGetSpawnedPrefabCategory(((Component)root).gameObject, out var category))
 			{
-				if (hashSet2.Contains(gameObject))
-				{
-					return result;
-				}
+				return ((Object)root).name;
 			}
-			return ((Object)root).name;
+			return category;
 		}
 	}
 }

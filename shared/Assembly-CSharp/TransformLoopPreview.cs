@@ -32,16 +32,16 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 originPosition;
 
 	[SerializeField]
 	[HideInInspector]
 	private bool originCaptured;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float travelledDistance;
 
 	private void OnEnable()

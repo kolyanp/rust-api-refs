@@ -166,8 +166,8 @@ public class Planner : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	private void StartDurationPlace(RPCMessage msg)
 	{

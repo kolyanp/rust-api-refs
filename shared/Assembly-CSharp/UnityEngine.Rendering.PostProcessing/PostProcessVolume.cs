@@ -1,7 +1,7 @@
 namespace UnityEngine.Rendering.PostProcessing;
 
-[ExecuteAlways]
 [AddComponentMenu("Rendering/Post-process Volume", 1001)]
+[ExecuteAlways]
 public sealed class PostProcessVolume : MonoBehaviour
 {
 	public PostProcessProfile sharedProfile;
@@ -11,8 +11,8 @@ public sealed class PostProcessVolume : MonoBehaviour
 
 	public Bounds bounds;
 
-	[Tooltip("The distance (from the attached Collider) to start blending from. A value of 0 means there will be no blending and the Volume overrides will be applied immediatly upon entry to the attached Collider.")]
 	[Min(0f)]
+	[Tooltip("The distance (from the attached Collider) to start blending from. A value of 0 means there will be no blending and the Volume overrides will be applied immediatly upon entry to the attached Collider.")]
 	public float blendDistance;
 
 	[Range(0f, 1f)]

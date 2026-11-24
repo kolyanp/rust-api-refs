@@ -6,8 +6,8 @@ namespace FIMSpace.FTail;
 [AddComponentMenu("FImpossible Creations/Tail Animator Utilities/Tail Animator Wind")]
 public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon
 {
-	[Header("In playmode you will find this object in DontDestroyOnLoad")]
 	[FPD_Header("Main Wind Setings", 2f, 4f, 2)]
+	[Header("In playmode you will find this object in DontDestroyOnLoad")]
 	public float power = 1f;
 
 	public float additionalTurbulence = 1f;
@@ -35,8 +35,8 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 	[Range(0f, 10f)]
 	public float turbulenceSpeed = 1f;
 
-	[FPD_Header("World Position Turbulence", 6f, 4f, 2)]
 	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
+	[FPD_Header("World Position Turbulence", 6f, 4f, 2)]
 	public float worldTurb = 1f;
 
 	[Tooltip("If higher no performance cost, it is just a number")]
@@ -44,8 +44,8 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 
 	public float worldTurbSpeed = 5f;
 
-	[FPD_Header("Tail Compoenents Related", 6f, 4f, 2)]
 	[Tooltip("When tail is longer then power of wind should be higher")]
+	[FPD_Header("Tail Compoenents Related", 6f, 4f, 2)]
 	public bool powerDependOnTailLength = true;
 
 	[Tooltip("Don't destroy on load")]

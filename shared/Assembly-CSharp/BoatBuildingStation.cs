@@ -43,8 +43,8 @@ public class BoatBuildingStation : DecayEntity
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[ServerVar]
 	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
+	[ServerVar]
 	public static bool StaticStationsEnabled = true;
 
 	[ServerVar]
@@ -516,8 +516,8 @@ public class BoatBuildingStation : DecayEntity
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void FinishBuilding(RPCMessage msg)
 	{

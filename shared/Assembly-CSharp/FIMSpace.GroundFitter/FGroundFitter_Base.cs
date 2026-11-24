@@ -8,9 +8,9 @@ namespace FIMSpace.GroundFitter;
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
 	[Header("> Main Variables <", order = 0)]
-	[Space(4f, order = 1)]
 	[Tooltip("How quick rotation should be corrected to target")]
 	[Range(1f, 30f)]
+	[Space(4f, order = 1)]
 	public float FittingSpeed = 6f;
 
 	[Tooltip("Smoothing whole rotation motion")]
@@ -18,18 +18,18 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	public float TotalSmoother;
 
 	[Space(3f)]
-	[HideInInspector]
 	[Tooltip("Transform which will be rotated by script, usually it can be the same transform as component's")]
+	[HideInInspector]
 	public Transform TransformToRotate;
 
-	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	[Space(3f)]
+	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
 	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
-	[Range(0f, 1f)]
 	[Header("> Tweaking Settings <", order = 0)]
 	[Space(4f, order = 1)]
+	[Range(0f, 1f)]
 	public float MildForwardValue;
 
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
@@ -45,9 +45,9 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Range(0f, 90f)]
 	public float MaxHorizontalRotation = 90f;
 
-	[Header("> Advanced settings <", order = 0)]
-	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
 	[Space(4f, order = 1)]
+	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
+	[Header("> Advanced settings <", order = 0)]
 	public float RaycastHeightOffset = 0.5f;
 
 	[Tooltip("How far ray should cast to check if ground is under feet")]
@@ -75,8 +75,8 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 
 	internal Vector3 WorldUp = Vector3.up;
 
-	[Space(8f)]
 	[Tooltip("Casting more raycsts under object to detect ground more precisely, then we use average from all casts to set new rotation")]
+	[Space(8f)]
 	public bool ZoneCast;
 
 	public Vector2 ZoneCastDimensions = new Vector2(0.3f, 0.5f);

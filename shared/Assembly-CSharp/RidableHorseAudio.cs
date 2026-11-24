@@ -41,8 +41,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private string BaseFolder;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]

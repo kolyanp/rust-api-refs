@@ -300,9 +300,9 @@ public class VehiclePrivilege : SimplePrivilege
 		AddPlayer(player, player.userID);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null && authorizedPlayers.Remove(rpc.player.userID))
@@ -314,9 +314,9 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	private void ClearList(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || !CanModifyAuth(rpc.player) || Interface.CallHook("OnCupboardClearList", this, rpc.player) != null)

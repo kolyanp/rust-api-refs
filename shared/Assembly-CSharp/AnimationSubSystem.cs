@@ -21,9 +21,9 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private string SubSystemName = string.Empty;
 
-	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
-	[SubSystemVariable]
 	[SerializeField]
+	[SubSystemVariable]
+	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
 	protected AvatarMask Mask;
 
 	[SerializeField]

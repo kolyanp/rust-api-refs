@@ -34,8 +34,8 @@ public class TrainWagonLootData : ScriptableObject
 	[SerializeField]
 	private LootOption[] oreOptions;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private LootOption lootWagonContent;
 
 	[SerializeField]

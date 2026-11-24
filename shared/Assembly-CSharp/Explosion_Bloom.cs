@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-[AddComponentMenu("KriptoFX/Explosion_Bloom")]
-[RequireComponent(typeof(Camera))]
-[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
+[AddComponentMenu("KriptoFX/Explosion_Bloom")]
+[ImageEffectAllowedInSceneView]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
@@ -20,8 +20,8 @@ public class Explosion_Bloom : MonoBehaviour
 		public float softKnee;
 
 		[Range(1f, 7f)]
-		[SerializeField]
 		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
+		[SerializeField]
 		public float radius;
 
 		[SerializeField]
@@ -74,8 +74,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Shader m_Shader;
 
 	private Material m_Material;

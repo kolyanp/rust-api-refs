@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [Serializable]
-[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 [VolumeComponentMenu("RRP/Cathode")]
+[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 public class CathodeVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	public ClampedFloatParameter intensity = new ClampedFloatParameter(0f, 0f, 1f, false);

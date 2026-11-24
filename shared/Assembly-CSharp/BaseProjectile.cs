@@ -111,8 +111,8 @@ public class BaseProjectile : AttackEntity
 	[Header("NPC Info")]
 	public float NoiseRadius = 100f;
 
-	[Header("Projectile")]
 	[Tooltip("Scales the damage of the projectile across all ranges.")]
+	[Header("Projectile")]
 	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
@@ -1660,9 +1660,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1756,8 +1756,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartReload(RPCMessage msg)
 	{
 		ProcessStartReload(msg, VerifyClientRPC(msg.player));
@@ -1791,8 +1791,8 @@ public class BaseProjectile : AttackEntity
 		UpdateShieldState(bHeld: false);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void ServerFractionalReloadInsert(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1849,8 +1849,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Reload(RPCMessage msg)
 	{
 		ProcessReload(msg, VerifyClientRPC(msg.player), 1.5f);
@@ -1911,10 +1911,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
-	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{
 		ProcessCLProject(msg, VerifyClientAttack(msg.player), null);

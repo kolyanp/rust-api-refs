@@ -334,9 +334,9 @@ public class BuildingBlock : StabilityEntity
 		return DeployVolume.CheckInPlaceOf(this, ((Component)this).transform.rotation, volumes);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void SERVER_DoFlip(RPCMessage msg)
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
@@ -509,8 +509,8 @@ public class BuildingBlock : StabilityEntity
 		health = MaxHealth();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoUpgradeToGrade(RPCMessage msg)
 	{
 		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
@@ -1340,8 +1340,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))

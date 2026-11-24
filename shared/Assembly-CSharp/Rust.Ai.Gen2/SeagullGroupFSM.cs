@@ -51,8 +51,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public abstract class State_SeagullFly : BirdFlockFSM.State_Fly
 	{
-		[SerializeField]
 		[Tooltip("Height above the ground or water the group flies at, in metres.")]
+		[SerializeField]
 		protected float altitude = 25f;
 
 		protected Vector3 Home
@@ -95,20 +95,20 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_FlyAway : State_SeagullFly
 	{
-		[Tooltip("How long the group flies straight away from the scare before it turns back to circle home, in seconds.")]
 		[SerializeField]
+		[Tooltip("How long the group flies straight away from the scare before it turns back to circle home, in seconds.")]
 		private Vector2 durationRange = new Vector2(3f, 6f);
 
-		[Tooltip("Played for every player in range as the group is startled into the air, attached to the group so it follows the flock away.")]
 		[SerializeField]
+		[Tooltip("Played for every player in range as the group is startled into the air, attached to the group so it follows the flock away.")]
 		private GameObjectRef startleEffect;
 
-		[Tooltip("How long the group takes to build up to full speed, in seconds. Keeps it over the birds while they run and take off, so they stay inside its bounds and shootable.")]
 		[SerializeField]
+		[Tooltip("How long the group takes to build up to full speed, in seconds. Keeps it over the birds while they run and take off, so they stay inside its bounds and shootable.")]
 		private float speedRampTime = 3f;
 
-		[SerializeField]
 		[Tooltip("How far the way the group takes off has to be clear, in metres. It turns aside from walls rather than flying the birds into them.")]
+		[SerializeField]
 		private float takeoffClearance = 60f;
 
 		private const float clearTurnStep = 30f;
@@ -286,8 +286,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private Vector2 radiusRange = new Vector2(25f, 50f);
 
-		[SerializeField]
 		[Tooltip("How far ahead round the circle the group aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
+		[SerializeField]
 		private float leadAngle = 0.6f;
 
 		private TimeUntil circleEnd;
@@ -339,16 +339,16 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float homeRadius = 150f;
 
-		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
 		[SerializeField]
+		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
 		private Vector2 searchDistance = new Vector2(30f, 500f);
 
-		[Tooltip("Radius the group circles home at while it waits for a land point to come free, in metres.")]
 		[SerializeField]
+		[Tooltip("Radius the group circles home at while it waits for a land point to come free, in metres.")]
 		private float waitRadius = 40f;
 
-		[Tooltip("How close to the land point counts as arrived, where the group stops steering and comes straight down.")]
 		[SerializeField]
+		[Tooltip("How close to the land point counts as arrived, where the group stops steering and comes straight down.")]
 		private float arriveDistance = 15f;
 
 		private const float searchInterval = 5f;
@@ -435,16 +435,16 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_Land : FSMStateBase
 	{
-		[Tooltip("How fast the group closes on the spot above the land point, in metres per second.")]
 		[SerializeField]
+		[Tooltip("How fast the group closes on the spot above the land point, in metres per second.")]
 		private float approachSpeed = 8f;
 
 		[Tooltip("How fast the group comes down onto the land point, in metres per second.")]
 		[SerializeField]
 		private float descentSpeed = 5f;
 
-		[SerializeField]
 		[Tooltip("How far above or below the land point the group looks for the ground to land on, in metres.")]
+		[SerializeField]
 		private float groundSearchDistance = 2f;
 
 		[Tooltip("How long the group waits after touching down for its last birds to glide in, in seconds. It keeps the bounds that reach up to them until then.")]

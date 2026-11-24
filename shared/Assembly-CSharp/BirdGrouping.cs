@@ -82,8 +82,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How fast the birds' spots wheel round the point, in radians per second. Each bird is given its own share of this, so most drift round together at different rates while a few hang back or cut against them.")]
 		public float interestedSwirlSpeed;
 
-		[Tooltip("How far a bird looks for flockmates to fly with, in metres.")]
 		[Header("Flocking")]
+		[Tooltip("How far a bird looks for flockmates to fly with, in metres.")]
 		public float neighbourRadius;
 
 		[Tooltip("Closer than this to a flockmate and a bird pushes away from it, in metres.")]
@@ -103,8 +103,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a bird matches the entity's velocity, per metre per second it is off. Keeps the flock with an entity that flies off somewhere, rather than trailing or circling it.")]
 		public float anchorVelocityWeight;
 
-		[Header("Fleeing")]
 		[Tooltip("How much faster the birds can fly and turn while fleeing. Needs to keep up with the entity's flee speed.")]
+		[Header("Fleeing")]
 		public float fleeSpeedMultiplier;
 
 		[Tooltip("Gap between birds along each arm of the V the flock flees in, in metres.")]
@@ -129,13 +129,13 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How much one bird's wing beat speed differs from another's, as a fraction either side. Stops a flock drifting into flapping in step.")]
 		public float flapRateVariance;
 
-		[Range(-1f, 1f)]
 		[Tooltip("Where the wings are held in a glide, from -1 fully down to 1 fully up.")]
+		[Range(-1f, 1f)]
 		[Header("Gliding")]
 		public float glideWingHeight;
 
-		[Range(0f, 1f)]
 		[Tooltip("How steep a descent has a bird glide down it instead of flapping, from 0 for any descent to 1 for only the steepest dive.")]
+		[Range(0f, 1f)]
 		public float diveGlideSteepness;
 
 		[Tooltip("How long a bird glides between bouts of flapping in level flight, in seconds. Zero to only glide on dives.")]
@@ -147,8 +147,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a gliding bird sinks. The flapping after climbs it back up, so level flight swoops.")]
 		public float glideSink;
 
-		[Header("Obstacles")]
 		[Tooltip("How far ahead a bird looks for something to fly into, in metres.")]
+		[Header("Obstacles")]
 		public float lookAheadDistance;
 
 		public float obstacleWeight;
@@ -159,8 +159,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a bird below minClearance climbs, per metre it is under.")]
 		public float clearanceWeight;
 
-		[Tooltip("How close a player gets before the birds nearest them scatter, in metres.")]
 		[Header("Players")]
+		[Tooltip("How close a player gets before the birds nearest them scatter, in metres.")]
 		public float playerAvoidRadius;
 
 		public float playerAvoidWeight;
@@ -170,8 +170,8 @@ public class BirdGrouping : IDisposable
 
 		public float maxScale;
 
-		[Tooltip("Drawn instead of mesh once the flock is past farMeshDistance from the camera. Must use the same UV layout so the wing beat still works. Leave empty to always draw mesh.")]
 		[Header("LOD")]
+		[Tooltip("Drawn instead of mesh once the flock is past farMeshDistance from the camera. Must use the same UV layout so the wing beat still works. Leave empty to always draw mesh.")]
 		public Mesh farMesh;
 
 		public float farMeshDistance;

@@ -35,8 +35,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 	[Tooltip("The Rope width set at start (changing this value during run time will produce no effect)")]
 	public float ropeWidth = 0.1f;
 
-	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	[Range(1f, 15f)]
+	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	public float midPointWeight = 1f;
 
 	[Tooltip("Use local positions instead of world positions (relative to this object)")]

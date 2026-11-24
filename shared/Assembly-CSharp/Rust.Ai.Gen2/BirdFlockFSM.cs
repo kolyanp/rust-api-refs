@@ -353,8 +353,8 @@ public class BirdFlockFSM : FSMComponent
 	[Serializable]
 	public class State_Interested : State_Fly
 	{
-		[SerializeField]
 		[Tooltip("How far ahead round the circle the flock aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
+		[SerializeField]
 		private float leadAngle = 0.6f;
 
 		[Tooltip("Share of its normal speed the entity circles at once it is over the point. The birds do the moving there, so slower keeps the flock settled over the point.")]
@@ -373,8 +373,8 @@ public class BirdFlockFSM : FSMComponent
 		[SerializeField]
 		private float travelAltitude = 35f;
 
-		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		[SerializeField]
+		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		private float extraCircleHeight;
 
 		private const float circleClearance = 10f;

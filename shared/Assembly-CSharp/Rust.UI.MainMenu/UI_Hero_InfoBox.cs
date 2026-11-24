@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_Hero_InfoBox : FacepunchBehaviour
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	protected RustText _title;
 
 	[SerializeField]

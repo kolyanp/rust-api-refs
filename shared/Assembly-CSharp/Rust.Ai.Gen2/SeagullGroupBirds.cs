@@ -54,17 +54,17 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private string[] idleStates = new string[5] { "seagull_idle", "seagull_idle_look", "seagull_peck", "seagull_groom", "seagull_caw" };
 
+	[SerializeField]
 	[Header("Handover")]
 	[Tooltip("How close to the player a flying bird can come before it swaps back to its Animator to land, in metres.")]
-	[SerializeField]
 	private float handoverDistance = 5f;
 
-	[Tooltip("How close to the edge of the group's bounds a bird taking off can get before it joins the flock, in metres. Past the bounds a hit on it is rejected, flock birds stay well inside them.")]
 	[SerializeField]
+	[Tooltip("How close to the edge of the group's bounds a bird taking off can get before it joins the flock, in metres. Past the bounds a hit on it is rejected, flock birds stay well inside them.")]
 	private float boundsMargin = 1f;
 
-	[Header("Takeoff")]
 	[SerializeField]
+	[Header("Takeoff")]
 	private string takeoffState = "seagull_take_off";
 
 	[Tooltip("How long into the takeoff clip the bird leaves the ground, in seconds.")]
@@ -91,32 +91,32 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector2 scatterRunDuration = new Vector2(0f, 1.2f);
 
-	[Tooltip("How fast a bird turns to face the way it takes off, in degrees per second.")]
 	[SerializeField]
+	[Tooltip("How fast a bird turns to face the way it takes off, in degrees per second.")]
 	private float takeoffTurnSpeed = 720f;
 
 	[Tooltip("Shortest time a bird plays the takeoff clip before it can join the flock for nearing the edge of the bounds, in seconds. Longer than liftoffDelay so it visibly takes off.")]
 	[SerializeField]
 	private float minTakeoffDuration = 1f;
 
-	[SerializeField]
 	[Tooltip("How long a bird animates its own takeoff before joining the flock, in seconds. No more than the clip's length.")]
+	[SerializeField]
 	private float takeoffWindow = 3f;
 
-	[SerializeField]
 	[Tooltip("How fast a bird climbs while taking off, in metres per second.")]
+	[SerializeField]
 	private float takeoffClimbSpeed = 2f;
 
-	[SerializeField]
 	[Tooltip("How quickly a bird taking off picks up forward speed, in metres per second per second.")]
+	[SerializeField]
 	private float takeoffAcceleration = 4f;
 
 	[SerializeField]
 	[Header("Landing")]
 	private string landState = "seagull_land";
 
-	[SerializeField]
 	[Tooltip("Height above the ground a flying bird swaps back to its Animator to land, in metres. Rolled per bird, so they peel off one at a time.")]
+	[SerializeField]
 	private Vector2 landHandoverHeightRange = new Vector2(2f, 6f);
 
 	[Tooltip("Longest a bird keeps flying once the group starts coming down before it lands, in seconds. Rolled per bird.")]
@@ -131,16 +131,16 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float landingCurve = 0.5f;
 
-	[Tooltip("How far into the land clip the bird's feet touch the ground, in seconds. The glide down is timed to arrive then.")]
 	[SerializeField]
+	[Tooltip("How far into the land clip the bird's feet touch the ground, in seconds. The glide down is timed to arrive then.")]
 	private float touchdownTime = 2.25f;
 
-	[SerializeField]
 	[Tooltip("How long the land clip plays before the bird starts idling, in seconds. No less than the clip's length.")]
+	[SerializeField]
 	private float landSettleTime = 2.93f;
 
-	[SerializeField]
 	[Tooltip("Lowest the flock flies over the ground while the group comes down, in metres.")]
+	[SerializeField]
 	private float landingClearance = 0.5f;
 
 	[Tooltip("How far below the group a landing bird looks for the ground, in metres. Needs to reach down from the height the group starts coming down at.")]

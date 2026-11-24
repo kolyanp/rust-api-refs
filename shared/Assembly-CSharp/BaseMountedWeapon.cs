@@ -24,8 +24,8 @@ public abstract class BaseMountedWeapon : BaseMountedUseable
 		public GameObjectRef effectPrefab;
 	}
 
-	[Header("Loaded Gun")]
 	[SerializeField]
+	[Header("Loaded Gun")]
 	private bool syncAimDirOnFire = true;
 
 	[SerializeField]
@@ -60,8 +60,8 @@ public abstract class BaseMountedWeapon : BaseMountedUseable
 	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -770,8 +770,8 @@ public abstract class BaseMountedWeapon : BaseMountedUseable
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	[RPC_Server.FromMounted]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
@@ -785,9 +785,9 @@ public abstract class BaseMountedWeapon : BaseMountedUseable
 	{
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -999,13 +999,13 @@ public class LivestockAnimalFSM : FSMComponent
 			public float Score;
 		}
 
+		[SerializeField]
 		[FormerlySerializedAs("grassRetryDelay")]
 		[FormerlySerializedAs("waterRetryDelay")]
-		[SerializeField]
 		private float retryDelay = 30f;
 
-		[SerializeField]
 		[FormerlySerializedAs("drinkTopology")]
+		[SerializeField]
 		[FormerlySerializedAs("grazeTopology")]
 		private Enum topology;
 
@@ -1980,8 +1980,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private Transform[] TargetPoints;
 
-		[SerializeField]
 		[Tooltip("Speeds are cycled through, one every 'speedCycleInterval' seconds, to preview movement animations")]
+		[SerializeField]
 		private RustNavMeshAgent.Speeds[] speeds = new RustNavMeshAgent.Speeds[4]
 		{
 			RustNavMeshAgent.Speeds.Walk,
@@ -2536,8 +2536,8 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_CanBreed : FSMSlowTransitionBase
 	{
-		[Tooltip("How long (in seconds) before searching again after finding nobody worth walking to")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) before searching again after finding nobody worth walking to")]
 		private float retryDelay = 15f;
 
 		protected override bool EvaluateAtInterval(ref FSMPayload payload)
@@ -2677,8 +2677,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Jog;
 
-		[SerializeField]
 		[Tooltip("Distance at which the male moves at maxSpeed; he eases off as he closes in")]
+		[SerializeField]
 		private float fullSpeedDistance = 20f;
 
 		[SerializeField]
@@ -2696,12 +2696,12 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float withdrawClearance = 10f;
 
-		[Tooltip("Give up on the walk out and settle where they got to after this long. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		[SerializeField]
+		[Tooltip("Give up on the walk out and settle where they got to after this long. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		private float withdrawTimeout = 20f;
 
-		[Tooltip("How long (in seconds) after leaving this state before looking for a mate again")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) after leaving this state before looking for a mate again")]
 		private float retryDelay = 15f;
 
 		private Phase phase;
@@ -3047,16 +3047,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Frolic : State_Circle
 	{
-		[Tooltip("How long (in seconds) the pair circle each other before they settle. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) the pair circle each other before they settle. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		private float duration = 12f;
 
 		[SerializeField]
 		[Tooltip("The gait for the stretches between canters.")]
 		private RustNavMeshAgent.Speeds walkGait = RustNavMeshAgent.Speeds.Walk;
 
-		[SerializeField]
 		[Tooltip("How long a stretch of cantering, or of walking, lasts before it swaps to the other. Rolled fresh each time.")]
+		[SerializeField]
 		private Vector2 gaitStretchRange = new Vector2(1.5f, 3.5f);
 
 		private TimeUntil frolicEnd;
@@ -3202,16 +3202,16 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float closeTimeout = 10f;
 
-		[Tooltip("How long (in seconds) the pair stand together before she becomes pregnant")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) the pair stand together before she becomes pregnant")]
 		private float matingDuration = 3f;
 
-		[Tooltip("How long he stays with her afterwards, watching her go down, before he gets on with his day. Counted in the 45 seconds a pair can be away from the herd.")]
 		[SerializeField]
+		[Tooltip("How long he stays with her afterwards, watching her go down, before he gets on with his day. Counted in the 45 seconds a pair can be away from the herd.")]
 		private float afterMatingLinger = 8f;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) after leaving this state before looking for a mate again")]
+		[SerializeField]
 		private float retryDelay = 15f;
 
 		private Phase phase;
@@ -3494,16 +3494,16 @@ public class LivestockAnimalFSM : FSMComponent
 			Standing
 		}
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) it lies there before lifting its head.")]
+		[SerializeField]
 		private float sleepDuration = 6f;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) it sits up with its head about before trying to stand.")]
+		[SerializeField]
 		private float restDuration = 8f;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) to let the getting up play out before the state ends.")]
+		[SerializeField]
 		private float standUpDuration = 2.5f;
 
 		private Phase phase;
@@ -3614,16 +3614,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_FriskyCanter : State_MoveToTarget
 	{
-		[Tooltip("Whether this species has the happy canter on its animator.")]
 		[SerializeField]
+		[Tooltip("Whether this species has the happy canter on its animator.")]
 		private bool hasFriskyCanter;
 
 		[Tooltip("How far short of whoever she is running to she pulls up.")]
 		[SerializeField]
 		private float standoff = 4f;
 
-		[Tooltip("How far off she runs when there is nobody to run to, picked in this range.")]
 		[SerializeField]
+		[Tooltip("How far off she runs when there is nobody to run to, picked in this range.")]
 		private Vector2 wanderRange = new Vector2(12f, 22f);
 
 		[Tooltip("Longest (in seconds) the canter lasts, however far the destination turned out to be.")]
@@ -3775,9 +3775,9 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_IsVeryHappy : FSMTransitionBase
 	{
-		[SerializeField]
 		[Tooltip("Chance of going for a canter, each time an idling animal is content enough for one.")]
 		[Range(0f, 1f)]
+		[SerializeField]
 		private float chance = 0.15f;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -3816,19 +3816,19 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Run;
 
-		[SerializeField]
 		[Tooltip("Fastest gait an animal that is not answering for the herd will use to get back.")]
+		[SerializeField]
 		private RustNavMeshAgent.Speeds dependentMaxSpeed = RustNavMeshAgent.Speeds.Walk;
 
-		[Tooltip("Distance at which the infant moves at maxSpeed; it eases off as it closes in")]
 		[SerializeField]
+		[Tooltip("Distance at which the infant moves at maxSpeed; it eases off as it closes in")]
 		private float fullSpeedDistance = 25f;
 
 		[SerializeField]
 		private float reunitedDistance = 4f;
 
-		[Tooltip("Give up if the walk back takes this much longer than walking the distance at its gait should")]
 		[SerializeField]
+		[Tooltip("Give up if the walk back takes this much longer than walking the distance at its gait should")]
 		private float returnTimeout = 30f;
 
 		[Tooltip("How long (in seconds) after a failed walk back before trying again")]
@@ -4002,8 +4002,8 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_StrayedFromMother : FSMTransitionBase
 	{
-		[Tooltip("How far (in metres) an infant can get from its mother before it heads back to her.")]
 		[SerializeField]
+		[Tooltip("How far (in metres) an infant can get from its mother before it heads back to her.")]
 		private float strayDistance = 15f;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -4050,8 +4050,8 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public float WakeDuration = 10f;
 
-		[Tooltip("How long (in seconds) the animal spends walking in to the herd before giving up and lying down where it stands.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) the animal spends walking in to the herd before giving up and lying down where it stands.")]
 		private float gatherTimeout = 20f;
 
 		[SerializeField]
@@ -4066,8 +4066,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds gatherMaxSpeed = RustNavMeshAgent.Speeds.Walk;
 
-		[Tooltip("How far out the walk in to the herd runs at full speed before easing down.")]
 		[SerializeField]
+		[Tooltip("How far out the walk in to the herd runs at full speed before easing down.")]
 		private float gatherFullSpeedDistance = 10f;
 
 		private Phase phase;
@@ -4278,8 +4278,8 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_WantsBedtimeRest : FSMTransitionBase
 	{
-		[Tooltip("Chance an animal dozes before dropping off rather than going straight to sleep.")]
 		[Range(0f, 1f)]
+		[Tooltip("Chance an animal dozes before dropping off rather than going straight to sleep.")]
 		[SerializeField]
 		private float chance = 0.5f;
 
@@ -4367,8 +4367,8 @@ public class LivestockAnimalFSM : FSMComponent
 	public class Trans_FoodSearchFailed : Trans_AfterFailedFoodSearch
 	{
 		[Tooltip("Fullness has to be at or under this, not merely under the consume threshold.")]
-		[SerializeField]
 		[Range(0f, 1f)]
+		[SerializeField]
 		private float starvingBelow = 0.2f;
 
 		public Trans_FoodSearchFailed()
@@ -4407,20 +4407,20 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Rest : FSMStateBase
 	{
-		[SerializeField]
 		[Tooltip("Whether this species has the lying down pose set up on its animator.")]
+		[SerializeField]
 		private bool hasRestingPose;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) the animal stays down, picked in this range. Long enough that the standing gap between two rests still leaves the day's resting share reachable - short lie downs with a fixed gap between them cannot add up to it.")]
+		[SerializeField]
 		private Vector2 durationRange = new Vector2(40f, 70f);
 
-		[Tooltip("How long (in seconds) a sleepy adult stays down, picked in this range. Long, so a sleepy animal spends most of its day lying down.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) a sleepy adult stays down, picked in this range. Long, so a sleepy animal spends most of its day lying down.")]
 		private Vector2 sleepyDurationRange = new Vector2(120f, 240f);
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) a sleepy adult walks to its spot away from the herd before it gives up and lies down where it stands.")]
+		[SerializeField]
 		private float lonelyWalkTimeout = 20f;
 
 		[Tooltip("Scales the lie down after dark, where it is a doze on the way to sleep rather than a rest in its own right.")]
@@ -4713,17 +4713,17 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float minimumTimeStanding = 30f;
 
-		[Tooltip("How long (in seconds) after getting up before a sleepy adult will lie down again. Shorter than minimumTimeStanding, so a sleepy animal is soon back down.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) after getting up before a sleepy adult will lie down again. Shorter than minimumTimeStanding, so a sleepy animal is soon back down.")]
 		private float sleepyMinimumTimeStanding = 10f;
 
 		[SerializeField]
 		[Tooltip("How long (in seconds) a food search that found nothing lets a hungry animal lie down anyway.")]
 		private float foodSearchFailedMemory = 60f;
 
-		[Tooltip("Chance that an animal on its way to bed, or just woken up, lies down for a while first instead.")]
-		[Range(0f, 1f)]
 		[SerializeField]
+		[Range(0f, 1f)]
+		[Tooltip("Chance that an animal on its way to bed, or just woken up, lies down for a while first instead.")]
 		private float aroundBedtimeChance = 0.5f;
 
 		[Tooltip("How long (in seconds) that lie down around bedtime lasts, picked in this range.")]
@@ -4872,8 +4872,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[Tooltip("How close to the threat a cow or calf has to be for him to put himself in front of it. Zero makes him only stand his ground.")]
 		private float shieldSearchRadius = 20f;
 
-		[SerializeField]
 		[Tooltip("How often the search for someone to shield runs, in seconds.")]
+		[SerializeField]
 		private float shieldSearchInterval = 1f;
 
 		[Tooltip("How far along the line from the threat to the animal he is shielding he tries to stand. 0.5 is squarely between the two of them.")]
@@ -4889,8 +4889,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds repositionSpeed = RustNavMeshAgent.Speeds.Run;
 
-		[Tooltip("How far off his shielding spot counts as out of position, and worth hurrying.")]
 		[SerializeField]
+		[Tooltip("How far off his shielding spot counts as out of position, and worth hurrying.")]
 		private float inPositionTolerance = 1f;
 
 		[Tooltip("How much room he leaves in front of the animal he is guarding, so he stands off her shoulder rather than in her.")]
@@ -5142,16 +5142,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_HerdFlee : State_Flee
 	{
-		[SerializeField]
 		[Tooltip("Keep running while whatever we are fleeing is still this close, rather than giving up on it. 0 leaves the base behaviour alone.")]
+		[SerializeField]
 		private float keepRunningWithin = 12f;
 
-		[Tooltip("Longest (in seconds) that persistence lasts.")]
 		[SerializeField]
+		[Tooltip("Longest (in seconds) that persistence lasts.")]
 		private float maxPersistence = 20f;
 
-		[Tooltip("How far a startled animal moves off, instead of the full flee distance.")]
 		[SerializeField]
+		[Tooltip("How far a startled animal moves off, instead of the full flee distance.")]
 		private float startleDistance = 6f;
 
 		private const float StopShortStep = 1f;
@@ -5686,12 +5686,12 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_GetUp : State_PlayAnimation
 	{
-		[Tooltip("Scrambles straight from the sleeping pose to standing, replacing the animator's slower wake and stand. Must be authored from the sleeping pose.")]
 		[SerializeField]
+		[Tooltip("Scrambles straight from the sleeping pose to standing, replacing the animator's slower wake and stand. Must be authored from the sleeping pose.")]
 		private AnimationClip scrambleFromSleep;
 
-		[Tooltip("The same for a daytime lie down. Must be authored from the lying pose, not the sleeping one.")]
 		[SerializeField]
+		[Tooltip("The same for a daytime lie down. Must be authored from the lying pose, not the sleeping one.")]
 		private AnimationClip scrambleFromRest;
 
 		public bool HasSleepScramble => (Object)(object)scrambleFromSleep != (Object)null;
@@ -5812,8 +5812,8 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_TurnAndRun : State_PlayAnimationRM
 	{
-		[Tooltip("Turns away to the animal's left, for a threat on its right.")]
 		[SerializeField]
+		[Tooltip("Turns away to the animal's left, for a threat on its right.")]
 		private RootMotionData TurnLeft;
 
 		[Tooltip("Turns away to the animal's right, for a threat on its left.")]
@@ -5824,13 +5824,13 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RootMotionData TurnAbout;
 
-		[Tooltip("Only bridges from a standstill. Already moving faster than this and the animal can just run, a turn montage would snap it back to a stop.")]
 		[SerializeField]
+		[Tooltip("Only bridges from a standstill. Already moving faster than this and the animal can just run, a turn montage would snap it back to a stop.")]
 		private float maxSpeedToTurn = 1f;
 
-		[Tooltip("How far off dead ahead a hit can land and still read as frontal, as a dot product against the animal's forward. 0 is straight to the side.")]
 		[Range(0f, 1f)]
 		[SerializeField]
+		[Tooltip("How far off dead ahead a hit can land and still read as frontal, as a dot product against the animal's forward. 0 is straight to the side.")]
 		private float frontalDot = 0.35f;
 
 		public bool HasTurnAnimation

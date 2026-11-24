@@ -49,17 +49,17 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObject feedNoSignal;
 
-	[Header("Tabs")]
 	[Space]
 	[SerializeField]
+	[Header("Tabs")]
 	private GameObject apartmentsPanel;
 
 	[SerializeField]
 	private GameObject shopsPanel;
 
-	[Space]
 	[SerializeField]
 	[Header("Shops")]
+	[Space]
 	private RectTransform shopList;
 
 	[SerializeField]

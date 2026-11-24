@@ -25,56 +25,73 @@ public class PhysicsTumblingEntity : BaseEntity
 	[ServerVar(Saved = true, Help = "Minimum velocity required for an object to get tumbling force applied on collision")]
 	public static float velocity_threshold_for_tumbling_force = 1.5f;
 
+	[ServerVar(Saved = true, Help = "Extra distance in metres around the object's colliders that still counts as hitting a player")]
+	public static float player_hit_padding = 0.1f;
+
 	private Rigidbody rb;
+
+	private float unscaledMass;
+
+	private Vector3 appliedScale;
+
+	private readonly List<Collider> solidColliders = new List<Collider>();
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		rb = ((Component)this).GetComponent<Rigidbody>();
+		unscaledMass = rb.mass;
+		((Component)this).GetComponentsInChildren<Collider>(solidColliders);
+		solidColliders.RemoveAll((Collider c) => c.isTrigger || ((Component)c).gameObject.layer != 15);
+		ApplyScale();
+	}
+
+	private void ApplyScale()
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		appliedScale = ((Component)this).transform.localScale;
+		if (appliedScale != Vector3.one)
+		{
+			networkEntityScale = true;
+		}
+		rb.mass = unscaledMass * appliedScale.x * appliedScale.y * appliedScale.z;
+	}
 
 	public override void OnCollision(Collision collision, BaseEntity hitEntity)
 	{
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)rb == (Object)null)
 		{
-			rb = ((Component)this).GetComponent<Rigidbody>();
+			return;
 		}
 		if ((Object)(object)hitEntity == (Object)null)
 		{
 			hitEntity = GameObjectEx.ToBaseEntity(collision.collider);
 		}
-		if ((Object)(object)hitEntity == (Object)(object)this || ((Object)(object)hitEntity != (Object)null && hitEntity.isServer != isServer) || hitEntity is TimedExplosive)
+		if (!((Object)(object)hitEntity == (Object)null) && !((Object)(object)hitEntity == (Object)(object)this) && hitEntity.isServer == isServer && !(hitEntity is TimedExplosive))
 		{
-			return;
-		}
-		float num = Random.Range(min_tumbling_force, max_tumbling_force);
-		Vector3 val = rb.linearVelocity;
-		if (!(val.magnitude < velocity_threshold_for_tumbling_force))
-		{
-			if ((Object)(object)hitEntity == (Object)null)
+			Vector3 val = rb.linearVelocity;
+			if (!(val.magnitude < velocity_threshold_for_tumbling_force))
 			{
-				Vector3 point = collision.contacts[0].point;
-				val = collision.impulse;
-				RagdollPlayers(point, -val.normalized * player_impulse_multiplier);
-			}
-			else
-			{
+				float num = Random.Range(min_tumbling_force, max_tumbling_force) * rb.mass / unscaledMass;
 				val = collision.impulse;
 				Vector3 val2 = RandomVectorInCone(val.normalized, tumbling_force_cone_angle);
 				val2 *= num;
@@ -86,36 +103,88 @@ public class PhysicsTumblingEntity : BaseEntity
 
 	public void FixedUpdate()
 	{
-		if ((Object)(object)rb == (Object)null)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)rb == (Object)null))
 		{
-			rb = ((Component)this).GetComponent<Rigidbody>();
-		}
-		if (drag_override != -1f && rb.linearDamping != drag_override)
-		{
-			rb.linearDamping = drag_override;
-		}
-		if (angular_drag_override != -1f && rb.angularDamping != angular_drag_override)
-		{
-			rb.angularDamping = angular_drag_override;
+			if (((Component)this).transform.localScale != appliedScale)
+			{
+				ApplyScale();
+				SendNetworkUpdate();
+			}
+			if (drag_override != -1f && rb.linearDamping != drag_override)
+			{
+				rb.linearDamping = drag_override;
+			}
+			if (angular_drag_override != -1f && rb.angularDamping != angular_drag_override)
+			{
+				rb.angularDamping = angular_drag_override;
+			}
+			HitPlayers();
 		}
 	}
 
-	private void RagdollPlayers(Vector3 worldPosition, Vector3 impulse)
+	private void HitPlayers()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 linearVelocity = rb.linearVelocity;
+		if (linearVelocity.magnitude < velocity_threshold_for_tumbling_force)
+		{
+			return;
+		}
+		OBB val = WorldSpaceBounds();
 		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
-		Vis.Entities(worldPosition, 0.4f, list, 131072, (QueryTriggerInteraction)2);
+		Vis.Entities(val.position, val.extents.magnitude + BasePlayer.GetRadius() + player_hit_padding, list, 131072, (QueryTriggerInteraction)2);
 		foreach (BasePlayer item in list)
 		{
-			if (item.isServer && !item.IsDead() && !item.InSafeZone())
+			if (item.isServer && !item.IsDead() && !item.IsRagdolling() && !item.InSafeZone() && IsTouching(item))
 			{
-				item.Ragdoll(item.GetWorldVelocity() + impulse);
+				item.Ragdoll(item.GetWorldVelocity() + linearVelocity.normalized * player_impulse_multiplier);
 			}
 		}
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
+	}
+
+	private bool IsTouching(BasePlayer player)
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		float radius = BasePlayer.GetRadius();
+		float num = radius + player_hit_padding;
+		Vector3 position = ((Component)player).transform.position;
+		float height = player.GetHeight();
+		foreach (Collider solidCollider in solidColliders)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				Vector3 val = position + Vector3.up * Mathf.Lerp(radius, height - radius, (float)i * 0.5f);
+				Vector3 val2 = solidCollider.ClosestPoint(val) - val;
+				if (val2.sqrMagnitude <= num * num)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public static Vector3 RandomVectorInCone(Vector3 normal, float coneAngle)

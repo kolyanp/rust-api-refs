@@ -13,19 +13,19 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[NonSerialized]
-	[Tooltip("Max sampling range in pixels.")]
 	[Range(32f, 1024f)]
+	[Tooltip("Max sampling range in pixels.")]
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
@@ -33,8 +33,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity = 1f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
 	[Tooltip("Controls the initial occlusion contribution offset.")]
@@ -68,19 +68,19 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 32f)]
 	public float FadeToRadius = 2f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
+	[Range(0f, 16f)]
 	public float FadeToPowerExponent = 1.8f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToThickness = 1f;
 
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Range(1f, 4f)]
 	[Tooltip("Radius in screen pixels.")]
+	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
 	[Tooltip("Number of times that the Blur will repeat.")]

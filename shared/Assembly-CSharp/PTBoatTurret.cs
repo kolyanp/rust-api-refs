@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class PTBoatTurret : BaseMountedUseable
 {
-	[Header("Mounted Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon")]
 	private ItemDefinition[] weapons;
 
 	[SerializeField]

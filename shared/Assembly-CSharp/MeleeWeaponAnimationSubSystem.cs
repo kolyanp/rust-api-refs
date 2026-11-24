@@ -12,8 +12,8 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private float PlayerVelocityCap = 2f;
 
-	[SerializeField]
 	[Tooltip("Optional prop-bone-only mask. Held at full weight so the velocity fade never pulls the held item out of the hand.")]
+	[SerializeField]
 	private AvatarMask PropMask;
 
 	[SerializeField]

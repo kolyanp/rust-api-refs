@@ -226,9 +226,9 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		_mutedPlayers.Clear();
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	private void StartSetupNotification(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract())
@@ -241,8 +241,8 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void SetNotificationTextImpl(RPCMessage rpc)
 	{

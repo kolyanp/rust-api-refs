@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_NotificationEntry : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Icons")]
+	[SerializeField]
 	private RustIcon basicIcon;
 
 	[SerializeField]
@@ -20,8 +20,8 @@ public class UI_NotificationEntry : MonoBehaviour
 	[SerializeField]
 	private RustIcon popupIcon;
 
-	[SerializeField]
 	[Header("UI Elements")]
+	[SerializeField]
 	private GameObject linkIcon;
 
 	public RustButton linkButton;

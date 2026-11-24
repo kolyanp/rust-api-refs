@@ -135,8 +135,8 @@ public class MedicalTool : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void UseSelf(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

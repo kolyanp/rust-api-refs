@@ -29,8 +29,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -58,8 +58,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	private UI_StoreTakeover localTakeovers;
 
 	[Header("Skin Viewer")]
-	[Space]
 	[SerializeField]
+	[Space]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]

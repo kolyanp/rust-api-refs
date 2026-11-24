@@ -143,8 +143,8 @@ public class WipeLaptopEntity : BaseEntity
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(5f)]
+	[RPC_Server]
 	public void DefuseLaptop(RPCMessage msg)
 	{
 		if (msg.read.Int32() == 3 && IsArmed())

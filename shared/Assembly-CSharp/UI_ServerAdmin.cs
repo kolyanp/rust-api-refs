@@ -36,8 +36,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RustInput playerListSearchInput;
 
-	[Header("Server Info")]
 	[SerializeField]
+	[Header("Server Info")]
 	private GameObjectRef serverInfoEntryPrefab;
 
 	[SerializeField]
@@ -53,8 +53,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RectTransform convarInfoParent;
 
-	[SerializeField]
 	[Header("UGC")]
+	[SerializeField]
 	private FlexVirtualScroll ugcVirtualScroll;
 
 	[SerializeField]

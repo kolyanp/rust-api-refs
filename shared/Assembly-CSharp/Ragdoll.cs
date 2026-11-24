@@ -46,16 +46,16 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[ReadOnly]
 	private List<Joint> joints = new List<Joint>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<CharacterJoint> characterJoints = new List<CharacterJoint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<ConfigurableJoint> configurableJoints = new List<ConfigurableJoint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<Collider> colliders = new List<Collider>();
 
 	[SerializeField]
@@ -66,8 +66,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[ReadOnly]
 	private Vector3[] genericBonePos;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] genericBoneRot;
 
 	[SerializeField]

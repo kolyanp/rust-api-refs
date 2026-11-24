@@ -16,8 +16,8 @@ public static class SystemCommands
 
 	private static int limitedJobWorkerCount = -1;
 
-	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
+	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	public static void cpu_affinity(ConsoleSystem.Arg arg)
 	{
 		if (!arg.HasArgs())

@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias = 0.01f;
 
-	[Header("Contact Shadows")]
 	[Header("                ")]
+	[Header("Contact Shadows")]
 	public bool enableContactShadows = true;
 
 	[Range(0f, 1f)]
@@ -80,8 +80,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 1f)]
 	public float traceBias = 0.03f;
 
-	[Header("Ambient Occlusion")]
 	[Header("                ")]
+	[Header("Ambient Occlusion")]
 	public bool enableAmbientOcclusion = true;
 
 	public SampleCountLevel SampleCount = SampleCountLevel.Medium;
@@ -90,8 +90,8 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[Range(0f, 16f)]
@@ -132,8 +132,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent = 1.8f;
 
-	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness = 1f;
 
 	[Header("                ")]

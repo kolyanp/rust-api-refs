@@ -154,8 +154,8 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 		base.DoServerDestroy();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

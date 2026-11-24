@@ -44,18 +44,18 @@ public class Socket_Free_Snappable : Socket_Free
 	[ClientVar(Help = "(Generated) When enabled, draws debug visualisations for deployable snapping calculations showing candidate snap points and distances")]
 	public static bool DebugSnapping = false;
 
-	[Range(-1f, 1f)]
 	[Header("Snapping - General")]
+	[Range(-1f, 1f)]
 	[SerializeField]
 	private float generalPadding;
 
+	[Header("Snapping - Walls")]
 	[Range(-1f, 1f)]
 	[SerializeField]
-	[Header("Snapping - Walls")]
 	private float snappingPadding;
 
-	[Header("Snapping - Corners")]
 	[SerializeField]
+	[Header("Snapping - Corners")]
 	private bool allowSnappingToCorners = true;
 
 	[Range(-1f, 1f)]

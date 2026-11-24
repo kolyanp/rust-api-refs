@@ -141,7 +141,7 @@ public class VehicleEditingPanel : LootPanel
 	[SerializeField]
 	private Phrase phraseEmptyStorage;
 
-	[SerializeField]
 	[Header("Create Chassis")]
+	[SerializeField]
 	private CreateChassisEntry[] chassisOptions;
 }

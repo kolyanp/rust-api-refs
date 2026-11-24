@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class SatelliteSpectatorScreenUI : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Map")]
+	[SerializeField]
 	private RawImage mapImage;
 
 	[SerializeField]

@@ -4,8 +4,8 @@ using UnityEngine.Sprites;
 
 namespace UnityEngine.UI.Extensions;
 
-[AddComponentMenu("UI/Extensions/Primitives/UILineRenderer")]
 [RequireComponent(typeof(RectTransform))]
+[AddComponentMenu("UI/Extensions/Primitives/UILineRenderer")]
 public class UILineRenderer : UIPrimitiveBase
 {
 	private enum SegmentType
@@ -67,8 +67,8 @@ public class UILineRenderer : UIPrimitiveBase
 	[Tooltip("Segments to be drawn\n This is a list of arrays of points")]
 	internal List<Vector2[]> m_segments;
 
-	[Tooltip("Thickness of the line")]
 	[SerializeField]
+	[Tooltip("Thickness of the line")]
 	internal float lineThickness = 2f;
 
 	[SerializeField]

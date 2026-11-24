@@ -1230,8 +1230,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	[ClientVar(AllowRunFromServer = true, Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
+	[ServerVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	public static void load(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1298,8 +1298,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
 	[ServerVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
+	[ClientVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
 	public static void list_cloud_configs(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1315,8 +1315,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Clears the volumetric cloud configuration override and resets cloud settings to the dynamic weather system; server replicates to clients")]
 	[ServerVar(Help = "(Generated) Clears the volumetric cloud configuration override and resets cloud settings to the dynamic weather system; server replicates to clients")]
+	[ClientVar(Help = "(Generated) Clears the volumetric cloud configuration override and resets cloud settings to the dynamic weather system; server replicates to clients")]
 	public static void reset_cloud_config(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

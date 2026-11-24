@@ -88,8 +88,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Resets the peak-usage high-water-mark counter for all pools, allowing fresh measurement of maximum pool demand")]
 	[ClientVar(Help = "(Generated) Resets the peak-usage high-water-mark counter for all pools, allowing fresh measurement of maximum pool demand")]
+	[ServerVar(Help = "(Generated) Resets the peak-usage high-water-mark counter for all pools, allowing fresh measurement of maximum pool demand")]
 	public static void reset_max_pool_counter(Arg arg)
 	{
 		if (Pool.Directory.Count == 0)
@@ -104,8 +104,8 @@ public class Pool : ConsoleSystem
 		arg.ReplyWith("Reset max item counter of pool");
 	}
 
-	[ServerVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	[ClientVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
+	[ServerVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	public static void print_arraypool(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");
@@ -218,8 +218,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	[ServerVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
+	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	public static void print_assets(Arg arg)
 	{
 		if (AssetPool.storage.Count == 0)
@@ -254,8 +254,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	[ServerVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
+	[ClientVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	public static void clear_memory(Arg arg)
 	{
 		Pool.Clear(arg.GetString(0, string.Empty));
@@ -269,8 +269,8 @@ public class Pool : ConsoleSystem
 		GameManager.server.pool.Clear(filter);
 	}
 
-	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
+	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	public static void clear_assets(Arg arg)
 	{
 		AssetPool.Clear(arg.GetString(0, string.Empty));
@@ -301,8 +301,8 @@ public class Pool : ConsoleSystem
 		File.WriteAllText("prefabs.csv", stringBuilder.ToString());
 	}
 
-	[ServerVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	[ClientVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
+	[ServerVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	public static void fill_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
@@ -310,8 +310,8 @@ public class Pool : ConsoleSystem
 		PrefabPoolWarmup.Run(filter, countOverride);
 	}
 
-	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	[ClientVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
+	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	public static void debug_mem_start(Arg arg)
 	{
 		string text = arg.GetString(0, string.Empty);
@@ -340,8 +340,8 @@ public class Pool : ConsoleSystem
 		arg.ReplyWith(stringBuilder.ToString());
 	}
 
-	[ClientVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
 	[ServerVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
+	[ClientVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
 	public static void debug_mem_stop(Arg arg)
 	{
 		int maxLogs = arg.GetInt(0, 8);

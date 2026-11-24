@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2470]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2473]
 	{
 		new ConsoleSystem.Command
 		{
@@ -28890,6 +28890,36 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "prefab_spawn_scale_max",
+			Parent = "convartimedprefabspawner",
+			FullName = "convartimedprefabspawner.prefab_spawn_scale_max",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Largest random uniform scale applied to spawned prefabs",
+			Variable = true,
+			GetOveride = () => ConvarTimedPrefabSpawner.prefab_spawn_scale_max.ToString(),
+			SetOveride = (string str) =>
+			{
+				ConvarTimedPrefabSpawner.prefab_spawn_scale_max = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "prefab_spawn_scale_min",
+			Parent = "convartimedprefabspawner",
+			FullName = "convartimedprefabspawner.prefab_spawn_scale_min",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Smallest random uniform scale applied to spawned prefabs",
+			Variable = true,
+			GetOveride = () => ConvarTimedPrefabSpawner.prefab_spawn_scale_min.ToString(),
+			SetOveride = (string str) =>
+			{
+				ConvarTimedPrefabSpawner.prefab_spawn_scale_min = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "cui_test",
 			Parent = "cui",
 			FullName = "cui.cui_test",
@@ -32027,6 +32057,21 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				PhysicsTumblingEntity.min_tumbling_force = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "player_hit_padding",
+			Parent = "physicstumblingentity",
+			FullName = "physicstumblingentity.player_hit_padding",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Extra distance in metres around the object's colliders that still counts as hitting a player",
+			Variable = true,
+			GetOveride = () => PhysicsTumblingEntity.player_hit_padding.ToString(),
+			SetOveride = (string str) =>
+			{
+				PhysicsTumblingEntity.player_hit_padding = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command

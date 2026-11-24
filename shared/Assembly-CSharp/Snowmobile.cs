@@ -25,8 +25,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public TimeSince timeSinceTerrainModCheck;
 
-	[SerializeField]
 	[Header("Snowmobile")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]

@@ -10,9 +10,9 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess, ISe
 {
 	public bool restoreHierarchy;
 
+	[HideInInspector]
 	[SerializeField]
 	[FormerlySerializedAs("prefabID")]
-	[HideInInspector]
 	private uint serializedPrefabID;
 
 	[NonSerialized]

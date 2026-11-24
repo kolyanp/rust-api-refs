@@ -647,6 +647,20 @@ public static class World
 		}
 	}
 
+	public static bool TryGetSpawnedPrefabCategory(GameObject instance, out string category)
+	{
+		foreach (var (text2, hashSet2) in SpawnedPrefabs)
+		{
+			if (hashSet2.Contains(instance))
+			{
+				category = text2;
+				return true;
+			}
+		}
+		category = null;
+		return false;
+	}
+
 	private static void Status(Action<string> statusFunction, string status, object obj1)
 	{
 		statusFunction?.Invoke(string.Format(status, obj1));

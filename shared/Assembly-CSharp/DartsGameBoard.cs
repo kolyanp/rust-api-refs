@@ -569,8 +569,8 @@ public class DartsGameBoard : BaseCombatEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -588,8 +588,8 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
@@ -607,9 +607,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_EndGame(RPCMessage msg)
 	{
 		if (CanEndGame(msg.player))
@@ -676,9 +676,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(float) })]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_UpdateThrowTimer(RPCMessage msg)
 	{
 		float timeTaken = Mathf.Clamp(msg.read.Float(), 0f, DartsGame.maxThrowTimer);
@@ -688,8 +688,8 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_ReceiveDartHit(RPCMessage msg)
 	{
 		int points = msg.read.Int32();

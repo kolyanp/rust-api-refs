@@ -27,11 +27,24 @@ public class MonumentMarker : MonoBehaviour
 			string fallbackName = info.GetFallbackName();
 			text.SetText(fallbackName, false, false);
 		}
-		if ((Object)(object)imageBackground != (Object)null)
+		SetIcon(info.mapIcon);
+		SetNightMode(nightMode: false);
+	}
+
+	public void Setup(string label)
+	{
+		text.SetText(label, false, false);
+		SetIcon(null);
+		SetNightMode(nightMode: false);
+	}
+
+	private void SetIcon(Sprite icon)
+	{
+		if (!((Object)(object)imageBackground == (Object)null))
 		{
-			if ((Object)(object)info.mapIcon != (Object)null)
+			if ((Object)(object)icon != (Object)null)
 			{
-				image.sprite = info.mapIcon;
+				image.sprite = icon;
 				ComponentExtensions.SetActive<RustText>(text, false);
 				ComponentExtensions.SetActive<Image>(imageBackground, true);
 			}
@@ -41,7 +54,6 @@ public class MonumentMarker : MonoBehaviour
 				ComponentExtensions.SetActive<Image>(imageBackground, false);
 			}
 		}
-		SetNightMode(nightMode: false);
 	}
 
 	public void SetNightMode(bool nightMode)

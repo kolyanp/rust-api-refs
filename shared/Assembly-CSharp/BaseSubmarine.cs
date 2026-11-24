@@ -68,8 +68,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	private GameObjectRef fuelStoragePrefab;
 
-	[SerializeField]
 	[Header("Submarine Engine & Fuel")]
+	[SerializeField]
 	public float engineKW = 200f;
 
 	[SerializeField]
@@ -94,8 +94,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
-	[SerializeField]
 	[Header("Submarine Weaponry")]
+	[SerializeField]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
@@ -105,8 +105,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public float reloadTime = 1.5f;
 
-	[SerializeField]
 	[Header("Submarine Audio & FX")]
+	[SerializeField]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]

@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BaseMountedUseable : BaseVehicleSeat
 {
-	[Header("Mounted Gun")]
 	[SerializeField]
+	[Header("Mounted Gun")]
 	protected bool isMountedOnVehicle = true;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class BaseMountedUseable : BaseVehicleSeat
 	[SerializeField]
 	private bool plantGunnerFeet = true;
 
-	[SerializeField]
 	[Header("Sounds")]
+	[SerializeField]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]

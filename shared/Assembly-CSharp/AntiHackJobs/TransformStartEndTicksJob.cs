@@ -8,12 +8,12 @@ namespace AntiHackJobs;
 [BurstCompile]
 public struct TransformStartEndTicksJob : IJobFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> Starts;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<Vector3> Ends;
 
 	public ReadOnly<Matrix4x4> Matrices;

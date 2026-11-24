@@ -24,8 +24,8 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess, IFlatte
 	[HideInInspector]
 	private Light[] lights;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private LightEx[] lightExs;
 
 	[UnityEvent]

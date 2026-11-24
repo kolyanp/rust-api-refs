@@ -51,8 +51,8 @@ public class MLRS : BaseMountable
 
 	public static readonly Phrase RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
 
-	[SerializeField]
 	[Header("MLRS Components")]
+	[SerializeField]
 	private GameObjectRef rocketStoragePrefab;
 
 	[SerializeField]
@@ -71,20 +71,20 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public float vRotSpeed = 10f;
 
-	[SerializeField]
 	[Range(50f, 90f)]
+	[SerializeField]
 	public float vRotMax = 85f;
 
 	[SerializeField]
 	private Transform hydraulics;
 
+	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	[Header("MLRS Weaponry")]
 	[SerializeField]
-	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	public float minRange = 200f;
 
-	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	[SerializeField]
+	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -96,8 +96,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public RocketTube[] rocketTubes;
 
-	[Header("MLRS Dashboard/FX")]
 	[SerializeField]
+	[Header("MLRS Dashboard/FX")]
 	private GameObject screensChild;
 
 	[SerializeField]
@@ -745,8 +745,8 @@ public class MLRS : BaseMountable
 	}
 
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -787,8 +787,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open_Dashboard(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

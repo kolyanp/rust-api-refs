@@ -613,8 +613,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		GameController?.ReceivedInputFromPlayer(msg.player, msg.read.Int32(), countAsAction: true, msg.read.Int32());
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_LeaveTable(RPCMessage msg)
 	{
 		GameController?.LeaveTable(msg.player.userID);

@@ -1128,8 +1128,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_UpdatePlayerNote(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1139,8 +1139,8 @@ public class RelationshipManager : BaseEntity
 		MarkRelationshipsDirtyFor(userID);
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_ReceiveMugshot(RPCMessage msg)
 	{
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)

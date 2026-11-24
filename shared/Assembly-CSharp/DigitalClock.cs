@@ -179,9 +179,9 @@ public class DigitalClock : IOEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server.MaxRepeatedElements(5)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.MaxRepeatedElements(5)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SetAlarms(RPCMessage msg)
 	{

@@ -313,9 +313,9 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
 	[FormerlySerializedAs("prefabID")]
-	[SerializeField]
 	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[SerializeField]
 	private uint serializedPrefabID;
 
 	[NonSerialized]

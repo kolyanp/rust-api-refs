@@ -885,8 +885,8 @@ public class BoatAI : BaseEntity
 
 	private float _shoreRunEnds;
 
-	[SerializeField]
 	[Header("Boat AI - Scientists")]
+	[SerializeField]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -930,8 +930,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private BaseBoat _boat;
 
-	[Header("Boat AI - General")]
 	[SerializeField]
+	[Header("Boat AI - General")]
 	private bool _autoInit;
 
 	[SerializeField]
@@ -943,15 +943,15 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[Header("Boat AI - Collision Avoidance")]
 	[SerializeField]
+	[Header("Boat AI - Collision Avoidance")]
 	private float _awarenessAngle;
 
 	[SerializeField]
 	private float _awarenessDistance;
 
-	[SerializeField]
 	[Header("Boat AI - Debug")]
+	[SerializeField]
 	private Transform _debugMoveTo;
 
 	[ServerVar(Help = "(Generated) When enabled, draws DDraw visualisations of boat AI steering, avoidance, and pathfinding state")]

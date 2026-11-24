@@ -40,8 +40,8 @@ public class UIBorder : MonoBehaviour
 	[Range(1f, 32f)]
 	private int segmentsPerCorner = 8;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private BorderGraphic graphic;
 
 	public float Top

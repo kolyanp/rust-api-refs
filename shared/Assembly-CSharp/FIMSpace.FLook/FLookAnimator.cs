@@ -7,8 +7,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FLook;
 
-[AddComponentMenu("FImpossible Creations/Look Animator 2")]
 [DefaultExecutionOrder(-10)]
+[AddComponentMenu("FImpossible Creations/Look Animator 2")]
 public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -361,16 +361,16 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool birdModeInitialized;
 
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("Bird mode laggy movement for neck amount, lowering this value will cause crossfade motion of laggy movement and basic follow rotation")]
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float LagRotation = 0.85f;
 
-	[Tooltip("How often should be acquired new target position for laggy movement, time to trigger it will be slightly randomized")]
 	[FPD_Suffix(0.1f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
+	[Tooltip("How often should be acquired new target position for laggy movement, time to trigger it will be slightly randomized")]
 	public float LagEvery = 0.285f;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("Bird mode keeping previous position until distance is reached")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float DelayPosition;
 
 	[Tooltip("How far distance to go back should have head to move (remind movement of pigeons to yourself)")]
@@ -449,14 +449,14 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Vector3 headForward;
 
-	[Range(-1f, 1f)]
 	[Tooltip("When switching targets character will make small nod to make it look more natural, set higher value for toony effect")]
+	[Range(-1f, 1f)]
 	public float NoddingTransitions;
 
 	public Vector3 NodAxis = Vector3.right;
 
-	[Range(-1f, 1f)]
 	[Tooltip("Set zero to use only leading bone, set -1 to 1 to spread this motion over backbones")]
+	[Range(-1f, 1f)]
 	public float BackBonesNod = 0.15f;
 
 	private float nodProgress;
@@ -547,8 +547,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Vector2 whenAboveGoBackAngles;
 
-	[Range(0f, 1f)]
 	[Tooltip("If you want to remove animator's keyframes and replace them by look animation")]
+	[Range(0f, 1f)]
 	public float OverrideRotations;
 
 	private bool overrideRefInitialized;
@@ -656,8 +656,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If 'FollowOffset' should be world position translation\n\nor target object local space translation\n\nor we don't want to use ObjectToFollow and use just 'FollowOffset' position.")]
 	public EFFollowMode FollowMode;
 
-	[Range(0f, 2.5f)]
 	[Tooltip("How fast character should rotate towards focus direction.\n\nRotationSpeed = 2.5 -> Instant rotation\n\nIt is speed of transition for look direction (no bones rotations smoothing)")]
+	[Range(0f, 2.5f)]
 	public float RotationSpeed = 0.65f;
 
 	private bool instantRotation;
@@ -666,17 +666,17 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("This variable is making rotation animation become very smooth (but also slower).\nIt is enabling smooth rotation transition in bone rotations")]
 	public float UltraSmoother;
 
-	[Header("Look forward if this angle is exceeded", order = 1)]
 	[Tooltip("If target is too much after transform's back we smooth rotating head back to default animation's rotation")]
 	[Range(25f, 180f)]
+	[Header("Look forward if this angle is exceeded", order = 1)]
 	public float StopLookingAbove = 180f;
 
-	[Tooltip("If object in rotation range should be detected only when is nearer than 'StopLookingAbove' to avoid stuttery target changes")]
 	[Range(0.1f, 1f)]
+	[Tooltip("If object in rotation range should be detected only when is nearer than 'StopLookingAbove' to avoid stuttery target changes")]
 	public float StopLookingAboveFactor = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("If your character moves head too fast when loosing / changing target, here you can adjust it")]
+	[Range(0f, 1f)]
 	public float ChangeTargetSmoothing;
 
 	[Tooltip("Switch to enable advanced settings for back bones falloff")]
@@ -685,8 +685,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Max distance to target object to lost interest in it.\nValue = 0 -> Not using distance limits.\nWhen you have moment target - after exceeding distance moment target will be forgotten!")]
 	public float MaximumDistance;
 
-	[Tooltip("When Character is looking at something on his back but more on his right he look to right, when target suddenly goes more on his left and again to right very frequently you can set with this variable range from which rotating head to opposide shoulder side should be triggered to prevent strange looking behaviour when looking at dynamic objects")]
 	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	[Tooltip("When Character is looking at something on his back but more on his right he look to right, when target suddenly goes more on his left and again to right very frequently you can set with this variable range from which rotating head to opposide shoulder side should be triggered to prevent strange looking behaviour when looking at dynamic objects")]
 	public float HoldRotateToOppositeUntil;
 
 	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery target changes")]
@@ -723,8 +723,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Head going back looking in front of target after this amount of seconds")]
 	public float WhenAboveGoBackDuration = 0.2f;
 
-	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	[Tooltip("Rotating towards target slower when target don't need much angle to look at")]
+	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	public float StartLookElasticRangeX;
 
 	[Tooltip("Separated elastic start angle for vertical look axis\n\nIf zero then value will be same like 'StartLookElasticRange'")]
@@ -734,8 +734,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Header("Limits for rotation | Horizontal: X Vertical: Y")]
 	public Vector2 XRotationLimits = new Vector2(-80f, 80f);
 
-	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
 	[FPD_Suffix(0f, 60f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
 	public float XElasticRange = 20f;
 
 	[Tooltip("When head want go back to default state of looking, it will blend with default animation instead of changing values of rotation variables to go back")]
@@ -747,8 +747,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	public float YElasticRange = 15f;
 
-	[Tooltip("You can use this variable to blend intensity of look animator motion over skeleton animation\n\nValue = 1: Animation with Look Animator motion\nValue = 0: Only skeleton animation")]
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
+	[Tooltip("You can use this variable to blend intensity of look animator motion over skeleton animation\n\nValue = 1: Animation with Look Animator motion\nValue = 0: Only skeleton animation")]
 	public float LookAnimatorAmount = 1f;
 
 	[Tooltip("If head look seems to be calculated like it is not looking from center of head but far from bottom or over it - you can adjust it - check scene view gizmos")]

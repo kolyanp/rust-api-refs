@@ -4,9 +4,9 @@ using UnityEngine.Serialization;
 
 public class BasePrefab : BaseMonoBehaviour, IPrefabPreProcess, ISerializationCallbackReceiver
 {
+	[FormerlySerializedAs("prefabID")]
 	[SerializeField]
 	[HideInInspector]
-	[FormerlySerializedAs("prefabID")]
 	private uint serializedPrefabID;
 
 	[NonSerialized]

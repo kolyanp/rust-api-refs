@@ -15,8 +15,8 @@ public static class QueryVisJobs
 		[NativeDisableParallelForRestriction]
 		public QueryParameters queryParameters;
 
-		[NativeDisableParallelForRestriction]
 		[WriteOnly]
+		[NativeDisableParallelForRestriction]
 		public NativeArray<RaycastCommand> commands;
 
 		public void Execute(int index, TransformAccess transform)

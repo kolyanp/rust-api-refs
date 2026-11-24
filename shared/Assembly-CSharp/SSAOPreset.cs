@@ -4,8 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SSAOPreset", menuName = "Rendering/SSAOPreset")]
 public class SSAOPreset : ScriptableObject
 {
-	[Header("Ambient Occlusion")]
 	[Tooltip("How the occlusion result is composited into the frame.")]
+	[Header("Ambient Occlusion")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -14,8 +14,8 @@ public class SSAOPreset : ScriptableObject
 	[Tooltip("Source used for per-pixel normals.")]
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity = 1f;
 
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
@@ -33,15 +33,15 @@ public class SSAOPreset : ScriptableObject
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls thickness-based occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls thickness-based occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample = true;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]

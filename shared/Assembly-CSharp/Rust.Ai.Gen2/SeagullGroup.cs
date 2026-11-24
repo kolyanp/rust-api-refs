@@ -27,8 +27,8 @@ public class SeagullGroup : BaseNPC2, ISimpleHearingReceiver
 	[SerializeField]
 	private Vector3 flyingExtents = new Vector3(7f, 5f, 7f);
 
-	[SerializeField]
 	[Tooltip("Half size of the bounds a hit on a bird is checked against just after the group takes off, while its birds are still bursting out every way and gathering into the flock.")]
+	[SerializeField]
 	private Vector3 scatterExtents = new Vector3(55f, 15f, 55f);
 
 	[Tooltip("How long after taking off the group checks hits against scatterExtents, in seconds.")]

@@ -9,9 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FTail;
 
+[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 [DefaultExecutionOrder(-4)]
 [AddComponentMenu("FImpossible Creations/Tail Animator 2")]
-[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -737,8 +737,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float CollisionSlippery = 1f;
 
-	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
 	[Range(0f, 1f)]
+	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
 	public float ReflectCollision;
 
 	public AnimationCurve CollidersScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
@@ -857,8 +857,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Inverting ik iteration order to generate different pose results - more straight towards target")]
 	public bool IkInvertOrder;
 
-	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	public float IKBlend = 1f;
 
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
@@ -869,8 +869,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
 	public int IKReactionQuality = 2;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing reactions in CCD IK algorithm")]
+	[Range(0f, 1f)]
 	public float IKSmoothing;
 
 	[Range(0f, 1.5f)]
@@ -925,8 +925,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Spread gravity weight over tail segments")]
 	public bool UseGravityCurve;
 
-	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	[Tooltip("Spread gravity weight over tail segments")]
+	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]
@@ -1029,8 +1029,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Offsetting point from which we want to measure distance to target")]
 	public Vector3 DistanceMeasurePoint;
 
-	[Tooltip("Disable fade duration in seconds")]
 	[Range(0.25f, 2f)]
+	[Tooltip("Disable fade duration in seconds")]
 	public float FadeDuration = 0.75f;
 
 	private bool maxDistanceExceed;
@@ -1168,8 +1168,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	protected bool preAutoCorrect;
 
-	[Tooltip("Blending Slithery - smooth & soft tentacle like movement (value = 1)\nwith more stiff & springy motion (value = 0)\n\n0: Stiff somewhat like tree branch\n1: Soft like squid tentacle / Animal tail")]
 	[Range(0f, 1.2f)]
+	[Tooltip("Blending Slithery - smooth & soft tentacle like movement (value = 1)\nwith more stiff & springy motion (value = 0)\n\n0: Stiff somewhat like tree branch\n1: Soft like squid tentacle / Animal tail")]
 	public float Slithery = 1f;
 
 	[Tooltip("How curly motion should be applied to tail segments")]
@@ -1202,8 +1202,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
 	public float MotionInfluence = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
+	[Range(0f, 1f)]
 	public float MotionInfluenceInY = 1f;
 
 	[Tooltip("If first bone of chain should also be affected with whole chain")]
@@ -1213,12 +1213,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float UnifyBendiness;
 
-	[Tooltip("Reaction Speed is defining how fast tail segments will return to target position, it gives animation more underwater/floaty feeling if it's lower")]
 	[Range(0f, 1f)]
+	[Tooltip("Reaction Speed is defining how fast tail segments will return to target position, it gives animation more underwater/floaty feeling if it's lower")]
 	public float ReactionSpeed = 0.9f;
 
-	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	[Range(0f, 1f)]
+	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	public float Sustain;
 
 	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
@@ -1256,8 +1256,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If tail movement should not move in depth you can use this parameter")]
 	public int Axis2D;
 
-	[Range(-1f, 1f)]
 	[Tooltip("[Experimental: Works only with Slithery Blend set to >= 1] Making each segment go to target pose in front of parent segment creating new animation effect")]
+	[Range(-1f, 1f)]
 	public float Tangle;
 
 	[Tooltip("Making tail animate also roll rotation like it was done in Tail Animator V1 ! Use Rotation Relevancy Parameter (set lower than 0.5) !")]

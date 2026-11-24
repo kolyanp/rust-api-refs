@@ -132,8 +132,8 @@ public class BaseLauncher : BaseProjectile
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void SV_Launch(RPCMessage msg)
 	{
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)

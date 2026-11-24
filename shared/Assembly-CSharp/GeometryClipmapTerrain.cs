@@ -31,8 +31,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	public Material pixelNormalMaterial;
 
-	[Range(1f, 8f)]
 	[SerializeField]
+	[Range(1f, 8f)]
 	public int minVertLOD = 3;
 
 	[HideInInspector]
@@ -64,12 +64,12 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected int colliderVertexReduction;
 
-	[SerializeField]
 	[Range(0f, 4f)]
+	[SerializeField]
 	protected int vertexDensity;
 
-	[SerializeField]
 	[Range(0f, 4f)]
+	[SerializeField]
 	protected int vertexDensityReduction;
 
 	public bool debugCullingOn = true;

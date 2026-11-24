@@ -15,8 +15,8 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 
 	public Phrase phrase;
 
-	[Header("Additional Settings - Delay")]
 	[Space(10f)]
+	[Header("Additional Settings - Delay")]
 	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
 	public DelayType delayBeforeAppearing;
 
